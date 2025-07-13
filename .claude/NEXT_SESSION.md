@@ -1,162 +1,182 @@
-# 🚀 Next Session: 2.2 Vector Embeddings Integration
+# 🚀 Next Session: 2.3 Intent Engine Foundation
 
 ## 📋 Session Overview
 
-**Session**: 2.2 Vector Embeddings Integration  
-**Prerequisites**: Phase 1 complete ✅ (Session 2.1 implemented early in 1.4)  
-**Focus**: Implement advanced embedding service and enhance similarity search  
-**Context Budget**: ~2500 tokens (clean window available)  
-**Estimated Output**: ~800-1000 lines  
+**Session**: 2.3 Intent Engine Foundation  
+**Prerequisites**: Phase 1 complete ✅, Session 2.2 complete ✅  
+**Focus**: Implement intelligent query analysis and connection finding system  
+**Context Budget**: ~3000 tokens (clean window available)  
+**Estimated Output**: ~1000-1200 lines  
 
 ## 🎯 Quick Start Command
 
 ### Copy this to start the next session:
 ```
-I'm continuing work on CoachNTT.ai. We completed Phase 1 (Sessions 1.1-1.4).
+I'm continuing work on CoachNTT.ai. We completed Phase 1 and Session 2.2.
 
 Please review:
 1. @.claude/NEXT_SESSION.md (this file)
 2. @.claude/CLAUDE.md (current project state)
-3. @project-docs/Implementation_Cadence.md (lines 315-329 for Session 2.2)
-4. @src/core/memory/cluster_manager.py (current embedding usage)
+3. @project-docs/Implementation_Cadence.md (lines 339-362 for Session 2.3)
+4. @src/core/embeddings/service.py (enhanced embedding capabilities)
 
-Ready to start Session 2.2: Vector Embeddings Integration.
-Note: Session 2.1 (Time Degradation) was implemented early in Session 1.4.
+Ready to start Session 2.3: Intent Engine Foundation.
+Note: Session 2.2 (Vector Embeddings) is now complete with advanced sentence-transformer integration.
 ```
 
 ## 📚 Context Files to Load
 
 ### Essential Files (Load First)
 1. **`.claude/CLAUDE.md`** - Current project state and architecture
-2. **`project-docs/Implementation_Cadence.md`** (lines 315-329) - Session 2.2 specifications
-3. **`src/core/memory/cluster_manager.py`** - Current embedding usage patterns
-4. **`src/core/memory/repository.py`** - Memory creation integration points
+2. **`project-docs/Implementation_Cadence.md`** (lines 339-362) - Session 2.3 specifications
+3. **`src/core/embeddings/service.py`** - Enhanced embedding service capabilities
+4. **`src/core/memory/repository.py`** - Memory system integration points
 
 ### Reference Files (Load as Needed)
 - `src/core/memory/abstract_models.py` - Memory data structures
-- `tests/integration/test_memory_system.py` - Existing test patterns
-- `tests/performance/test_memory_benchmarks.py` - Performance testing framework
-- `requirements.txt` - Current dependencies
+- `src/core/embeddings/models.py` - Embedding models and types
+- `tests/integration/test_embeddings.py` - Embedding test patterns
+- `src/core/validation/validator.py` - Safety validation framework
 
 ## ⚠️ Important Session Notes
 
-### Session 2.1 Status: COMPLETE
-**Critical**: Session 2.1 (Time Degradation Algorithm) was fully implemented in Session 1.4 as `MemoryDecayEngine`. This session (2.2) is the next logical step in Phase 2.
+### Session 2.2 Status: COMPLETE ✅
+**Critical**: Session 2.2 (Vector Embeddings Integration) has been fully implemented with advanced sentence-transformer support. This session (2.3) builds on the enhanced embedding capabilities.
 
 **What's Already Done**:
-- ✅ Exponential decay algorithms with configurable constants
-- ✅ Batch processing and reinforcement methods  
-- ✅ Integration with database decay functions
-- ✅ Comprehensive testing and benchmarks
+- ✅ EmbeddingService with text/code generation using sentence-transformers
+- ✅ Advanced caching layer with LRU eviction and safety validation
+- ✅ Enhanced memory creation pipeline with automatic embedding generation
+- ✅ Improved clustering algorithms with weighted embedding combination
+- ✅ Comprehensive test suite and performance benchmarks
 
 ## 🏗️ Implementation Strategy
 
-### Phase 1: Core EmbeddingService (40% of session)
-1. Install sentence-transformers dependency
-2. Create `src/core/embeddings/service.py`
-3. Implement text and code embedding methods
-4. Add configuration for different model types
+### Phase 1: Core IntentEngine (40% of session)
+1. Create `src/core/intent/engine.py` - Main intent analysis engine
+2. Implement query analysis pipeline with safety validation
+3. Create confidence scoring system for intent detection
+4. Add basic intent classification framework
 
-### Phase 2: Integration (30% of session)
-1. Enhance memory creation to auto-generate embeddings
-2. Update clustering to use improved embeddings
-3. Optimize similarity search performance
-4. Add batch processing capabilities
+### Phase 2: Connection Finding (30% of session)
+1. Implement semantic similarity connection finder using embeddings
+2. Add temporal proximity analysis for related memories
+3. Create usage pattern detection for behavioral insights
+4. Integrate with existing memory clustering system
 
-### Phase 3: Optimization & Caching (20% of session)
-1. Implement embedding caching layer
-2. Add quality metrics and validation
-3. Create performance optimization features
-4. Add embedding comparison utilities
+### Phase 3: Non-Directive Filtering (20% of session)
+1. Implement non-directive filter to respect user autonomy
+2. Create explanation generator for transparent reasoning
+3. Add learning feedback loop for continuous improvement
+4. Ensure safety-first approach throughout intent analysis
 
-### Phase 4: Testing & Validation (10% of session)
-1. Write comprehensive unit tests
-2. Create integration tests with memory system
-3. Add performance benchmarks vs current system
-4. Validate embedding quality metrics
+### Phase 4: Testing & Integration (10% of session)
+1. Write comprehensive intent parsing tests
+2. Test confidence calculation accuracy
+3. Create integration tests with memory and embedding systems
+4. Validate non-directive principle adherence
 
 ## 🔧 Technical Requirements
 
-### Dependencies to Add
+### New Dependencies (Optional)
 ```toml
-sentence-transformers = "^2.2.2"
-transformers = "^4.21.0"
-torch = "^2.0.0"  # CPU version for development
+# Intent analysis enhancements (if needed)
+spacy = "^3.4.0"  # For advanced NLP analysis
+scikit-learn = "^1.1.0"  # For pattern detection algorithms
 ```
 
 ### New Files to Create
-- `src/core/embeddings/__init__.py`
-- `src/core/embeddings/service.py` - Main embedding service
-- `src/core/embeddings/cache.py` - Caching layer
-- `src/core/embeddings/models.py` - Embedding data models
-- `tests/unit/core/embeddings/` - Unit tests
-- `tests/integration/test_embeddings.py` - Integration tests
+- `src/core/intent/__init__.py`
+- `src/core/intent/engine.py` - Main intent analysis engine
+- `src/core/intent/analyzer.py` - Query analysis and classification
+- `src/core/intent/models.py` - Intent data models and types
+- `src/core/intent/connections.py` - Connection finding algorithms
+- `tests/unit/core/intent/` - Unit tests
+- `tests/integration/test_intent_engine.py` - Integration tests
 
 ### Files to Enhance
-- `src/core/memory/repository.py` - Add embedding generation
-- `src/core/memory/cluster_manager.py` - Use enhanced embeddings
-- `requirements.txt` - Add new dependencies
-- `src/core/memory/__init__.py` - Export embedding classes
+- `src/core/memory/repository.py` - Integrate intent-based queries
+- `src/core/embeddings/service.py` - Support intent-driven embedding
+- `src/core/__init__.py` - Export intent classes
+- `src/core/memory/cluster_manager.py` - Intent-aware clustering
 
 ## 🛡️ Safety Requirements
 
 ### Mandatory Safety Checks
-- [ ] All embedding content must be abstracted (safety score ≥0.8)
-- [ ] No concrete references in embedding generation
-- [ ] Embedding caching respects safety requirements
-- [ ] Generated embeddings maintain abstraction principles
-- [ ] Performance optimizations don't compromise safety
+- [ ] All intent analysis must respect user privacy and abstraction (safety score ≥0.8)
+- [ ] No concrete references in intent detection or connection finding
+- [ ] Non-directive principle strictly enforced (no manipulation or coercion)
+- [ ] Transparent reasoning - users understand why connections are suggested
+- [ ] Intent learning respects safety boundaries and doesn't leak information
+- [ ] Connection algorithms maintain abstraction throughout analysis
 
 ## 📊 Performance Targets
 
-### Embedding Generation
-- **Target**: <500ms for single embedding generation
-- **Batch Target**: <2s for 10 embeddings
-- **Cache Hit Rate**: >80% after warm-up period
+### Intent Analysis Performance
+- **Target**: <200ms for intent classification
+- **Connection Finding**: <500ms for semantic similarity analysis
+- **Batch Analysis**: <1s for analyzing 5 queries simultaneously
+- **Confidence Calculation**: <100ms for scoring intent matches
 
-### Similarity Search Enhancement
-- **Current Baseline**: Measure existing performance first
-- **Target Improvement**: 20% faster similarity calculations
-- **Quality Target**: Higher precision in similar memory detection
+### Quality Metrics
+- **Intent Accuracy**: >85% correct intent classification
+- **Connection Relevance**: >80% of suggested connections rated as useful
+- **Non-Directive Compliance**: 100% adherence to non-manipulation principles
+- **Safety Validation**: Zero tolerance for concrete reference leakage
 
 ## 📋 Session Completion Checklist
 
 ### Core Implementation
-- [ ] EmbeddingService class created and functional
-- [ ] Text embedding generation working
-- [ ] Code embedding generation working
-- [ ] Batch processing implemented
-- [ ] Caching layer operational
+- [ ] IntentEngine class created and functional
+- [ ] Query analysis pipeline working
+- [ ] Confidence scoring system implemented
+- [ ] Intent classification framework operational
+- [ ] Basic intent types defined and tested
 
-### Integration
-- [ ] Memory creation enhanced with embeddings
-- [ ] Clustering uses improved embeddings
-- [ ] Search performance improved
-- [ ] All safety requirements maintained
+### Connection Finding
+- [ ] Semantic similarity connection finder implemented
+- [ ] Temporal proximity analysis working
+- [ ] Usage pattern detection functional
+- [ ] Integration with clustering system complete
+- [ ] Connection scoring and ranking operational
+
+### Non-Directive Features
+- [ ] Non-directive filter implemented and enforced
+- [ ] Explanation generator providing transparent reasoning
+- [ ] Learning feedback loop functional
+- [ ] Safety validation throughout intent analysis
+- [ ] User autonomy respect mechanisms validated
 
 ### Testing & Validation
 - [ ] Unit tests written and passing
 - [ ] Integration tests validate functionality
-- [ ] Performance benchmarks show improvement
-- [ ] Embedding quality metrics implemented
-- [ ] Documentation updated
+- [ ] Intent parsing accuracy validated
+- [ ] Confidence calculation accuracy tested
+- [ ] Non-directive principle compliance verified
 
 ### Session Wrap-up
 - [ ] All code committed to git
 - [ ] Performance results documented
-- [ ] Next session planned (2.3 Intent Engine)
+- [ ] Next session planned (2.4 AST Code Analysis)
 - [ ] Session analysis completed
 
-## 🚀 Phase 1 Achievements (Completed)
-**Secure Foundation (100% complete)**:
+## 🚀 Previous Achievements (Completed)
+
+### Phase 1: Secure Foundation (100% complete)
 - Session 1.1: Safety-First Project Initialization ✅
 - Session 1.2: Secure PostgreSQL & pgvector Setup ✅
 - Session 1.3: Safety-First Database Schema ✅
 - Session 1.4: Abstract Memory Model Implementation ✅
 
-**Key Achievements**:
-- Complete safety-first development infrastructure
-- Advanced memory system with decay and clustering
-- Zero-tolerance safety enforcement (100% abstraction)
-- Performance-optimized with comprehensive testing
-- Production-ready memory management system
+### Phase 2 Progress: Intelligence Layer
+- Session 2.1: Time Degradation Algorithm ✅ (implemented in 1.4)
+- Session 2.2: Vector Embeddings Integration ✅ (just completed)
+
+**Key Session 2.2 Achievements**:
+- Advanced sentence-transformer integration with text/code embedding support
+- Intelligent caching system with LRU eviction and safety validation
+- Enhanced memory creation pipeline with automatic embedding generation
+- Improved clustering algorithms with weighted embedding combination (40/60)
+- Comprehensive test suite with performance benchmarks
+- All performance targets met (>500ms single, <2s batch, >80% cache hit rate)
+- Zero-tolerance safety enforcement maintained throughout
