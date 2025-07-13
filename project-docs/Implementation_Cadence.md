@@ -245,35 +245,37 @@
 
 ### Session 1.4: Abstract Memory Model Implementation
 **Context Window**: ~3000 tokens  
+**Code Budget**: ~1000 lines (enhancements to existing models)
 **Prerequisites**: Session 1.3
-**Context Files**: `src/core/memory/abstract_models.py`, `src/core/safety/validator.py`
+**Context Files**: `src/core/memory/abstract_models.py`, `src/core/memory/validator.py`
 **Safety Requirements**: No memory without abstraction
 
-- [ ] Create `AbstractMemoryEntry` class (not basic!):
-  ```python
-  @dataclass
-  class AbstractMemoryEntry:
-      abstracted_prompt: str
-      abstracted_code: str
-      concrete_refs: List[Reference]
-      safety_validation: ValidationResult
-  ```
-- [ ] Implement `SafeInteraction` with validation
-- [ ] Create `AbstractionValidator` class
-- [ ] Build `ReferenceDetector` service
-- [ ] Implement `SafeMemoryRepository`:
-  - [ ] `create_safe_memory()` with abstraction
-  - [ ] `validate_before_store()` method
-  - [ ] `get_with_safety_check()` method
-- [ ] Add mandatory abstraction pipeline
-- [ ] Create safety validation tests
-- [ ] Implement reference warning system
-- [ ] **Checkpoint**: Safe memory model ready
+**Note**: Core models already created in Session 1.3 - focus on enhancements
+
+- [ ] Enhance `AbstractMemoryEntry` with decay algorithms:
+  - [ ] Add temporal degradation methods
+  - [ ] Implement reinforcement patterns
+- [ ] Create `MemoryDecayEngine` service
+- [ ] Build `MemoryClusterManager`:
+  - [ ] Group related memories
+  - [ ] Similarity calculations
+- [ ] Enhance `SafeMemoryRepository`:
+  - [ ] Add clustering support
+  - [ ] Implement similarity search
+  - [ ] Add temporal queries
+- [ ] Create integration tests (~300 lines)
+- [ ] Add performance benchmarks
+- [ ] **Checkpoint**: Enhanced memory model ready
+
+**Context Checkpoints**:
+- [ ] 40%: Decay engine complete
+- [ ] 70%: Clustering implemented
+- [ ] 90%: Tests and documentation
 
 **Validation**:
-- [ ] Cannot create concrete-only memories
-- [ ] All references abstracted
-- [ ] Safety warnings functional
+- [ ] Decay algorithms working correctly
+- [ ] Clustering maintains safety
+- [ ] Performance <100ms per operation
 
 ---
 
@@ -281,6 +283,7 @@
 
 ### Session 2.1: Time Degradation Algorithm
 **Context Window**: ~2000 tokens
+**Code Budget**: ~800 lines
 **Prerequisites**: Phase 1 complete
 **Context Files**: `src/core/memory/degradation.py`
 
@@ -297,6 +300,10 @@
 - [ ] Write comprehensive tests (5 tests)
 - [ ] Add performance benchmarks
 - [ ] **Checkpoint**: Degradation operational
+
+**Context Checkpoints**:
+- [ ] 50%: Core algorithm implemented
+- [ ] 80%: Tests written
 
 **Validation**:
 - [ ] Decay calculations correct

@@ -10,7 +10,7 @@
 
 ### ✅ Completed Sessions
 - **Session 0.1**: Core Safety Principles & Architecture
-  - Created safety documentation (PRINCIPLES.md, PATTERNS.md, VALIDATION.md)
+  - Created safety documentation (docs/safety/PRINCIPLES.md, docs/safety/PATTERNS.md, docs/safety/VALIDATION.md)
   - Implemented abstraction engine with 4 core components
   - Set up PostgreSQL + pgvector in Docker
   - Created comprehensive test suite
@@ -125,8 +125,8 @@ docker-compose exec postgres psql -U ccp_user -d cognitive_coding_partner
 - [ ] Validate all safety measures working
 
 **Files to Load**:
-1. This file (CLAUDE.md)
-2. Implementation_Cadence.md (lines 244-276 for Session 1.4)
+1. This file (.claude/CLAUDE.md)
+2. project-docs/Implementation_Cadence.md (lines 244-276 for Session 1.4)
 3. src/core/memory/ (existing models from Session 1.3)
 4. Recent migration files for context
 
@@ -136,13 +136,21 @@ docker-compose exec postgres psql -U ccp_user -d cognitive_coding_partner
 I'm continuing work on CoachNTT.ai. We completed Session 1.3 (Safety-First Database Schema).
 
 Please review:
-1. @CLAUDE.md
-2. @Implementation_Cadence.md (lines 244-276 for Session 1.4)
+1. @.claude/CLAUDE.md
+2. @project-docs/Implementation_Cadence.md (lines 244-276 for Session 1.4)
 3. @src/core/memory/ (models created in Session 1.3)
 4. @migrations/005_cognitive_memory_enhancements.sql (for memory table structure)
 
 Ready to start Session 1.4: Abstract Memory Model Implementation.
 ```
+
+## 📁 Pre-Session Structure Check
+
+Before creating new files or directories:
+1. **Check PRD Structure**: Review PROJECT_STRUCTURE_STATUS.md
+2. **Verify Location**: Ensure files go in PRD-defined locations
+3. **Document Deviations**: If diverging from PRD, document why
+4. **Update Tracker**: Mark newly created structure in status doc
 
 ## 📊 Progress Tracking
 - Phase 0: Safety Foundation [▓▓▓▓▓▓] 100% (3/3 sessions) ✅
@@ -151,8 +159,34 @@ Ready to start Session 1.4: Abstract Memory Model Implementation.
 - Phase 3: Knowledge Integration [ ] 0%
 - Phase 4: Integration & Polish [ ] 0%
 
+## 📊 Context Management Protocol
+
+### Session Start Protocol
+When starting a session, I will provide:
+- **Estimated Output**: Expected lines of code/documentation
+- **Context Budget**: Percentage allocation of available window
+- **Commit Points**: Clear checkpoints for saving progress
+
+### Progress Indicators
+- ✅ **Component Complete**: Major task finished
+- 📊 **Context Update**: Current usage estimate
+- 🎯 **Next Target**: What's coming next
+- 💡 **Checkpoint Opportunity**: Good time to commit
+
+### Context Estimation Guidelines
+- **SQL Migrations**: ~500-800 lines per 1000 tokens
+- **Python Code**: ~300-500 lines per 1000 tokens
+- **Tests**: ~400-600 lines per 1000 tokens
+- **Documentation**: ~200-300 lines per 1000 tokens
+
+### Checkpoint Triggers
+- **60% Usage**: Suggest commit checkpoint
+- **80% Usage**: Switch to essential completion mode
+- **Major Component**: Always suggest checkpoint opportunity
+
 ## ⚠️ Important Notes
 - **Context Window**: Keep initial load under 3000 tokens
 - **Progressive Loading**: Start minimal, load files as needed
 - **Safety First**: Every feature must support abstraction from the start
 - **No Retrofitting**: Build safety into foundation, not added later
+- **Section Analysis**: Complete .claude/SESSION_ANALYSIS.md entry when transitioning between major sections (e.g., 1.4→2.1)

@@ -75,6 +75,7 @@ CoachNTT.ai/
 
 ## Documentation
 
+- [Documentation Guide](DOCUMENTATION_GUIDE.md) - Where to find things
 - [Architecture Overview](docs/architecture/system-design.md)
 - [Development Guide](docs/development/setup-guide.md)
 - [User Guide](docs/user-guide/getting-started.md)

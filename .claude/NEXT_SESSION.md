@@ -7,8 +7,8 @@
 I'm continuing work on CoachNTT.ai. We completed Session 1.3 (Safety-First Database Schema).
 
 Please review:
-1. @CLAUDE.md
-2. @Implementation_Cadence.md (lines 244-276 for Session 1.4)
+1. @.claude/CLAUDE.md
+2. @project-docs/Implementation_Cadence.md (lines 244-276 for Session 1.4)
 3. @src/core/memory/ (models created in Session 1.3)
 4. @migrations/005_cognitive_memory_enhancements.sql (for memory table structure)
 
@@ -22,6 +22,20 @@ Ready to start Session 1.4: Abstract Memory Model Implementation.
 - [ ] Review Python models: `src/core/memory/abstract_models.py`, `validator.py`, `repository.py`
 - [ ] Test safety enforcement: Run `scripts/database/test-abstraction-enforcement.sql`
 - [ ] Commit Session 1.3 work if not already done
+- [ ] **If completing Phase 1**: Review .claude/SESSION_ANALYSIS.md for section transition analysis
+
+### Context Planning:
+**Estimated Output**: ~1000 lines (enhancements to existing models)
+**Component Breakdown**:
+- Memory decay engine: ~300 lines
+- Clustering system: ~400 lines
+- Integration tests: ~300 lines
+
+**Context Budget**: ~70% of window (keeping 30% buffer)
+**Checkpoint Opportunities**:
+- [ ] After decay engine implementation
+- [ ] After clustering system
+- [ ] Before final testing
 
 ### Session Goals:
 1. Review existing Python memory models (created ahead in Session 1.3)
@@ -82,3 +96,10 @@ Infrastructure:         ✅ Complete (Sessions 1.1-1.3)
 
 Next: Enhance memory models with advanced features
 ```
+
+### 📊 Post-Session Reminder
+**If Session 1.4 completes Phase 1**:
+1. Run section analysis using .claude/SESSION_ANALYSIS.md template
+2. Document learnings and efficiency metrics
+3. Apply recommendations to Phase 2 planning
+4. Update best practices based on discoveries
