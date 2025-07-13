@@ -1,0 +1,115 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+config/development/*.env
+config/production/*.env
+
+# Database
+*.db
+*.sqlite3
+data/
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Docker
+.docker/
+
+# Obsidian
+vault/.obsidian/workspace.json
+vault/.obsidian/workspace-mobile.json
+vault/.obsidian/community-plugins.json
+vault/.obsidian/core-plugins.json
+vault/.obsidian/core-plugins-migration.json
+vault/.obsidian/app.json
+vault/.obsidian/appearance.json
+vault/.obsidian/cache
+vault/.obsidian/hotkeys.json
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+.cache/
+
+# Security
+*.pem
+*.key
+*.crt
+*.csr
+secrets/
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+test-results/
+
+# Documentation builds
+docs/_build/
+site/
+
+# Node modules (for documentation tools)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Backups
+*.backup
+backups/
