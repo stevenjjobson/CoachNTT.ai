@@ -1320,3 +1320,236 @@ class SafeMemoryRepository:
                 return True
         
         return False
+    
+    # Vault synchronization integration methods
+    
+    async def mark_memories_as_vault_synced(
+        self,
+        memory_ids: List[UUID],
+        vault_file_paths: List[str],
+        sync_timestamp: Optional[datetime] = None
+    ) -> bool:
+        """
+        Mark memories as synchronized with vault files.
+        
+        Args:
+            memory_ids: List of memory IDs that were synced
+            vault_file_paths: Corresponding vault file paths
+            sync_timestamp: When sync occurred (defaults to now)
+            
+        Returns:
+            Whether marking succeeded
+        """
+        if len(memory_ids) != len(vault_file_paths):
+            raise ValueError("Memory IDs and vault paths must have same length")
+        
+        sync_time = sync_timestamp or datetime.now()
+        
+        try:
+            async with self.db_pool.acquire() as conn:
+                async with conn.transaction():
+                    # Update memory metadata with vault sync info
+                    for memory_id, vault_path in zip(memory_ids, vault_file_paths):
+                        await conn.execute("""
+                            UPDATE public.cognitive_memory 
+                            SET metadata = jsonb_set(
+                                COALESCE(metadata, '{}'),
+                                '{vault_sync}',
+                                jsonb_build_object(
+                                    'synced', true,
+                                    'vault_file_path', $2,
+                                    'last_sync', $3
+                                )
+                            )
+                            WHERE id = $1
+                        """, memory_id, vault_path, sync_time)
+            
+            logger.debug(f"Marked {len(memory_ids)} memories as vault synced")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to mark memories as vault synced: {e}")
+            return False
+    
+    async def get_memories_for_vault_sync(
+        self,
+        limit: int = 100,
+        include_unsynced_only: bool = True,
+        min_safety_score: float = 0.8
+    ) -> List[AbstractMemoryEntry]:
+        """
+        Get memories that are ready for vault synchronization.
+        
+        Args:
+            limit: Maximum number of memories to return
+            include_unsynced_only: Whether to only include unsynced memories
+            min_safety_score: Minimum safety score required
+            
+        Returns:
+            List of memory entries ready for vault sync
+        """
+        try:
+            async with self.db_pool.acquire() as conn:
+                # Build query conditions
+                conditions = ["cm.is_validated = true", "ma.safety_score >= $2"]
+                params = [limit, min_safety_score]
+                
+                if include_unsynced_only:
+                    conditions.append("""
+                        (cm.metadata->>'vault_sync' IS NULL 
+                         OR (cm.metadata->'vault_sync'->>'synced')::boolean IS NOT true)
+                    """)
+                
+                where_clause = " AND ".join(conditions)
+                
+                rows = await conn.fetch(f"""
+                    SELECT 
+                        cm.id,
+                        cm.session_id,
+                        cm.interaction_type,
+                        cm.weight,
+                        cm.access_count,
+                        cm.last_accessed,
+                        cm.created_at,
+                        cm.updated_at,
+                        cm.metadata,
+                        ma.abstracted_prompt as content,
+                        ma.abstracted_response,
+                        ma.safety_score,
+                        ma.concrete_references,
+                        ma.abstraction_metadata
+                    FROM public.cognitive_memory cm
+                    INNER JOIN safety.memory_abstractions ma ON cm.abstraction_id = ma.memory_id
+                    WHERE {where_clause}
+                    ORDER BY cm.weight DESC, cm.created_at DESC
+                    LIMIT $1
+                """, *params)
+                
+                memories = []
+                for row in rows:
+                    try:
+                        memory = await self._row_to_memory_entry(row)
+                        memories.append(memory)
+                    except Exception as e:
+                        logger.warning(f"Failed to convert row to memory entry: {e}")
+                        continue
+                
+                logger.debug(f"Retrieved {len(memories)} memories for vault sync")
+                return memories
+                
+        except Exception as e:
+            logger.error(f"Failed to get memories for vault sync: {e}")
+            return []
+    
+    async def get_vault_sync_status(
+        self,
+        memory_ids: Optional[List[UUID]] = None
+    ) -> List[Dict[str, Any]]:
+        """
+        Get vault synchronization status for memories.
+        
+        Args:
+            memory_ids: Specific memory IDs to check (None for all)
+            
+        Returns:
+            List of sync status information
+        """
+        try:
+            async with self.db_pool.acquire() as conn:
+                if memory_ids:
+                    # Get status for specific memories
+                    placeholders = ','.join([f'${i+1}' for i in range(len(memory_ids))])
+                    rows = await conn.fetch(f"""
+                        SELECT 
+                            cm.id as memory_id,
+                            cm.created_at,
+                            cm.updated_at,
+                            cm.metadata->'vault_sync' as vault_sync_info,
+                            ma.safety_score
+                        FROM public.cognitive_memory cm
+                        INNER JOIN safety.memory_abstractions ma ON cm.abstraction_id = ma.memory_id
+                        WHERE cm.id IN ({placeholders})
+                            AND cm.is_validated = true
+                        ORDER BY cm.updated_at DESC
+                    """, *memory_ids)
+                else:
+                    # Get status for all memories with vault sync info
+                    rows = await conn.fetch("""
+                        SELECT 
+                            cm.id as memory_id,
+                            cm.created_at,
+                            cm.updated_at,
+                            cm.metadata->'vault_sync' as vault_sync_info,
+                            ma.safety_score
+                        FROM public.cognitive_memory cm
+                        INNER JOIN safety.memory_abstractions ma ON cm.abstraction_id = ma.memory_id
+                        WHERE cm.metadata ? 'vault_sync'
+                            AND cm.is_validated = true
+                        ORDER BY cm.updated_at DESC
+                        LIMIT 1000
+                    """)
+                
+                sync_statuses = []
+                for row in rows:
+                    vault_sync = row['vault_sync_info'] or {}
+                    
+                    status = {
+                        'memory_id': row['memory_id'],
+                        'is_synced': vault_sync.get('synced', False),
+                        'vault_file_path': vault_sync.get('vault_file_path'),
+                        'last_sync': vault_sync.get('last_sync'),
+                        'memory_created': row['created_at'],
+                        'memory_updated': row['updated_at'],
+                        'safety_score': float(row['safety_score']),
+                        'needs_sync': False
+                    }
+                    
+                    # Determine if sync is needed
+                    if not status['is_synced']:
+                        status['needs_sync'] = True
+                    elif status['last_sync']:
+                        # Check if memory was updated after last sync
+                        from datetime import datetime
+                        import dateutil.parser
+                        
+                        last_sync = dateutil.parser.parse(status['last_sync'])
+                        if row['updated_at'] > last_sync:
+                            status['needs_sync'] = True
+                    
+                    sync_statuses.append(status)
+                
+                return sync_statuses
+                
+        except Exception as e:
+            logger.error(f"Failed to get vault sync status: {e}")
+            return []
+    
+    async def clear_vault_sync_info(
+        self,
+        memory_ids: List[UUID]
+    ) -> bool:
+        """
+        Clear vault synchronization information from memories.
+        
+        Args:
+            memory_ids: Memory IDs to clear sync info from
+            
+        Returns:
+            Whether clearing succeeded
+        """
+        try:
+            async with self.db_pool.acquire() as conn:
+                async with conn.transaction():
+                    for memory_id in memory_ids:
+                        await conn.execute("""
+                            UPDATE public.cognitive_memory 
+                            SET metadata = metadata - 'vault_sync'
+                            WHERE id = $1
+                        """, memory_id)
+            
+            logger.debug(f"Cleared vault sync info for {len(memory_ids)} memories")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to clear vault sync info: {e}")
+            return False

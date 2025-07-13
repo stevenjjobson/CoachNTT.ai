@@ -1,111 +1,111 @@
-# 🚀 Next Session: 3.1 Obsidian Vault Sync
+# 🚀 Next Session: 3.2 Script Automation Framework
 
 ## 📋 Session Overview
 
-**Session**: 3.1 Obsidian Vault Sync  
-**Prerequisites**: Phase 1-2 complete ✅, Sessions 2.2-2.4 complete ✅  
-**Focus**: Implement memory-to-markdown conversion and bidirectional vault synchronization  
+**Session**: 3.2 Script Automation Framework  
+**Prerequisites**: Phase 1-2 complete ✅, Sessions 2.2-3.1 complete ✅  
+**Focus**: Implement development automation scripts and checkpoint management  
 **Context Budget**: ~3000 tokens (clean window available)  
-**Estimated Output**: ~800-1000 lines  
+**Estimated Output**: ~600-800 lines  
 
 ## 🎯 Quick Start Command
 
 ### Copy this to start the next session:
 ```
-I'm continuing work on CoachNTT.ai. We completed Phase 1-2 and Sessions 2.2-2.4.
+I'm continuing work on CoachNTT.ai. We completed Phase 1-2 and Sessions 2.2-3.1.
 
 Please review:
-1. @.claude/NEXT_SESSION.md (this file)
+1. @.claude/NEXT_SESSION.md (this file)  
 2. @.claude/CLAUDE.md (current project state)
-3. @project-docs/Implementation_Cadence.md (lines 393-416 for Session 3.1)
-4. @src/core/analysis/ast_analyzer.py (code analysis capabilities)
-5. @src/core/intent/engine.py (intent analysis with code integration)
+3. @project-docs/Implementation_Cadence.md (lines 421-443 for Session 3.2)
+4. @src/services/vault/sync_engine.py (vault sync capabilities)
+5. @src/core/memory/repository.py (enhanced with vault integration)
 
-Ready to start Session 3.1: Obsidian Vault Sync.
-Note: Session 2.4 (AST Code Analysis) is now complete with comprehensive code understanding and pattern detection.
+Ready to start Session 3.2: Script Automation Framework.
+Note: Session 3.1 (Obsidian Vault Sync) is now complete with comprehensive memory-to-markdown conversion and bidirectional synchronization.
 ```
 
 ## 📚 Context Files to Load
 
 ### Essential Files (Load First)
 1. **`.claude/CLAUDE.md`** - Current project state and architecture
-2. **`project-docs/Implementation_Cadence.md`** (lines 393-416) - Session 3.1 specifications
-3. **`src/core/memory/repository.py`** - Memory system for vault sync integration
-4. **`src/core/analysis/ast_analyzer.py`** - Code analysis capabilities for vault notes
+2. **`project-docs/Implementation_Cadence.md`** (lines 421-443) - Session 3.2 specifications
+3. **`src/services/vault/sync_engine.py`** - Vault synchronization system for script integration
+4. **`src/core/memory/repository.py`** - Memory system with vault sync capabilities
 
 ### Reference Files (Load as Needed)
-- `src/core/memory/abstract_models.py` - Memory models for conversion
-- `src/core/embeddings/service.py` - Embedding capabilities for note linking
+- `src/services/vault/models.py` - Vault sync data models
+- `src/core/analysis/ast_analyzer.py` - Code analysis for script enhancement
 - `src/core/validation/validator.py` - Safety validation framework
 - `src/core/intent/engine.py` - Intent analysis integration
 
 ## ⚠️ Important Session Notes
 
-### Session 2.4 Status: COMPLETE ✅
-**Critical**: Session 2.4 (AST Code Analysis) has been fully implemented with comprehensive code understanding and pattern detection. This session (3.1) builds on the analysis capabilities for vault synchronization.
+### Session 3.1 Status: COMPLETE ✅
+**Critical**: Session 3.1 (Obsidian Vault Sync) has been fully implemented with comprehensive memory-to-markdown conversion and bidirectional synchronization. This session (3.2) builds on the vault capabilities for automation and scripting.
 
 **What's Already Done**:
-- ✅ ASTAnalyzer with language detection (Python, JavaScript, TypeScript)
-- ✅ PatternDetector for design patterns (Singleton, Factory, Observer)
-- ✅ ComplexityAnalyzer with cyclomatic and cognitive complexity metrics
-- ✅ Dependency graph builder for code relationship analysis
-- ✅ Integration with IntentEngine for context-aware code insights
-- ✅ Safety-first design with complete abstraction of concrete references
-- ✅ Performance targets met (<300ms Python analysis, <50ms language detection)
-- ✅ Comprehensive test suite with unit, integration, and performance tests
+- ✅ VaultSyncEngine with bidirectional memory-vault synchronization
+- ✅ MarkdownConverter with frontmatter generation, tag extraction, and AST integration
+- ✅ TemplateProcessor with checkpoint, learning, and decision templates
+- ✅ ConflictResolver with multiple resolution strategies (safe merge, memory wins, vault wins)
+- ✅ Integration with memory repository, AST analyzer, and intent engine
+- ✅ Safety-first design with complete abstraction of concrete references in vault content
+- ✅ Performance targets met (<500ms conversion, <300ms conflict detection, <100ms backlinks)
+- ✅ Comprehensive test suite with unit and integration tests using mock filesystem
 
 ## 🏗️ Implementation Strategy
 
-### Phase 1: Core VaultSyncEngine (40% of session)
-1. Create `src/services/vault/sync_engine.py` - Main vault synchronization engine
-2. Implement memory-to-markdown converter with frontmatter generation
-3. Add backlink resolver for connecting related memories
-4. Create tag extraction and organization system
+### Phase 1: Script Framework Foundation (40% of session)
+1. Create `scripts/framework/runner.py` - Main script execution framework
+2. Implement `scripts/development/checkpoint.sh` - Git state capture and analysis
+3. Add script logging and execution tracking system
+4. Create dependency management and validation
 
-### Phase 2: Template Processing (30% of session)
-1. Implement checkpoint template for memory snapshots
-2. Add learning template for knowledge capture
-3. Create decision template for important choices
-4. Build template processing system with variable substitution
+### Phase 2: Development Automation (30% of session)
+1. Implement `scripts/development/rollback.py` - Safe rollback capabilities
+2. Add `scripts/monitoring/context-monitor.py` - Context window monitoring
+3. Create performance tracking and benchmarking scripts
+4. Build automated documentation generation hooks
 
-### Phase 3: Conflict Detection & Merge (20% of session)
-1. Add conflict detection for vault/memory synchronization
-2. Implement merge strategies for handling conflicts
-3. Create bidirectional sync capabilities
-4. Build change tracking and version management
+### Phase 3: Integration Scripts (20% of session)
+1. Add vault sync automation scripts
+2. Implement safety validation automation
+3. Create test execution and reporting scripts
+4. Build deployment preparation automation
 
-### Phase 4: Testing & Integration (10% of session)
-1. Write comprehensive vault sync tests with mock filesystem
-2. Test template processing and conflict resolution
-3. Create integration tests with memory and analysis systems
-4. Validate safety abstraction for vault content
+### Phase 4: Testing & Validation (10% of session)
+1. Write comprehensive script tests
+2. Test automation workflows end-to-end
+3. Validate safety compliance in all scripts
+4. Performance benchmark script execution
 
 ## 🔧 Technical Requirements
 
 ### New Dependencies (if needed)
 ```toml
-# Vault synchronization enhancements
-pyyaml = "^6.0"  # YAML frontmatter processing
-markdown = "^3.4"  # Markdown processing
-pathlib = "built-in"  # Path handling (Python standard library)
+# Script automation enhancements
+click = "^8.0"  # CLI framework for script interfaces
+psutil = "^5.9"  # System monitoring for context tracking
+gitpython = "^3.1"  # Git operations for checkpoint/rollback
+rich = "^13.0"  # Rich console output for script feedback
 ```
 
 ### New Files to Create
-- `src/services/__init__.py`
-- `src/services/vault/__init__.py`
-- `src/services/vault/sync_engine.py` - Main vault synchronization engine
-- `src/services/vault/markdown_converter.py` - Memory to markdown conversion
-- `src/services/vault/template_processor.py` - Template processing system
-- `src/services/vault/conflict_resolver.py` - Conflict detection and resolution
-- `src/services/vault/models.py` - Vault sync data models
-- `tests/unit/services/vault/` - Unit tests
-- `tests/integration/test_vault_sync.py` - Integration tests
+- `scripts/framework/__init__.py`
+- `scripts/framework/runner.py` - Main script execution framework
+- `scripts/development/checkpoint.sh` - Git state capture and complexity analysis
+- `scripts/development/rollback.py` - Safe rollback with validation
+- `scripts/monitoring/context-monitor.py` - Context window and performance monitoring
+- `scripts/automation/vault-sync.py` - Automated vault synchronization
+- `scripts/testing/run-suite.py` - Comprehensive test execution
+- `tests/unit/scripts/` - Script unit tests
 
 ### Files to Enhance
-- `src/core/memory/repository.py` - Add vault sync integration points
-- `src/core/memory/abstract_models.py` - Add vault metadata
-- `src/core/__init__.py` - Export vault sync classes
-- `src/core/intent/engine.py` - Context-aware vault note generation
+- `src/services/vault/sync_engine.py` - Add automation hooks
+- `src/core/memory/repository.py` - Add script integration points
+- `scripts/` - Create directory structure for organized automation
+- `.github/workflows/` - Prepare for CI/CD integration
 
 ## 🛡️ Safety Requirements
 
