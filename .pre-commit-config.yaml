@@ -1,4 +1,14 @@
+# ===============================================
+# Pre-commit Configuration with Safety-First Validation
+# ===============================================
+# IMPORTANT: These hooks enforce safety principles
+# and prevent concrete references from being committed.
+# ===============================================
+
 repos:
+  # ===============================================
+  # Standard Code Quality Hooks
+  # ===============================================
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
@@ -6,29 +16,63 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-added-large-files
+        args: ['--maxkb=1000']
       - id: check-json
       - id: check-toml
       - id: check-merge-conflict
       - id: detect-private-key
+      - id: debug-statements
+      - id: check-executables-have-shebangs
 
+  # ===============================================
+  # Python Code Formatting and Linting
+  # ===============================================
   - repo: https://github.com/psf/black
     rev: 24.1.0
     hooks:
       - id: black
-        language_version: python3.11
-
+        language_version: python3.10
+        
   - repo: https://github.com/pycqa/isort
     rev: 5.13.2
     hooks:
       - id: isort
         args: ["--profile", "black"]
-
+        
   - repo: https://github.com/pycqa/flake8
     rev: 7.0.0
     hooks:
       - id: flake8
         args: ["--max-line-length=88", "--extend-ignore=E203,W503"]
+        additional_dependencies: [flake8-docstrings]
+        
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+      - id: mypy
+        additional_dependencies: [types-all]
+        args: [--ignore-missing-imports]
 
+  # ===============================================
+  # Security and Safety Hooks
+  # ===============================================
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.5
+    hooks:
+      - id: bandit
+        args: ['-c', 'pyproject.toml']
+        additional_dependencies: ['bandit[toml]']
+        
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: package.lock.json
+        
+  # ===============================================
+  # Safety-Specific Validation Hooks
+  # ===============================================
   - repo: local
     hooks:
       - id: safety-validation
@@ -37,3 +81,36 @@ repos:
         language: script
         files: \.(py|sql)$
         pass_filenames: false
+        
+      - id: concrete-reference-check
+        name: Check for concrete references
+        entry: python scripts/safety/check_concrete_references.py
+        language: system
+        files: \.(py|md|yaml|yml|json|toml)$
+        pass_filenames: true
+        
+      - id: abstraction-validation
+        name: Validate abstraction patterns
+        entry: python scripts/safety/validate_abstractions.py
+        language: system
+        files: \.py$
+        pass_filenames: true
+        
+      - id: safety-score-check
+        name: Validate safety scores
+        entry: python scripts/safety/validate_safety_scores.py
+        language: system
+        files: \.py$
+        pass_filenames: false
+
+# ===============================================
+# Default Language Version
+# ===============================================
+default_language_version:
+  python: python3.10
+
+# ===============================================
+# Configuration
+# ===============================================
+fail_fast: false
+minimum_pre_commit_version: 3.6.0

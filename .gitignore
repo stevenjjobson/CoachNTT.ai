@@ -95,6 +95,16 @@ vault/.obsidian/hotkeys.json
 *.csr
 secrets/
 
+# Safety Framework
+safety-reports/
+abstraction-cache/
+reference-detection.log
+safety-validation.log
+concrete-references.log
+abstraction-quality.log
+.safety-cache/
+.abstraction/
+
 # Testing
 .coverage
 htmlcov/

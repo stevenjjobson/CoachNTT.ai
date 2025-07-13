@@ -1,0 +1,368 @@
+version: '3.8'
+
+services:
+  postgres:
+    build:
+      context: ./docker/dockerfiles
+      dockerfile: postgres.Dockerfile
+    container_name: ccp_postgres
+    environment:
+      # Core database configuration
+      POSTGRES_USER: ${POSTGRES_USER:-ccp_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ccp_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-cognitive_coding_partner}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      
+      # Security settings
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256 --auth-local=peer --data-checksums"
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      
+      # Safety configuration
+      POSTGRES_SAFETY_SCHEMA_FIRST: "true"
+      POSTGRES_ENABLE_AUDIT_LOGGING: "true"
+      POSTGRES_REQUIRE_SSL: "false"  # Enable in production
+      
+      # Performance tuning
+      POSTGRES_SHARED_BUFFERS: "256MB"
+      POSTGRES_EFFECTIVE_CACHE_SIZE: "1GB"
+      POSTGRES_WORK_MEM: "4MB"
+      
+      # Security monitoring
+      POSTGRES_LOG_STATEMENT: "all"
+      POSTGRES_LOG_CONNECTIONS: "on"
+      POSTGRES_LOG_DISCONNECTIONS: "on"
+      
+    ports:
+      - "127.0.0.1:5432:5432"  # Bind to localhost only for security
+      
+    volumes:
+      # Database data with secure permissions
+      - postgres_data:/var/lib/postgresql/data:rw
+      
+      # Initialization scripts (read-only)
+      - ./scripts/database/init:/docker-entrypoint-initdb.d:ro
+      
+      # Migration scripts (read-only)
+      - ./migrations:/migrations:ro
+      
+      # Configuration files (read-only)
+      - ./docker/dockerfiles/postgresql-secure.conf:/etc/postgresql/postgresql.conf:ro
+      - ./docker/dockerfiles/pg_hba-secure.conf:/etc/postgresql/pg_hba.conf:ro
+      
+      # Secure log directory
+      - postgres_logs:/var/lib/postgresql/logs:rw
+      
+      # Audit logs
+      - postgres_audit:/var/lib/postgresql/audit:rw
+      
+      # Backup directory
+      - postgres_backups:/var/lib/postgresql/backups:rw
+      
+    healthcheck:
+      test: [
+        "CMD-SHELL", 
+        "pg_isready -U ${POSTGRES_USER:-ccp_user} -d ${POSTGRES_DB:-cognitive_coding_partner} -h localhost -p 5432 && psql -U ${POSTGRES_USER:-ccp_user} -d ${POSTGRES_DB:-cognitive_coding_partner} -c 'SELECT 1' > /dev/null"
+      ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+      
+    networks:
+      - ccp_network
+      
+    restart: unless-stopped
+    
+    # ===============================================
+    # Enhanced Security Configuration
+    # ===============================================
+    
+    # User security (run as postgres user)
+    user: "999:999"  # postgres:postgres UID:GID
+    
+    # Read-only filesystem where possible
+    read_only: false  # PostgreSQL requires write access to data directory
+    
+    # Secure temporary filesystems
+    tmpfs:
+      - /tmp:noexec,nosuid,nodev,size=256m,mode=1777
+      - /var/run/postgresql:noexec,nosuid,nodev,size=64m,mode=0755
+      - /dev/shm:noexec,nosuid,nodev,size=64m,mode=0755
+      
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+      - apparmor:unconfined  # Adjust based on your AppArmor profiles
+      - seccomp:unconfined   # Consider custom seccomp profile for production
+      
+    # Capability management (principle of least privilege)
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETUID      # Required for PostgreSQL user switching
+      - SETGID      # Required for PostgreSQL group operations
+      - DAC_OVERRIDE # Required for file permission overrides
+      - CHOWN       # Required for file ownership changes
+      - FOWNER      # Required for file operations
+      - FSETID      # Required for file operations
+      
+    # Resource limits (security and stability)
+    mem_limit: 1g
+    mem_reservation: 512m
+    memswap_limit: 1g
+    cpus: "1.0"
+    cpu_shares: 1024
+    
+    # Process and file limits
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+      nproc:
+        soft: 4096
+        hard: 4096
+      memlock:
+        soft: -1
+        hard: -1
+        
+    # Process management
+    pids_limit: 1000
+    
+    # ===============================================
+    # Logging and Monitoring
+    # ===============================================
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "5"
+        labels: "service=postgres,component=database,safety=enabled"
+        
+    # Container labels for monitoring
+    labels:
+      - "ccp.component=database"
+      - "ccp.security.level=high"
+      - "ccp.safety.enabled=true"
+      - "ccp.monitoring.enabled=true"
+      - "traefik.enable=false"  # No external access
+      
+    # ===============================================
+    # Environment-specific overrides
+    # ===============================================
+    profiles:
+      - database
+      - production  # Include in production profile
+
+  # ===============================================
+  # Secure Connection Pooling Service
+  # ===============================================
+  pgbouncer:
+    build:
+      context: ./docker/dockerfiles
+      dockerfile: pgbouncer.Dockerfile
+    container_name: ccp_pgbouncer
+    environment:
+      # Database connection settings
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-ccp_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ccp_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-cognitive_coding_partner}
+      
+      # PgBouncer configuration
+      PGBOUNCER_POOL_MODE: transaction
+      PGBOUNCER_MAX_CLIENT_CONN: 100
+      PGBOUNCER_DEFAULT_POOL_SIZE: 20
+      PGBOUNCER_LOG_CONNECTIONS: 1
+      PGBOUNCER_LOG_DISCONNECTIONS: 1
+      
+      # Security settings
+      PGBOUNCER_AUTH_TYPE: scram-sha-256
+      PGBOUNCER_ADMIN_USERS: pgbouncer_admin
+      PGBOUNCER_STATS_USERS: pgbouncer_monitor,ccp_user
+      
+    ports:
+      - "127.0.0.1:6432:6432"  # PgBouncer port (localhost only)
+      
+    volumes:
+      # Configuration files (read-only)
+      - ./docker/dockerfiles/pgbouncer-secure.ini:/etc/pgbouncer/pgbouncer.ini:ro
+      - ./docker/dockerfiles/userlist-secure.txt:/etc/pgbouncer/userlist.txt:ro
+      
+      # Log storage
+      - pgbouncer_logs:/var/log/pgbouncer:rw
+      
+    depends_on:
+      postgres:
+        condition: service_healthy
+        
+    healthcheck:
+      test: [
+        "CMD-SHELL", 
+        "/usr/local/bin/pgbouncer-healthcheck.sh"
+      ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+      
+    networks:
+      - ccp_network
+      
+    restart: unless-stopped
+    
+    # ===============================================
+    # Security Configuration for PgBouncer
+    # ===============================================
+    
+    # User security
+    user: "999:999"  # pgbouncer:pgbouncer UID:GID
+    
+    # Read-only filesystem where possible
+    read_only: false  # PgBouncer needs write access to logs
+    
+    # Secure temporary filesystems
+    tmpfs:
+      - /tmp:noexec,nosuid,nodev,size=64m,mode=1777
+      - /var/run/pgbouncer:noexec,nosuid,nodev,size=32m,mode=0755
+      
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+      - apparmor:unconfined
+      
+    # Capability management
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETUID
+      - SETGID
+      - DAC_OVERRIDE
+      
+    # Resource limits
+    mem_limit: 256m
+    mem_reservation: 128m
+    memswap_limit: 256m
+    cpus: "0.5"
+    
+    # Process limits
+    ulimits:
+      nofile:
+        soft: 1024
+        hard: 2048
+      nproc:
+        soft: 512
+        hard: 1024
+        
+    pids_limit: 100
+    
+    # Logging
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+        labels: "service=pgbouncer,component=connection-pool,safety=enabled"
+        
+    # Container labels
+    labels:
+      - "ccp.component=connection-pool"
+      - "ccp.security.level=high"
+      - "ccp.safety.enabled=true"
+      - "ccp.monitoring.enabled=true"
+      - "traefik.enable=false"
+
+  # Future services can be added here
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/dockerfiles/app.Dockerfile
+  #   container_name: ccp_api
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   environment:
+  #     DATABASE_URL: postgresql://${POSTGRES_USER:-ccp_user}:${POSTGRES_PASSWORD:-ccp_dev_password}@postgres:5432/${POSTGRES_DB:-cognitive_coding_partner}
+  #   ports:
+  #     - "8000:8000"
+  #   networks:
+  #     - ccp_network
+
+volumes:
+  # ===============================================
+  # Secure Volume Configuration
+  # ===============================================
+  
+  # Primary database data volume
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${POSTGRES_DATA_PATH:-./data/postgres}
+    labels:
+      - "ccp.component=database-data"
+      - "ccp.security.level=high"
+      - "ccp.backup.enabled=true"
+      
+  # Secure log storage
+  postgres_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${POSTGRES_LOGS_PATH:-./data/postgres-logs}
+    labels:
+      - "ccp.component=database-logs"
+      - "ccp.security.level=medium"
+      - "ccp.retention=30d"
+      
+  # Audit log storage
+  postgres_audit:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${POSTGRES_AUDIT_PATH:-./data/postgres-audit}
+    labels:
+      - "ccp.component=audit-logs"
+      - "ccp.security.level=high"
+      - "ccp.retention=1y"
+      - "ccp.immutable=true"
+      
+  # Backup storage
+  postgres_backups:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${POSTGRES_BACKUP_PATH:-./data/postgres-backups}
+    labels:
+      - "ccp.component=database-backups"
+      - "ccp.security.level=high"
+      - "ccp.encrypted=true"
+      
+  # PgBouncer log storage
+  pgbouncer_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PGBOUNCER_LOGS_PATH:-./data/pgbouncer-logs}
+    labels:
+      - "ccp.component=connection-pool-logs"
+      - "ccp.security.level=medium"
+      - "ccp.retention=30d"
+
+networks:
+  ccp_network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+      com.docker.network.driver.mtu: "1500"
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1

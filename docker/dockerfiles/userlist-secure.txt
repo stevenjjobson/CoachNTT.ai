@@ -1,0 +1,121 @@
+# ===============================================
+# PgBouncer User Authentication List
+# ===============================================
+# Secure user authentication for CoachNTT.ai database access
+# Format: "username" "password_hash" "options"
+# All passwords are hashed using SCRAM-SHA-256
+# ===============================================
+
+# ===============================================
+# Application Users
+# ===============================================
+
+# Main application user (placeholder - will be replaced with actual hash)
+"ccp_user" "SCRAM-SHA-256$4096:<salt>$<hashed_password>" ""
+
+# API service user (dedicated for API connections)
+"ccp_api_user" "SCRAM-SHA-256$4096:<api_salt>$<api_hashed_password>" ""
+
+# Vault synchronization user (limited permissions)
+"ccp_vault_user" "SCRAM-SHA-256$4096:<vault_salt>$<vault_hashed_password>" ""
+
+# Backup service user (read-only + backup privileges)
+"ccp_backup_user" "SCRAM-SHA-256$4096:<backup_salt>$<backup_hashed_password>" ""
+
+# ===============================================
+# Monitoring and Administration Users
+# ===============================================
+
+# Monitoring user (read-only access to stats)
+"ccp_monitor" "SCRAM-SHA-256$4096:<monitor_salt>$<monitor_hashed_password>" ""
+
+# PgBouncer admin user (connection pool management)
+"pgbouncer_admin" "SCRAM-SHA-256$4096:<admin_salt>$<admin_hashed_password>" ""
+
+# PgBouncer monitor user (statistics access)
+"pgbouncer_monitor" "SCRAM-SHA-256$4096:<stats_salt>$<stats_hashed_password>" ""
+
+# ===============================================
+# Database Administrator (Emergency Access)
+# ===============================================
+
+# PostgreSQL superuser (emergency use only)
+"postgres" "SCRAM-SHA-256$4096:<postgres_salt>$<postgres_hashed_password>" ""
+
+# ===============================================
+# Development and Testing Users (if needed)
+# ===============================================
+
+# Development user (development environment only)
+"ccp_dev_user" "SCRAM-SHA-256$4096:<dev_salt>$<dev_hashed_password>" ""
+
+# Test user (testing environment only)
+"ccp_test_user" "SCRAM-SHA-256$4096:<test_salt>$<test_hashed_password>" ""
+
+# ===============================================
+# Service-Specific Users
+# ===============================================
+
+# Metrics collection user (Prometheus/monitoring)
+"ccp_metrics" "SCRAM-SHA-256$4096:<metrics_salt>$<metrics_hashed_password>" ""
+
+# Audit log reader (compliance and security)
+"ccp_audit_reader" "SCRAM-SHA-256$4096:<audit_salt>$<audit_hashed_password>" ""
+
+# ===============================================
+# Important Security Notes
+# ===============================================
+#
+# 1. Password Generation:
+#    - All passwords should be generated using strong randomization
+#    - Minimum 16 characters with mixed case, numbers, and symbols
+#    - Use tools like: openssl rand -base64 32
+#
+# 2. Hash Generation:
+#    - Use PostgreSQL's scram-sha-256 hash generation
+#    - Command: SELECT 'SCRAM-SHA-256$4096:' || encode(gen_salt('scram-sha-256'), 'hex') || '$' || encode(digest(password || gen_salt('scram-sha-256'), 'sha256'), 'hex');
+#    - Or use pgbouncer's auth_query mechanism
+#
+# 3. User Permissions:
+#    - Each user should have minimal required permissions
+#    - Regular audit of user access patterns
+#    - Rotate passwords according to security policy
+#
+# 4. Access Control:
+#    - Limit connection sources by IP when possible
+#    - Monitor authentication attempts and failures
+#    - Implement account lockout after failed attempts
+#
+# 5. Environment-Specific Notes:
+#    - Development: Use separate credentials
+#    - Staging: Mirror production security model
+#    - Production: Strongest security measures
+#
+# ===============================================
+# Password Rotation Schedule
+# ===============================================
+#
+# Application Users: Every 90 days
+# Admin Users: Every 60 days  
+# Service Users: Every 120 days
+# Emergency Users: Every 30 days
+#
+# ===============================================
+# Placeholder Replacement Instructions
+# ===============================================
+#
+# Before deployment, replace all placeholders with actual values:
+# 1. Generate unique salt for each user
+# 2. Create strong passwords (minimum 16 chars)
+# 3. Generate SCRAM-SHA-256 hashes
+# 4. Replace <salt> and <hashed_password> placeholders
+# 5. Verify all users can authenticate
+# 6. Document credentials in secure credential store
+#
+# Example for generating hash:
+# salt=$(openssl rand -hex 16)
+# password="your_secure_password_here"
+# hash=$(echo -n "$password$salt" | sha256sum | cut -d' ' -f1)
+# echo "SCRAM-SHA-256\$4096:$salt\$$hash"
+#
+# ===============================================
