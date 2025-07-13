@@ -119,42 +119,15 @@ docker-compose exec postgres psql -U ccp_user -d cognitive_coding_partner
 
 ## 📋 Next Session Plan
 
-### Session 2.2: Vector Embeddings Integration (Lines 315-329)
-**Prerequisites**: Phase 1 complete ✅ (Session 2.1 implemented early in 1.4)
-**Focus**: Implement embedding service and similarity search enhancements
+**For detailed session preparation, see:** [NEXT_SESSION.md](.claude/NEXT_SESSION.md)
 
-**Key Tasks**:
-- [ ] Install sentence-transformers dependency
-- [ ] Create `EmbeddingService` class for text/code embeddings
-- [ ] Implement embedding caching layer for performance
-- [ ] Enhance memory creation with automatic embedding generation
-- [ ] Optimize similarity search using improved embeddings
-- [ ] Add batch processing for embedding operations
-- [ ] Create embedding quality metrics and validation
-- [ ] Write comprehensive tests for embedding functionality
-- [ ] Benchmark embedding performance vs current system
-- [ ] Integrate with existing clustering for enhanced accuracy
+### Quick Summary: Session 2.2 Vector Embeddings Integration
+- **Prerequisites**: Phase 1 complete ✅ (Session 2.1 implemented early in 1.4)
+- **Focus**: Implement advanced EmbeddingService and enhance similarity search
+- **Context Budget**: ~2500 tokens (clean window)
+- **Estimated Output**: ~800-1000 lines
 
-**Files to Load**:
-1. This file (.claude/CLAUDE.md)
-2. project-docs/Implementation_Cadence.md (lines 315-329 for Session 2.2)
-3. src/core/memory/ (enhanced models from Session 1.4)
-4. Current clustering implementation for integration
-
-## 🎯 How to Start Next Session
-
-```
-I'm continuing work on CoachNTT.ai. We completed Phase 1 (Sessions 1.1-1.4).
-
-Please review:
-1. @.claude/CLAUDE.md
-2. @project-docs/Implementation_Cadence.md (lines 315-329 for Session 2.2)
-3. @src/core/memory/ (enhanced system from Session 1.4)
-4. Current embedding usage in cluster_manager.py
-
-Ready to start Session 2.2: Vector Embeddings Integration.
-Note: Session 2.1 (Time Degradation) was implemented early in Session 1.4.
-```
+**Note**: Session 2.1 (Time Degradation) was fully implemented in Session 1.4 as `MemoryDecayEngine`.
 
 ## 📁 Pre-Session Structure Check
 
