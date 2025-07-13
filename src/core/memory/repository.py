@@ -28,6 +28,7 @@ from .validator import MemoryValidator
 from .cluster_manager import MemoryClusterManager, ClusterType
 from .decay_engine import MemoryDecayEngine
 from ..embeddings import EmbeddingService, EmbeddingCache, ContentType
+from ..intent import IntentEngine, IntentType, QueryAnalysis
 
 
 logger = logging.getLogger(__name__)
@@ -43,7 +44,8 @@ class SafeMemoryRepository:
     def __init__(
         self, 
         db_pool: Pool,
-        embedding_service: Optional[EmbeddingService] = None
+        embedding_service: Optional[EmbeddingService] = None,
+        intent_engine: Optional[IntentEngine] = None
     ):
         """
         Initialize repository with database connection pool.
@@ -51,6 +53,7 @@ class SafeMemoryRepository:
         Args:
             db_pool: AsyncPG connection pool
             embedding_service: Optional embedding service for enhanced similarity
+            intent_engine: Optional intent engine for query analysis
         """
         self.db_pool = db_pool
         self.validator = MemoryValidator()
@@ -63,6 +66,9 @@ class SafeMemoryRepository:
             self.embedding_service = EmbeddingService(cache=embedding_cache)
         else:
             self.embedding_service = embedding_service
+            
+        # Initialize intent engine
+        self.intent_engine = intent_engine
     
     async def create_memory(
         self,
@@ -70,10 +76,12 @@ class SafeMemoryRepository:
         response: str,
         metadata: Optional[Dict[str, Any]] = None,
         auto_abstract: bool = True,
-        generate_embeddings: bool = True
+        generate_embeddings: bool = True,
+        analyze_intent: bool = True,
+        user_id: Optional[UUID] = None
     ) -> AbstractMemoryEntry:
         """
-        Create a new memory entry with automatic abstraction and embeddings.
+        Create a new memory entry with automatic abstraction, embeddings, and intent analysis.
         
         Args:
             prompt: The original prompt
@@ -81,6 +89,8 @@ class SafeMemoryRepository:
             metadata: Additional metadata
             auto_abstract: Whether to automatically abstract content
             generate_embeddings: Whether to generate embeddings automatically
+            analyze_intent: Whether to analyze intent
+            user_id: User ID for personalized intent analysis
             
         Returns:
             Created AbstractMemoryEntry
@@ -103,11 +113,43 @@ class SafeMemoryRepository:
             abstracted_response = response
             mappings = {}
         
+        # Analyze intent if enabled and engine available
+        intent_metadata = {}
+        if analyze_intent and self.intent_engine:
+            try:
+                query_analysis = await self.intent_engine.analyze_query(
+                    query=abstracted_prompt,
+                    context=metadata,
+                    user_id=user_id,
+                    include_connections=False  # Don't include connections during memory creation
+                )
+                
+                if query_analysis.intent_result:
+                    intent_metadata = {
+                        'intent_type': query_analysis.intent_result.intent_type.value,
+                        'intent_confidence': query_analysis.intent_result.metadata.confidence,
+                        'intent_reasoning': query_analysis.intent_result.reasoning,
+                        'intent_safety_score': float(query_analysis.intent_result.metadata.safety_score),
+                        'query_analysis_id': str(query_analysis.query_id)
+                    }
+                    
+                    logger.debug(
+                        f"Analyzed intent: {query_analysis.intent_result.intent_type} "
+                        f"(confidence: {query_analysis.intent_result.metadata.confidence:.2f})"
+                    )
+                
+            except Exception as e:
+                logger.warning(f"Intent analysis failed during memory creation: {e}")
+                # Continue without intent analysis - it's optional
+        
+        # Merge intent metadata with provided metadata
+        combined_metadata = {**(metadata or {}), **intent_metadata}
+        
         # Create memory entry
         memory = AbstractMemoryEntry(
             abstracted_prompt=abstracted_prompt,
             abstracted_response=abstracted_response,
-            abstracted_content=metadata or {},
+            abstracted_content=combined_metadata,
             abstraction_mapping=AbstractionMapping(mappings=mappings)
         )
         
@@ -1080,3 +1122,201 @@ class SafeMemoryRepository:
             created_at=row['created_at'],
             updated_at=row['updated_at']
         )
+    
+    async def search_with_intent_analysis(
+        self,
+        query: str,
+        user_id: Optional[UUID] = None,
+        context: Optional[Dict[str, Any]] = None,
+        max_connections: int = 10,
+        include_similar_intents: bool = True,
+        limit: int = 20
+    ) -> Dict[str, Any]:
+        """
+        Search memories using intent analysis and connection finding.
+        
+        This method combines traditional search with intent analysis to provide
+        more relevant and contextual results.
+        
+        Args:
+            query: Search query
+            user_id: User ID for personalized analysis
+            context: Additional context for intent analysis
+            max_connections: Maximum connections to find
+            include_similar_intents: Whether to include memories with similar intents
+            limit: Maximum search results
+            
+        Returns:
+            Dictionary with search results, intent analysis, and connections
+        """
+        if not self.intent_engine:
+            # Fallback to regular search if no intent engine
+            logger.warning("Intent engine not available, falling back to regular search")
+            results = await self.search_with_clustering(query, limit=limit)
+            return {
+                'query': query,
+                'intent_analysis': None,
+                'search_results': results,
+                'connections': [],
+                'total_results': len(results)
+            }
+        
+        try:
+            # Step 1: Analyze query intent
+            logger.debug(f"Analyzing intent for search query: {query[:100]}...")
+            
+            query_analysis = await self.intent_engine.analyze_query(
+                query=query,
+                context=context,
+                user_id=user_id,
+                include_connections=True,
+                max_connections=max_connections
+            )
+            
+            # Step 2: Perform regular search
+            search_results = await self.search_with_clustering(
+                query=query,
+                limit=limit
+            )
+            
+            # Step 3: Enhance results with intent-based filtering and ranking
+            enhanced_results = await self._enhance_results_with_intent(
+                search_results,
+                query_analysis,
+                include_similar_intents
+            )
+            
+            # Step 4: Get connections from intent analysis
+            connections = []
+            if query_analysis.connection_result:
+                connections = [
+                    {
+                        'target_id': str(conn.target_id),
+                        'connection_type': conn.connection_type.value,
+                        'strength': conn.strength,
+                        'explanation': conn.explanation,
+                        'reasoning': conn.reasoning.value
+                    }
+                    for conn in query_analysis.connection_result.connections
+                ]
+            
+            result = {
+                'query': query,
+                'intent_analysis': {
+                    'intent_type': query_analysis.intent_result.intent_type.value if query_analysis.intent_result else None,
+                    'confidence': query_analysis.intent_result.metadata.confidence if query_analysis.intent_result else 0.0,
+                    'reasoning': query_analysis.intent_result.reasoning if query_analysis.intent_result else None,
+                    'safety_score': float(query_analysis.safety_score),
+                    'processing_time_ms': query_analysis.total_processing_time_ms
+                },
+                'search_results': enhanced_results,
+                'connections': connections,
+                'total_results': len(enhanced_results),
+                'connection_count': len(connections)
+            }
+            
+            logger.info(
+                f"Intent-aware search completed: {len(enhanced_results)} results, "
+                f"{len(connections)} connections for intent: {query_analysis.intent_result.intent_type if query_analysis.intent_result else 'unknown'}"
+            )
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Intent-aware search failed: {e}")
+            # Fallback to regular search
+            search_results = await self.search_with_clustering(query, limit=limit)
+            return {
+                'query': query,
+                'intent_analysis': {'error': str(e)},
+                'search_results': search_results,
+                'connections': [],
+                'total_results': len(search_results)
+            }
+    
+    async def _enhance_results_with_intent(
+        self,
+        search_results: List[Dict[str, Any]],
+        query_analysis: QueryAnalysis,
+        include_similar_intents: bool
+    ) -> List[Dict[str, Any]]:
+        """
+        Enhance search results using intent analysis.
+        
+        Args:
+            search_results: Original search results
+            query_analysis: Intent analysis results
+            include_similar_intents: Whether to boost similar intents
+            
+        Returns:
+            Enhanced and re-ranked search results
+        """
+        if not query_analysis.intent_result:
+            return search_results
+        
+        query_intent = query_analysis.intent_result.intent_type
+        enhanced_results = []
+        
+        for result in search_results:
+            enhanced_result = result.copy()
+            
+            # Check if memory has intent metadata
+            memory_metadata = result.get('abstracted_content', {})
+            memory_intent_str = memory_metadata.get('intent_type')
+            
+            intent_boost = 0.0
+            intent_match = False
+            
+            if memory_intent_str:
+                try:
+                    memory_intent = IntentType(memory_intent_str)
+                    
+                    # Exact intent match
+                    if memory_intent == query_intent:
+                        intent_boost = 0.3
+                        intent_match = True
+                    # Similar intent (simplified similarity)
+                    elif include_similar_intents and self._are_intents_similar(query_intent, memory_intent):
+                        intent_boost = 0.1
+                        intent_match = True
+                    
+                except ValueError:
+                    # Invalid intent type in metadata
+                    pass
+            
+            # Apply intent boost to similarity score
+            original_similarity = result.get('similarity', 0.0)
+            enhanced_similarity = min(1.0, original_similarity + intent_boost)
+            
+            enhanced_result.update({
+                'original_similarity': original_similarity,
+                'intent_boosted_similarity': enhanced_similarity,
+                'intent_match': intent_match,
+                'intent_boost': intent_boost,
+                'memory_intent': memory_intent_str
+            })
+            
+            enhanced_results.append(enhanced_result)
+        
+        # Re-sort by enhanced similarity
+        enhanced_results.sort(
+            key=lambda x: x.get('intent_boosted_similarity', 0),
+            reverse=True
+        )
+        
+        return enhanced_results
+    
+    def _are_intents_similar(self, intent1: IntentType, intent2: IntentType) -> bool:
+        """Check if two intents are similar (simplified logic)."""
+        similar_groups = [
+            {IntentType.QUESTION, IntentType.EXPLANATION, IntentType.LEARN},
+            {IntentType.DEBUG, IntentType.OPTIMIZE, IntentType.REVIEW},
+            {IntentType.CREATE, IntentType.PLAN, IntentType.COMMAND},
+            {IntentType.SEARCH, IntentType.REVIEW, IntentType.REFLECT}
+        ]
+        
+        for group in similar_groups:
+            if intent1 in group and intent2 in group:
+                return True
+        
+        return False
