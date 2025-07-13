@@ -27,6 +27,7 @@ from .abstract_models import (
 from .validator import MemoryValidator
 from .cluster_manager import MemoryClusterManager, ClusterType
 from .decay_engine import MemoryDecayEngine
+from ..embeddings import EmbeddingService, EmbeddingCache, ContentType
 
 
 logger = logging.getLogger(__name__)
@@ -39,33 +40,47 @@ class SafeMemoryRepository:
     All memory operations go through validation before storage.
     """
     
-    def __init__(self, db_pool: Pool):
+    def __init__(
+        self, 
+        db_pool: Pool,
+        embedding_service: Optional[EmbeddingService] = None
+    ):
         """
         Initialize repository with database connection pool.
         
         Args:
             db_pool: AsyncPG connection pool
+            embedding_service: Optional embedding service for enhanced similarity
         """
         self.db_pool = db_pool
         self.validator = MemoryValidator()
         self.cluster_manager = MemoryClusterManager(db_pool)
         self.decay_engine = MemoryDecayEngine(db_pool)
+        
+        # Initialize embedding service with cache
+        if embedding_service is None:
+            embedding_cache = EmbeddingCache(max_size=1000, default_ttl_seconds=3600)
+            self.embedding_service = EmbeddingService(cache=embedding_cache)
+        else:
+            self.embedding_service = embedding_service
     
     async def create_memory(
         self,
         prompt: str,
         response: str,
         metadata: Optional[Dict[str, Any]] = None,
-        auto_abstract: bool = True
+        auto_abstract: bool = True,
+        generate_embeddings: bool = True
     ) -> AbstractMemoryEntry:
         """
-        Create a new memory entry with automatic abstraction.
+        Create a new memory entry with automatic abstraction and embeddings.
         
         Args:
             prompt: The original prompt
             response: The original response
             metadata: Additional metadata
             auto_abstract: Whether to automatically abstract content
+            generate_embeddings: Whether to generate embeddings automatically
             
         Returns:
             Created AbstractMemoryEntry
@@ -120,8 +135,40 @@ class SafeMemoryRepository:
                 f"Memory validation failed: {validation_result.violations}"
             )
         
+        # Generate embeddings if requested
+        prompt_embedding = None
+        response_embedding = None
+        
+        if generate_embeddings:
+            try:
+                # Determine content type based on metadata or content analysis
+                content_type = self._determine_content_type(prompt, response, metadata)
+                
+                # Generate embeddings for abstracted content
+                prompt_result = await self.embedding_service.generate_embedding(
+                    content=abstracted_prompt,
+                    content_type=content_type
+                )
+                
+                response_result = await self.embedding_service.generate_embedding(
+                    content=abstracted_response or "",
+                    content_type=content_type
+                )
+                
+                prompt_embedding = prompt_result.vector
+                response_embedding = response_result.vector
+                
+                logger.debug(
+                    f"Generated embeddings: prompt={len(prompt_embedding)}d, "
+                    f"response={len(response_embedding)}d"
+                )
+                
+            except Exception as e:
+                logger.warning(f"Failed to generate embeddings: {e}")
+                # Continue without embeddings - they're optional
+        
         # Store in database
-        await self._store_memory(memory)
+        await self._store_memory(memory, prompt_embedding, response_embedding)
         
         return memory
     
@@ -159,7 +206,7 @@ class SafeMemoryRepository:
         if errors:
             raise ValueError(f"Interaction validation failed: {errors}")
         
-        # Store in database
+        # Store in database (embeddings will be retrieved from memory)
         await self._store_interaction(interaction)
         
         return interaction
@@ -810,7 +857,70 @@ class SafeMemoryRepository:
                 return Decimal(str(row['weight']))
             return None
     
-    async def _store_memory(self, memory: AbstractMemoryEntry) -> None:
+    def _determine_content_type(
+        self, 
+        prompt: str, 
+        response: str, 
+        metadata: Optional[Dict[str, Any]] = None
+    ) -> ContentType:
+        """
+        Determine the content type for embedding generation.
+        
+        Args:
+            prompt: The prompt content
+            response: The response content
+            metadata: Optional metadata with hints
+            
+        Returns:
+            ContentType for embedding model selection
+        """
+        # Check metadata for explicit content type
+        if metadata and 'content_type' in metadata:
+            content_type_str = metadata['content_type'].lower()
+            if content_type_str == 'code':
+                return ContentType.CODE
+            elif content_type_str == 'documentation':
+                return ContentType.DOCUMENTATION
+            elif content_type_str == 'query':
+                return ContentType.QUERY
+        
+        # Analyze content for code patterns
+        combined_content = f"{prompt} {response}".lower()
+        
+        # Code indicators
+        code_indicators = [
+            'def ', 'function', 'class ', 'import ', 'from ',
+            'if __name__', 'return ', 'print(', 'console.log',
+            '#!/', '<?php', '<script', '<html', 'SELECT ', 'INSERT ',
+            'CREATE TABLE', 'function(', '=>', 'async ', 'await ',
+            'public class', 'private ', 'protected ', '#include'
+        ]
+        
+        # Documentation indicators
+        doc_indicators = [
+            'readme', 'documentation', 'guide', 'tutorial',
+            'installation', 'getting started', 'api reference',
+            'changelog', 'license', 'contributing'
+        ]
+        
+        # Count indicators
+        code_score = sum(1 for indicator in code_indicators if indicator in combined_content)
+        doc_score = sum(1 for indicator in doc_indicators if indicator in combined_content)
+        
+        # Determine type based on scores
+        if code_score > doc_score and code_score > 0:
+            return ContentType.CODE
+        elif doc_score > 0:
+            return ContentType.DOCUMENTATION
+        else:
+            return ContentType.TEXT
+    
+    async def _store_memory(
+        self, 
+        memory: AbstractMemoryEntry, 
+        prompt_embedding: Optional[List[float]] = None,
+        response_embedding: Optional[List[float]] = None
+    ) -> None:
         """Store memory entry in database."""
         async with self.db_pool.acquire() as conn:
             await conn.execute("""
@@ -851,6 +961,24 @@ class SafeMemoryRepository:
     async def _store_interaction(self, interaction: SafeInteraction) -> None:
         """Store interaction in database."""
         async with self.db_pool.acquire() as conn:
+            # Get embeddings from the associated memory if available
+            prompt_embedding = interaction.prompt_embedding
+            response_embedding = interaction.response_embedding
+            
+            # If embeddings not set on interaction, try to get from memory
+            if not prompt_embedding or not response_embedding:
+                memory_embeddings = await conn.fetchrow("""
+                    SELECT prompt_embedding, response_embedding
+                    FROM public.cognitive_memory cm
+                    WHERE cm.abstraction_id = $1
+                    ORDER BY cm.created_at DESC
+                    LIMIT 1
+                """, interaction.abstraction_id)
+                
+                if memory_embeddings:
+                    prompt_embedding = prompt_embedding or memory_embeddings['prompt_embedding']
+                    response_embedding = response_embedding or memory_embeddings['response_embedding']
+            
             await conn.execute("""
                 INSERT INTO public.cognitive_memory (
                     id,
@@ -886,8 +1014,8 @@ class SafeMemoryRepository:
                     'language': interaction.metadata.language,
                     'framework': interaction.metadata.framework
                 },
-                interaction.prompt_embedding,
-                interaction.response_embedding,
+                prompt_embedding,
+                response_embedding,
                 interaction.is_validated,
                 interaction.validation_errors,
                 interaction.created_at,

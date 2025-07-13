@@ -18,6 +18,7 @@ import numpy as np
 from asyncpg import Pool
 
 from .abstract_models import InteractionType
+from ..embeddings import EmbeddingService, ContentType
 
 
 logger = logging.getLogger(__name__)
@@ -159,18 +160,24 @@ class MemoryClusterManager:
     Groups related memories for efficient retrieval and analysis.
     """
     
-    def __init__(self, db_pool: Pool):
+    def __init__(
+        self, 
+        db_pool: Pool,
+        embedding_service: Optional[EmbeddingService] = None
+    ):
         """
         Initialize cluster manager.
         
         Args:
             db_pool: Database connection pool
+            embedding_service: Optional embedding service for enhanced clustering
         """
         self.db_pool = db_pool
         self.min_cluster_size = 2
         self.max_cluster_size = 50
         self.similarity_threshold = 0.7
         self.min_safety_score = Decimal("0.8")
+        self.embedding_service = embedding_service
     
     async def create_cluster(
         self,
@@ -377,10 +384,19 @@ class MemoryClusterManager:
             embeddings = {}
             
             for row in memories:
-                # Combine prompt and response embeddings
+                # Enhanced embedding combination
                 prompt_emb = np.array(row['prompt_embedding'])
                 response_emb = np.array(row['response_embedding'])
-                combined_emb = (prompt_emb + response_emb) / 2
+                
+                # Use weighted combination for better semantic representation
+                # Weight response slightly higher as it often contains more complete information
+                combined_emb = (prompt_emb * 0.4 + response_emb * 0.6)
+                
+                # Normalize the combined embedding
+                magnitude = np.linalg.norm(combined_emb)
+                if magnitude > 0:
+                    combined_emb = combined_emb / magnitude
+                
                 embeddings[row['id']] = combined_emb.tolist()
             
             # Find clusters using hierarchical clustering
@@ -682,13 +698,20 @@ class MemoryClusterManager:
                 """, cluster_id)
                 
                 if members:
-                    # Calculate new centroid
+                    # Calculate new centroid with enhanced embedding combination
                     embeddings = {}
                     for member in members:
-                        combined_emb = (
-                            np.array(member['prompt_embedding']) + 
-                            np.array(member['response_embedding'])
-                        ) / 2
+                        prompt_emb = np.array(member['prompt_embedding'])
+                        response_emb = np.array(member['response_embedding'])
+                        
+                        # Use same weighted combination as clustering
+                        combined_emb = (prompt_emb * 0.4 + response_emb * 0.6)
+                        
+                        # Normalize
+                        magnitude = np.linalg.norm(combined_emb)
+                        if magnitude > 0:
+                            combined_emb = combined_emb / magnitude
+                        
                         embeddings[member['memory_id']] = combined_emb.tolist()
                     
                     # Create temporary cluster for centroid calculation
@@ -734,3 +757,206 @@ class MemoryClusterManager:
             cluster_count_score = min(1.0, quality_metrics['total_clusters'] / 20.0)  # Prefer more clusters up to 20
             
             return (safety_score * 0.5) + (size_score * 0.3) + (cluster_count_score * 0.2)
+    
+    async def regenerate_embeddings_for_cluster(
+        self,
+        cluster_id: UUID,
+        force_regeneration: bool = False
+    ) -> int:
+        """
+        Regenerate embeddings for memories in a cluster using enhanced embedding service.
+        
+        Args:
+            cluster_id: Cluster to regenerate embeddings for
+            force_regeneration: Whether to regenerate even if embeddings exist
+            
+        Returns:
+            Number of embeddings regenerated
+        """
+        if not self.embedding_service:
+            logger.warning("No embedding service available for regeneration")
+            return 0
+        
+        regenerated_count = 0
+        
+        async with self.db_pool.acquire() as conn:
+            # Get cluster members with their abstracted content
+            members = await conn.fetch("""
+                SELECT 
+                    mcm.memory_id,
+                    ma.abstracted_prompt,
+                    ma.abstracted_response,
+                    ma.abstracted_content,
+                    cm.prompt_embedding,
+                    cm.response_embedding
+                FROM public.memory_cluster_members mcm
+                INNER JOIN safety.memory_abstractions ma ON mcm.memory_id = ma.memory_id
+                INNER JOIN public.cognitive_memory cm ON mcm.memory_id = cm.id
+                WHERE mcm.cluster_id = $1 AND ma.validation_status = 'validated'
+            """, cluster_id)
+            
+            for member in members:
+                should_regenerate = force_regeneration
+                
+                # Check if embeddings are missing or invalid
+                if not should_regenerate:
+                    prompt_emb = member['prompt_embedding']
+                    response_emb = member['response_embedding']
+                    
+                    if not prompt_emb or not response_emb:
+                        should_regenerate = True
+                    elif len(prompt_emb) != len(response_emb):
+                        should_regenerate = True
+                        logger.debug(f"Dimension mismatch for memory {member['memory_id']}")
+                
+                if should_regenerate:
+                    try:
+                        # Determine content type
+                        content_type = self._determine_content_type_from_content(
+                            member['abstracted_prompt'],
+                            member['abstracted_response'] or "",
+                            member['abstracted_content']
+                        )
+                        
+                        # Generate new embeddings
+                        prompt_result = await self.embedding_service.generate_embedding(
+                            content=member['abstracted_prompt'],
+                            content_type=content_type
+                        )
+                        
+                        response_result = await self.embedding_service.generate_embedding(
+                            content=member['abstracted_response'] or "",
+                            content_type=content_type
+                        )
+                        
+                        # Update database
+                        await conn.execute("""
+                            UPDATE public.cognitive_memory
+                            SET prompt_embedding = $2,
+                                response_embedding = $3,
+                                updated_at = NOW()
+                            WHERE abstraction_id = $1
+                        """, 
+                            member['memory_id'],
+                            prompt_result.vector,
+                            response_result.vector
+                        )
+                        
+                        regenerated_count += 1
+                        logger.debug(
+                            f"Regenerated embeddings for memory {member['memory_id']} "
+                            f"({prompt_result.metadata.dimensions}d)"
+                        )
+                        
+                    except Exception as e:
+                        logger.error(
+                            f"Failed to regenerate embeddings for memory "
+                            f"{member['memory_id']}: {e}"
+                        )
+            
+            # Update cluster centroid after regeneration
+            if regenerated_count > 0:
+                await self._update_cluster_centroid(cluster_id)
+        
+        logger.info(
+            f"Regenerated {regenerated_count} embeddings for cluster {cluster_id}"
+        )
+        return regenerated_count
+    
+    def _determine_content_type_from_content(
+        self,
+        prompt: str,
+        response: str,
+        metadata: Dict[str, Any]
+    ) -> ContentType:
+        """
+        Determine content type from abstracted content.
+        
+        Args:
+            prompt: Abstracted prompt
+            response: Abstracted response
+            metadata: Content metadata
+            
+        Returns:
+            ContentType for embedding generation
+        """
+        # Check metadata first
+        if isinstance(metadata, dict) and 'content_type' in metadata:
+            content_type_str = str(metadata['content_type']).lower()
+            if content_type_str == 'code':
+                return ContentType.CODE
+            elif content_type_str == 'documentation':
+                return ContentType.DOCUMENTATION
+        
+        # Analyze content for patterns (even if abstracted)
+        combined_content = f"{prompt} {response}".lower()
+        
+        # Look for abstracted code patterns
+        code_patterns = [
+            '<code_block>', '<function_def>', '<class_def>',
+            '<method_call>', '<import_statement>', '<variable>',
+            'algorithm', 'implementation', 'function', 'method'
+        ]
+        
+        # Look for documentation patterns
+        doc_patterns = [
+            'documentation', 'guide', 'tutorial', 'readme',
+            'explanation', 'instruction', 'how to', 'overview'
+        ]
+        
+        code_score = sum(1 for pattern in code_patterns if pattern in combined_content)
+        doc_score = sum(1 for pattern in doc_patterns if pattern in combined_content)
+        
+        if code_score > doc_score:
+            return ContentType.CODE
+        elif doc_score > 0:
+            return ContentType.DOCUMENTATION
+        else:
+            return ContentType.TEXT
+    
+    async def _update_cluster_centroid(self, cluster_id: UUID) -> None:
+        """Update cluster centroid after embedding changes."""
+        async with self.db_pool.acquire() as conn:
+            # Get updated member embeddings
+            members = await conn.fetch("""
+                SELECT 
+                    mcm.memory_id,
+                    mcm.membership_score,
+                    cm.prompt_embedding,
+                    cm.response_embedding
+                FROM public.memory_cluster_members mcm
+                INNER JOIN public.cognitive_memory cm ON mcm.memory_id = cm.id
+                WHERE mcm.cluster_id = $1 AND cm.is_validated = true
+            """, cluster_id)
+            
+            if members:
+                # Calculate new centroid
+                embeddings = {}
+                for member in members:
+                    prompt_emb = np.array(member['prompt_embedding'])
+                    response_emb = np.array(member['response_embedding'])
+                    
+                    # Use enhanced combination
+                    combined_emb = (prompt_emb * 0.4 + response_emb * 0.6)
+                    magnitude = np.linalg.norm(combined_emb)
+                    if magnitude > 0:
+                        combined_emb = combined_emb / magnitude
+                    
+                    embeddings[member['memory_id']] = combined_emb.tolist()
+                
+                # Create temporary cluster for centroid calculation
+                temp_cluster = MemoryCluster()
+                for member in members:
+                    temp_cluster.add_member(
+                        member['memory_id'], 
+                        float(member['membership_score'])
+                    )
+                
+                new_centroid = temp_cluster.calculate_centroid(embeddings)
+                
+                # Update cluster
+                await conn.execute("""
+                    UPDATE public.memory_clusters
+                    SET centroid_embedding = $2, updated_at = NOW()
+                    WHERE id = $1
+                """, cluster_id, new_centroid)

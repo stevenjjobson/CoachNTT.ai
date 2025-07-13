@@ -35,6 +35,16 @@ from .cluster_manager import (
     ClusteringResult,
 )
 
+# Embedding support
+from ..embeddings import (
+    EmbeddingService,
+    EmbeddingCache,
+    EmbeddingResult,
+    EmbeddingMetadata,
+    ContentType,
+    ModelConfig,
+)
+
 __all__ = [
     # Core models
     "AbstractMemoryEntry",
@@ -64,6 +74,14 @@ __all__ = [
     "ClusterType",
     "ClusterMember",
     "ClusteringResult",
+    
+    # Embeddings
+    "EmbeddingService",
+    "EmbeddingCache",
+    "EmbeddingResult",
+    "EmbeddingMetadata",
+    "ContentType",
+    "ModelConfig",
 ]
 
 # Version info
