@@ -1,28 +1,28 @@
-# 🚀 Next Session: 3.2 Script Automation Framework
+# 🚀 Next Session: 3.3 Documentation Generator
 
 ## 📋 Session Overview
 
-**Session**: 3.2 Script Automation Framework  
-**Prerequisites**: Phase 1-2 complete ✅, Sessions 2.2-3.1 complete ✅  
-**Focus**: Implement development automation scripts and checkpoint management  
+**Session**: 3.3 Documentation Generator  
+**Prerequisites**: Phase 1-2 complete ✅, Sessions 2.2-3.2 complete ✅  
+**Focus**: Implement automated documentation generation with safety-first design  
 **Context Budget**: ~3000 tokens (clean window available)  
-**Estimated Output**: ~600-800 lines  
+**Estimated Output**: ~800-1000 lines  
 
 ## 🎯 Quick Start Command
 
 ### Copy this to start the next session:
 ```
-I'm continuing work on CoachNTT.ai. We completed Phase 1-2 and Sessions 2.2-3.1.
+I'm continuing work on CoachNTT.ai. We completed Phase 1-2 and Sessions 2.2-3.2.
 
 Please review:
 1. @.claude/NEXT_SESSION.md (this file)  
 2. @.claude/CLAUDE.md (current project state)
-3. @project-docs/Implementation_Cadence.md (lines 421-443 for Session 3.2)
-4. @src/services/vault/sync_engine.py (vault sync capabilities)
-5. @src/core/memory/repository.py (enhanced with vault integration)
+3. @project-docs/Implementation_Cadence.md (lines 444-466 for Session 3.3)
+4. @scripts/framework/runner.py (script automation framework)
+5. @src/core/analysis/ast_analyzer.py (AST analysis for documentation)
 
-Ready to start Session 3.2: Script Automation Framework.
-Note: Session 3.1 (Obsidian Vault Sync) is now complete with comprehensive memory-to-markdown conversion and bidirectional synchronization.
+Ready to start Session 3.3: Documentation Generator.
+Note: Session 3.2 (Script Automation Framework) is now complete with comprehensive development automation and safety-first script execution.
 ```
 
 ## 📚 Context Files to Load
@@ -41,18 +41,19 @@ Note: Session 3.1 (Obsidian Vault Sync) is now complete with comprehensive memor
 
 ## ⚠️ Important Session Notes
 
-### Session 3.1 Status: COMPLETE ✅
-**Critical**: Session 3.1 (Obsidian Vault Sync) has been fully implemented with comprehensive memory-to-markdown conversion and bidirectional synchronization. This session (3.2) builds on the vault capabilities for automation and scripting.
+### Session 3.2 Status: COMPLETE ✅
+**Critical**: Session 3.2 (Script Automation Framework) has been fully implemented with comprehensive development automation and safety-first script execution. This session (3.3) builds on the script framework for automated documentation generation.
 
 **What's Already Done**:
-- ✅ VaultSyncEngine with bidirectional memory-vault synchronization
-- ✅ MarkdownConverter with frontmatter generation, tag extraction, and AST integration
-- ✅ TemplateProcessor with checkpoint, learning, and decision templates
-- ✅ ConflictResolver with multiple resolution strategies (safe merge, memory wins, vault wins)
-- ✅ Integration with memory repository, AST analyzer, and intent engine
-- ✅ Safety-first design with complete abstraction of concrete references in vault content
-- ✅ Performance targets met (<500ms conversion, <300ms conflict detection, <100ms backlinks)
-- ✅ Comprehensive test suite with unit and integration tests using mock filesystem
+- ✅ ScriptRunner with dependency validation, performance monitoring, and safety checks
+- ✅ Safety-first logging system with automatic content abstraction and compliance tracking
+- ✅ Git state capture and complexity analysis integration (checkpoint.sh)
+- ✅ Safe rollback system with multi-level validation and automatic backup creation (rollback.py)
+- ✅ Real-time context monitoring with system performance and safety score tracking
+- ✅ Automated vault sync integration with existing VaultSyncEngine
+- ✅ Comprehensive test execution framework with coverage reporting and safety validation
+- ✅ Performance targets achieved (<2s script execution, <5s checkpoint analysis, <10s vault automation)
+- ✅ Complete abstraction of concrete references in all script outputs
 
 ## 🏗️ Implementation Strategy
 
