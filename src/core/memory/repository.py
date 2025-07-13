@@ -25,6 +25,8 @@ from .abstract_models import (
     AbstractionMapping,
 )
 from .validator import MemoryValidator
+from .cluster_manager import MemoryClusterManager, ClusterType
+from .decay_engine import MemoryDecayEngine
 
 
 logger = logging.getLogger(__name__)
@@ -46,6 +48,8 @@ class SafeMemoryRepository:
         """
         self.db_pool = db_pool
         self.validator = MemoryValidator()
+        self.cluster_manager = MemoryClusterManager(db_pool)
+        self.decay_engine = MemoryDecayEngine(db_pool)
     
     async def create_memory(
         self,
@@ -229,6 +233,437 @@ class SafeMemoryRepository:
                 return None
             
             return self._row_to_interaction(row)
+    
+    async def create_memory_relationship(
+        self,
+        source_memory_id: UUID,
+        target_memory_id: UUID,
+        relationship_type: str,
+        relationship_strength: float = 0.5,
+        context: Optional[Dict[str, Any]] = None,
+        is_bidirectional: bool = False
+    ) -> bool:
+        """
+        Create a relationship between two memories.
+        
+        Args:
+            source_memory_id: Source memory
+            target_memory_id: Target memory
+            relationship_type: Type of relationship
+            relationship_strength: Strength of relationship (0.0 to 1.0)
+            context: Additional context for the relationship
+            is_bidirectional: Whether relationship works both ways
+            
+        Returns:
+            True if relationship created successfully
+        """
+        # Validate relationship type
+        valid_types = [
+            'continuation', 'refinement', 'contradiction', 'expansion',
+            'implementation', 'question_answer', 'error_correction', 'related_topic'
+        ]
+        
+        if relationship_type not in valid_types:
+            raise ValueError(f"Invalid relationship type: {relationship_type}")
+        
+        async with self.db_pool.acquire() as conn:
+            try:
+                await conn.execute("""
+                    INSERT INTO public.memory_relationships (
+                        source_memory_id, target_memory_id, relationship_type,
+                        relationship_strength, context, is_bidirectional
+                    ) VALUES ($1, $2, $3, $4, $5, $6)
+                """, 
+                    source_memory_id, target_memory_id, relationship_type,
+                    Decimal(str(relationship_strength)), context or {}, is_bidirectional
+                )
+                return True
+            except Exception as e:
+                logger.error(f"Failed to create relationship: {e}")
+                return False
+    
+    async def get_memory_relationships(
+        self,
+        memory_id: UUID,
+        relationship_types: Optional[List[str]] = None,
+        min_strength: float = 0.0
+    ) -> List[Dict[str, Any]]:
+        """
+        Get relationships for a memory.
+        
+        Args:
+            memory_id: Memory to get relationships for
+            relationship_types: Filter by relationship types
+            min_strength: Minimum relationship strength
+            
+        Returns:
+            List of relationship dictionaries
+        """
+        async with self.db_pool.acquire() as conn:
+            # Build query filters
+            type_filter = ""
+            params = [memory_id, memory_id, min_strength]
+            
+            if relationship_types:
+                type_filter = "AND relationship_type = ANY($4)"
+                params.append(relationship_types)
+            
+            rows = await conn.fetch(f"""
+                SELECT 
+                    id,
+                    source_memory_id,
+                    target_memory_id,
+                    relationship_type,
+                    relationship_strength,
+                    context,
+                    is_bidirectional,
+                    created_at
+                FROM public.memory_relationships
+                WHERE (source_memory_id = $1 OR (target_memory_id = $2 AND is_bidirectional = true))
+                    AND relationship_strength >= $3
+                    {type_filter}
+                ORDER BY relationship_strength DESC, created_at DESC
+            """, *params)
+            
+            return [dict(row) for row in rows]
+    
+    async def find_temporal_sequences(
+        self,
+        memory_id: UUID,
+        max_distance: int = 5,
+        time_window_hours: int = 24
+    ) -> List[Dict[str, Any]]:
+        """
+        Find temporal sequences of memories related to a given memory.
+        
+        Args:
+            memory_id: Starting memory
+            max_distance: Maximum relationship distance to traverse
+            time_window_hours: Time window for temporal relationships
+            
+        Returns:
+            List of memory sequences with temporal context
+        """
+        async with self.db_pool.acquire() as conn:
+            # Use recursive CTE to find temporal sequences
+            sequences = await conn.fetch("""
+                WITH RECURSIVE temporal_sequence AS (
+                    -- Base case: start with the given memory
+                    SELECT 
+                        cm.id,
+                        cm.session_id,
+                        cm.created_at,
+                        cm.interaction_type,
+                        0 as distance,
+                        ARRAY[cm.id] as path
+                    FROM public.cognitive_memory cm
+                    WHERE cm.id = $1 AND cm.is_validated = true
+                    
+                    UNION ALL
+                    
+                    -- Recursive case: find related memories
+                    SELECT 
+                        cm.id,
+                        cm.session_id,
+                        cm.created_at,
+                        cm.interaction_type,
+                        ts.distance + 1,
+                        ts.path || cm.id
+                    FROM temporal_sequence ts
+                    JOIN public.memory_relationships mr ON (
+                        (mr.source_memory_id = ts.id OR 
+                         (mr.target_memory_id = ts.id AND mr.is_bidirectional = true))
+                        AND mr.relationship_type IN ('continuation', 'refinement', 'expansion')
+                    )
+                    JOIN public.cognitive_memory cm ON (
+                        CASE 
+                            WHEN mr.source_memory_id = ts.id THEN cm.id = mr.target_memory_id
+                            ELSE cm.id = mr.source_memory_id
+                        END
+                    )
+                    WHERE ts.distance < $2
+                        AND cm.is_validated = true
+                        AND cm.id != ALL(ts.path)  -- Prevent cycles
+                        AND ABS(EXTRACT(EPOCH FROM (cm.created_at - ts.created_at))) / 3600 <= $3
+                )
+                SELECT 
+                    ts.*,
+                    ma.abstracted_prompt,
+                    ma.safety_score
+                FROM temporal_sequence ts
+                JOIN safety.memory_abstractions ma ON ts.id = ma.memory_id
+                ORDER BY distance, created_at
+            """, memory_id, max_distance, time_window_hours)
+            
+            return [dict(row) for row in sequences]
+    
+    async def search_with_clustering(
+        self,
+        query: str,
+        cluster_types: Optional[List[ClusterType]] = None,
+        limit: int = 10,
+        min_safety_score: float = 0.8,
+        include_cluster_info: bool = True
+    ) -> List[Dict[str, Any]]:
+        """
+        Search for memories with cluster-aware ranking.
+        
+        Args:
+            query: Search query (will be abstracted)
+            cluster_types: Filter by cluster types
+            limit: Maximum results
+            min_safety_score: Minimum safety score filter
+            include_cluster_info: Include cluster membership info
+            
+        Returns:
+            List of memory dictionaries with cluster information
+        """
+        # Abstract the query
+        abstracted_query, _ = self.validator.auto_abstract_content(query)
+        
+        async with self.db_pool.acquire() as conn:
+            # Build cluster type filter
+            cluster_filter = ""
+            params = [abstracted_query, min_safety_score, limit]
+            
+            if cluster_types:
+                cluster_values = [ct.value for ct in cluster_types]
+                cluster_filter = "AND mc.cluster_type = ANY($4)"
+                params.append(cluster_values)
+            
+            # Search with cluster boosting
+            rows = await conn.fetch(f"""
+                WITH search_results AS (
+                    SELECT 
+                        ma.memory_id,
+                        ma.abstracted_prompt,
+                        ma.abstracted_response,
+                        ma.safety_score,
+                        similarity(
+                            ma.abstracted_prompt || ' ' || ma.abstracted_response,
+                            $1
+                        ) as base_similarity,
+                        cm.weight,
+                        cm.access_count,
+                        cm.last_accessed
+                    FROM safety.memory_abstractions ma
+                    INNER JOIN public.cognitive_memory cm ON ma.memory_id = cm.id
+                    WHERE ma.validation_status = 'validated'
+                        AND ma.safety_score >= $2
+                        AND similarity(
+                            ma.abstracted_prompt || ' ' || ma.abstracted_response,
+                            $1
+                        ) > 0.2
+                ),
+                clustered_results AS (
+                    SELECT 
+                        sr.*,
+                        mcm.cluster_id,
+                        mcm.membership_score,
+                        mc.cluster_name,
+                        mc.cluster_type,
+                        mc.member_count,
+                        -- Boost score based on cluster membership and size
+                        sr.base_similarity * (1 + (mcm.membership_score * 0.2)) * 
+                        (1 + (LEAST(mc.member_count, 10) * 0.01)) as boosted_similarity
+                    FROM search_results sr
+                    LEFT JOIN public.memory_cluster_members mcm ON sr.memory_id = mcm.memory_id
+                    LEFT JOIN public.memory_clusters mc ON mcm.cluster_id = mc.id
+                    WHERE mc.id IS NULL OR mc.avg_safety_score >= $2
+                        {cluster_filter}
+                )
+                SELECT 
+                    memory_id,
+                    abstracted_prompt,
+                    abstracted_response,
+                    safety_score,
+                    base_similarity,
+                    COALESCE(boosted_similarity, base_similarity) as final_similarity,
+                    weight,
+                    access_count,
+                    last_accessed,
+                    cluster_id,
+                    membership_score,
+                    cluster_name,
+                    cluster_type,
+                    member_count
+                FROM clustered_results
+                ORDER BY final_similarity DESC, weight DESC
+                LIMIT $3
+            """, *params)
+            
+            results = []
+            for row in rows:
+                result = {
+                    'memory_id': row['memory_id'],
+                    'abstracted_prompt': row['abstracted_prompt'],
+                    'abstracted_response': row['abstracted_response'],
+                    'safety_score': float(row['safety_score']),
+                    'similarity_score': float(row['final_similarity']),
+                    'weight': float(row['weight']),
+                    'access_count': row['access_count'],
+                    'last_accessed': row['last_accessed']
+                }
+                
+                if include_cluster_info and row['cluster_id']:
+                    result['cluster_info'] = {
+                        'cluster_id': row['cluster_id'],
+                        'cluster_name': row['cluster_name'],
+                        'cluster_type': row['cluster_type'],
+                        'membership_score': float(row['membership_score']),
+                        'member_count': row['member_count']
+                    }
+                
+                results.append(result)
+            
+            return results
+    
+    async def get_cluster_memories(
+        self,
+        cluster_id: UUID,
+        sort_by: str = 'membership_score',
+        limit: Optional[int] = None
+    ) -> List[Dict[str, Any]]:
+        """
+        Get all memories in a cluster.
+        
+        Args:
+            cluster_id: Cluster to retrieve memories from
+            sort_by: Sort field ('membership_score', 'weight', 'last_accessed')
+            limit: Maximum results
+            
+        Returns:
+            List of memory dictionaries
+        """
+        valid_sorts = ['membership_score', 'weight', 'last_accessed', 'created_at']
+        if sort_by not in valid_sorts:
+            sort_by = 'membership_score'
+        
+        async with self.db_pool.acquire() as conn:
+            query = f"""
+                SELECT 
+                    cm.id as memory_id,
+                    ma.abstracted_prompt,
+                    ma.abstracted_response,
+                    ma.safety_score,
+                    cm.weight,
+                    cm.access_count,
+                    cm.last_accessed,
+                    cm.created_at,
+                    mcm.membership_score,
+                    mcm.added_at
+                FROM public.memory_cluster_members mcm
+                INNER JOIN public.cognitive_memory cm ON mcm.memory_id = cm.id
+                INNER JOIN safety.memory_abstractions ma ON cm.abstraction_id = ma.memory_id
+                WHERE mcm.cluster_id = $1
+                    AND cm.is_validated = true
+                ORDER BY {sort_by} DESC
+            """
+            
+            if limit:
+                query += f" LIMIT {limit}"
+            
+            rows = await conn.fetch(query, cluster_id)
+            
+            return [
+                {
+                    'memory_id': row['memory_id'],
+                    'abstracted_prompt': row['abstracted_prompt'],
+                    'abstracted_response': row['abstracted_response'],
+                    'safety_score': float(row['safety_score']),
+                    'weight': float(row['weight']),
+                    'access_count': row['access_count'],
+                    'last_accessed': row['last_accessed'],
+                    'created_at': row['created_at'],
+                    'membership_score': float(row['membership_score']),
+                    'added_at': row['added_at']
+                }
+                for row in rows
+            ]
+    
+    async def auto_cluster_similar_memories(
+        self,
+        memory_id: UUID,
+        similarity_threshold: float = 0.8,
+        create_cluster: bool = True
+    ) -> Optional[UUID]:
+        """
+        Automatically cluster memories similar to a given memory.
+        
+        Args:
+            memory_id: Source memory for clustering
+            similarity_threshold: Minimum similarity for clustering
+            create_cluster: Whether to create a new cluster if none suitable exists
+            
+        Returns:
+            Cluster ID if successful, None otherwise
+        """
+        # Find similar memories
+        similar_memories = await self.cluster_manager.find_similar_memories(
+            memory_id, similarity_threshold, max_results=20
+        )
+        
+        if len(similar_memories) < 2:  # Need at least 2 memories for a cluster
+            return None
+        
+        # Check if any existing cluster would be suitable
+        recommendations = await self.cluster_manager.get_cluster_recommendations(
+            memory_id, max_recommendations=3
+        )
+        
+        for cluster_id, cluster_name, fit_score in recommendations:
+            if fit_score >= similarity_threshold:
+                # Add to existing cluster
+                await self.cluster_manager.add_memory_to_cluster(
+                    cluster_id, memory_id, fit_score
+                )
+                return cluster_id
+        
+        if create_cluster:
+            # Create new cluster
+            cluster_name = f"Auto-Cluster-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}"
+            cluster = await self.cluster_manager.create_cluster(
+                cluster_name=cluster_name,
+                cluster_type=ClusterType.SEMANTIC
+            )
+            
+            # Add source memory
+            await self.cluster_manager.add_memory_to_cluster(
+                cluster.cluster_id, memory_id, 1.0
+            )
+            
+            # Add similar memories
+            for similar_id, similarity in similar_memories:
+                if similarity >= similarity_threshold:
+                    await self.cluster_manager.add_memory_to_cluster(
+                        cluster.cluster_id, similar_id, similarity
+                    )
+            
+            return cluster.cluster_id
+        
+        return None
+    
+    async def apply_memory_decay(
+        self,
+        batch_size: int = 100,
+        interaction_types: Optional[List[InteractionType]] = None
+    ) -> Dict[str, Any]:
+        """
+        Apply temporal decay to memories.
+        
+        Args:
+            batch_size: Number of memories to process
+            interaction_types: Only process these interaction types
+            
+        Returns:
+            Decay analysis summary
+        """
+        analysis = await self.decay_engine.apply_decay_batch(
+            batch_size=batch_size,
+            interaction_types=interaction_types
+        )
+        
+        return analysis.get_summary()
     
     async def search_memories(
         self,
