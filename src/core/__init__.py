@@ -64,6 +64,23 @@ from .intent import (
     LearningFeedback
 )
 
+# AST Code Analysis
+from .analysis import (
+    ASTAnalyzer,
+    LanguageDetector,
+    PatternDetector,
+    ComplexityAnalyzer,
+    AnalysisResult,
+    AnalysisMetadata,
+    LanguageType,
+    PatternType,
+    ComplexityMetrics,
+    FunctionSignature,
+    ClassStructure,
+    QualityMetrics,
+    DesignPattern
+)
+
 # Safety models
 from .safety.models import (
     SafetyScore,
@@ -130,6 +147,21 @@ __all__ = [
     'ExplanationReason',
     'FeedbackType',
     'LearningFeedback',
+    
+    # AST Code Analysis
+    'ASTAnalyzer',
+    'LanguageDetector',
+    'PatternDetector',
+    'ComplexityAnalyzer',
+    'AnalysisResult',
+    'AnalysisMetadata',
+    'LanguageType',
+    'PatternType',
+    'ComplexityMetrics',
+    'FunctionSignature',
+    'ClassStructure',
+    'QualityMetrics',
+    'DesignPattern',
     
     # Safety models
     'SafetyScore',
