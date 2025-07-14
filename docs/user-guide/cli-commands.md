@@ -349,7 +349,7 @@ python coachntt.py memory delete abc123 --force
 ## Knowledge Graph Operations
 
 ### `coachntt graph build`
-🚧 **Status**: Planned for Session 4.2c  
+✅ **Status**: Implemented  
 **Description**: Build knowledge graph from memories and code analysis
 
 ```bash
@@ -359,9 +359,11 @@ python coachntt.py graph build [OPTIONS]
 **Options**:
 - `--from-memories` - Build from recent memories (default: true)
 - `--from-code PATH` - Include code analysis from path
+- `--max-memories N` - Maximum memories to include (default: 100)
 - `--max-nodes N` - Maximum nodes in graph (default: 100)
-- `--output FILE` - Save graph data to file
 - `--similarity-threshold FLOAT` - Minimum similarity for edges (default: 0.7)
+- `--name TEXT` - Name for the graph
+- `--output FILE` - Save graph metadata to file
 
 **Examples**:
 ```bash
@@ -372,79 +374,190 @@ python coachntt.py graph build
 python coachntt.py graph build \
   --from-code ./src \
   --max-nodes 200 \
-  --output knowledge-graph.json
+  --name "API Architecture Graph" \
+  --output graph-metadata.json
 
 # Build focused graph with high similarity
 python coachntt.py graph build \
   --similarity-threshold 0.8 \
+  --max-memories 50 \
   --max-nodes 50
 ```
 
 ---
 
-### `coachntt graph query`
-🚧 **Status**: Planned for Session 4.2c  
-**Description**: Query knowledge graph with semantic patterns
+### `coachntt graph list`
+✅ **Status**: Implemented  
+**Description**: List available knowledge graphs
 
 ```bash
-python coachntt.py graph query PATTERN [OPTIONS]
+python coachntt.py graph list [OPTIONS]
 ```
 
 **Options**:
-- `--format json|mermaid|table` - Output format (default: table)
-- `--depth N` - Maximum traversal depth (default: 3)
-- `--min-similarity FLOAT` - Minimum edge similarity (default: 0.5)
+- `--format table|json|simple` - Output format (default: table)
+
+**Examples**:
+```bash
+# List all graphs
+python coachntt.py graph list
+
+# JSON output for scripts
+python coachntt.py graph list --format json
+```
+
+---
+
+### `coachntt graph show`
+✅ **Status**: Implemented  
+**Description**: Display detailed information about a specific graph
+
+```bash
+python coachntt.py graph show GRAPH_ID [OPTIONS]
+```
+
+**Options**:
+- `--format pretty|json` - Output format (default: pretty)
+
+**Examples**:
+```bash
+# Show graph details
+python coachntt.py graph show abc123
+
+# JSON output
+python coachntt.py graph show abc123 --format json
+```
+
+---
+
+### `coachntt graph query`
+✅ **Status**: Implemented  
+**Description**: Query knowledge graph with semantic and structural filters
+
+```bash
+python coachntt.py graph query GRAPH_ID [OPTIONS]
+```
+
+**Options**:
+- `--pattern TEXT` - Content pattern to search for in nodes
+- `--node-types TEXT` - Filter by node types (comma-separated)
+- `--edge-types TEXT` - Filter by edge types (comma-separated)
+- `--min-safety FLOAT` - Minimum node safety score (0.0-1.0)
+- `--min-weight FLOAT` - Minimum edge weight (0.0-1.0)
+- `--max-nodes N` - Maximum nodes to return (default: 50)
+- `--format table|json|mermaid` - Output format (default: table)
 - `--output FILE` - Save results to file
 
 **Examples**:
 ```bash
-# Find API-related connections
-python coachntt.py graph query "API design patterns"
+# Query with pattern search
+python coachntt.py graph query abc123 --pattern "API design"
 
-# Deep traversal for error handling
-python coachntt.py graph query "error handling" --depth 5
+# Filter by node types and safety
+python coachntt.py graph query abc123 \
+  --node-types memory,code \
+  --min-safety 0.8 \
+  --max-nodes 20
 
 # Generate Mermaid diagram
-python coachntt.py graph query "database" --format mermaid --output db-graph.md
+python coachntt.py graph query abc123 \
+  --pattern "error handling" \
+  --format mermaid \
+  --output error-handling-graph.md
 ```
 
 ---
 
 ### `coachntt graph export`
-🚧 **Status**: Planned for Session 4.2c  
+✅ **Status**: Implemented  
 **Description**: Export knowledge graph in various formats
 
 ```bash
-python coachntt.py graph export FORMAT [OPTIONS]
+python coachntt.py graph export GRAPH_ID FORMAT --output FILE [OPTIONS]
 ```
 
 **Formats**: `mermaid`, `json`, `d3`, `cytoscape`, `graphml`
 
 **Options**:
 - `--output FILE` - Output file path (required)
-- `--subgraph NODE` - Export subgraph around specific node
-- `--max-depth N` - Maximum depth for subgraph (default: 3)
+- `--max-nodes N` - Maximum nodes to export
+- `--min-centrality FLOAT` - Filter by minimum centrality score
 - `--include-metadata` - Include node/edge metadata
 
 **Examples**:
 ```bash
 # Export full graph as Mermaid
-python coachntt.py graph export mermaid --output architecture.md
+python coachntt.py graph export abc123 mermaid --output architecture.md
 
 # Export D3-compatible JSON
-python coachntt.py graph export d3 --output graph.json
+python coachntt.py graph export abc123 d3 \
+  --output graph.json \
+  --max-nodes 50 \
+  --include-metadata
 
-# Export subgraph around specific topic
-python coachntt.py graph export mermaid \
-  --subgraph "API design" \
-  --max-depth 2 \
-  --output api-subgraph.md
+# Export filtered GraphML
+python coachntt.py graph export abc123 graphml \
+  --output analysis.graphml \
+  --min-centrality 0.5
+```
+
+---
+
+### `coachntt graph subgraph`
+✅ **Status**: Implemented  
+**Description**: Extract subgraph around a specific node
+
+```bash
+python coachntt.py graph subgraph GRAPH_ID CENTER_NODE_ID [OPTIONS]
+```
+
+**Options**:
+- `--max-depth N` - Maximum traversal depth (default: 3)
+- `--max-nodes N` - Maximum nodes to include (default: 50)
+- `--min-weight FLOAT` - Minimum edge weight (default: 0.1)
+- `--edge-types TEXT` - Edge types to include (comma-separated)
+- `--format table|json|mermaid` - Output format (default: table)
+- `--output FILE` - Save subgraph to file
+
+**Examples**:
+```bash
+# Extract subgraph around node
+python coachntt.py graph subgraph abc123 node456 --max-depth 2
+
+# Extract with filtering and save as Mermaid
+python coachntt.py graph subgraph abc123 node456 \
+  --max-depth 3 \
+  --max-nodes 30 \
+  --format mermaid \
+  --output subgraph.md
+```
+
+---
+
+### `coachntt graph delete`
+✅ **Status**: Implemented  
+**Description**: Delete a knowledge graph permanently
+
+```bash
+python coachntt.py graph delete GRAPH_ID [OPTIONS]
+```
+
+**Options**:
+- `--force` - Skip confirmation prompt
+
+**Examples**:
+```bash
+# Delete with confirmation
+python coachntt.py graph delete abc123
+
+# Delete without confirmation (use with caution)
+python coachntt.py graph delete abc123 --force
 ```
 
 ---
 
 ### `coachntt graph visualize`
-🚧 **Status**: Planned for Session 4.2c  
+🚧 **Status**: Planned for Session 4.2d  
 **Description**: Generate interactive visualizations of knowledge graph
 
 ```bash
@@ -697,7 +810,7 @@ python coachntt.py memory list --examples
 
 - ✅ **Session 4.2a Complete**: Basic CLI with status and memory list
 - ✅ **Session 4.2b Complete**: Complete memory management operations
-- 🚧 **Session 4.2c Planned**: Knowledge graph operations  
+- ✅ **Session 4.2c Complete**: Knowledge graph operations  
 - 🚧 **Session 4.2d Planned**: Integration and interactive mode
 
 ### Memory Management Features ✅
@@ -708,6 +821,15 @@ python coachntt.py memory list --examples
 - ✅ Safe memory deletion with confirmations
 - ✅ Comprehensive error handling and troubleshooting guidance
 - ✅ Progress indicators and rich output formatting
+
+### Knowledge Graph Features ✅
+- ✅ Graph building from memories and code analysis
+- ✅ Advanced graph querying with semantic and structural filters
+- ✅ Graph export in multiple formats (Mermaid, JSON, D3, Cytoscape, GraphML)
+- ✅ Subgraph extraction around specific nodes
+- ✅ Graph management (list, show, delete) with safety confirmations
+- ✅ Progress tracking and real-time feedback for all operations
+- ✅ Comprehensive filtering and customization options
 
 ---
 

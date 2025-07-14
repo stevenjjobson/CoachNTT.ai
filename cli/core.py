@@ -533,6 +533,388 @@ class CLIEngine:
                 "message": f"Failed to export memories: {e}"
             }
     
+    async def build_graph(
+        self,
+        memory_ids: Optional[List[str]] = None,
+        code_paths: Optional[List[str]] = None,
+        max_memories: int = 100,
+        max_nodes: int = 100,
+        similarity_threshold: float = 0.7,
+        graph_name: Optional[str] = None,
+        include_related: bool = True
+    ) -> Dict[str, Any]:
+        """
+        Build a knowledge graph from memories and code analysis.
+        
+        Args:
+            memory_ids: Specific memory IDs to include
+            code_paths: Code paths for analysis
+            max_memories: Maximum memories to include
+            max_nodes: Maximum nodes in graph
+            similarity_threshold: Minimum similarity for edges
+            graph_name: Name for the graph
+            include_related: Include related memories
+        
+        Returns:
+            Dictionary with graph build results or error
+        """
+        try:
+            if not self.client:
+                raise RuntimeError("CLI engine not initialized")
+            
+            # Prepare graph build request
+            build_data = {
+                "max_memories": max_memories,
+                "max_nodes": max_nodes,
+                "similarity_threshold": similarity_threshold,
+                "include_related": include_related
+            }
+            
+            if memory_ids:
+                build_data["memory_ids"] = memory_ids
+            if code_paths:
+                build_data["code_paths"] = code_paths
+            if graph_name:
+                build_data["graph_name"] = graph_name
+            
+            # Make API request
+            response = await self.client.post("/api/v1/graph/build", json=build_data)
+            
+            if response.status_code == 200:
+                return {
+                    "status": "success",
+                    "graph": response.json()
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": f"API returned status {response.status_code}",
+                    "details": response.text
+                }
+        
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Failed to build graph: {e}"
+            }
+    
+    async def get_graph(self, graph_id: str) -> Dict[str, Any]:
+        """
+        Get graph metadata and statistics.
+        
+        Args:
+            graph_id: Graph UUID
+        
+        Returns:
+            Dictionary with graph data or error
+        """
+        try:
+            if not self.client:
+                raise RuntimeError("CLI engine not initialized")
+            
+            response = await self.client.get(f"/api/v1/graph/{graph_id}")
+            
+            if response.status_code == 200:
+                return {
+                    "status": "success",
+                    "graph": response.json()
+                }
+            elif response.status_code == 404:
+                return {
+                    "status": "not_found",
+                    "message": f"Graph {graph_id} not found"
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": f"API returned status {response.status_code}",
+                    "details": response.text
+                }
+        
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Failed to get graph: {e}"
+            }
+    
+    async def list_graphs(self) -> Dict[str, Any]:
+        """
+        List available knowledge graphs.
+        
+        Returns:
+            Dictionary with graphs list or error
+        """
+        try:
+            if not self.client:
+                raise RuntimeError("CLI engine not initialized")
+            
+            response = await self.client.get("/api/v1/graph/")
+            
+            if response.status_code == 200:
+                data = response.json()
+                return {
+                    "status": "success",
+                    "graphs": data.get("graphs", []),
+                    "total": data.get("total_count", 0)
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": f"API returned status {response.status_code}",
+                    "details": response.text
+                }
+        
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Failed to list graphs: {e}"
+            }
+    
+    async def query_graph(
+        self,
+        graph_id: str,
+        node_types: Optional[List[str]] = None,
+        edge_types: Optional[List[str]] = None,
+        min_node_safety_score: Optional[float] = None,
+        min_edge_weight: Optional[float] = None,
+        node_content_pattern: Optional[str] = None,
+        max_nodes: int = 50,
+        max_depth: int = 3
+    ) -> Dict[str, Any]:
+        """
+        Query a knowledge graph with filters.
+        
+        Args:
+            graph_id: Graph UUID
+            node_types: Filter by node types
+            edge_types: Filter by edge types
+            min_node_safety_score: Minimum node safety score
+            min_edge_weight: Minimum edge weight
+            node_content_pattern: Pattern to match in node content
+            max_nodes: Maximum nodes to return
+            max_depth: Maximum traversal depth
+        
+        Returns:
+            Dictionary with query results or error
+        """
+        try:
+            if not self.client:
+                raise RuntimeError("CLI engine not initialized")
+            
+            # Prepare query data
+            query_data = {
+                "max_nodes": max_nodes,
+                "max_edges": max_nodes * 2  # Allow 2x edges as nodes
+            }
+            
+            if node_types:
+                query_data["node_types"] = node_types
+            if edge_types:
+                query_data["edge_types"] = edge_types
+            if min_node_safety_score is not None:
+                query_data["min_node_safety_score"] = min_node_safety_score
+            if min_edge_weight is not None:
+                query_data["min_edge_weight"] = min_edge_weight
+            if node_content_pattern:
+                query_data["node_content_pattern"] = node_content_pattern
+            
+            # Make API request
+            response = await self.client.post(f"/api/v1/graph/{graph_id}/query", json=query_data)
+            
+            if response.status_code == 200:
+                return {
+                    "status": "success",
+                    "result": response.json()
+                }
+            elif response.status_code == 404:
+                return {
+                    "status": "not_found",
+                    "message": f"Graph {graph_id} not found"
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": f"API returned status {response.status_code}",
+                    "details": response.text
+                }
+        
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Failed to query graph: {e}"
+            }
+    
+    async def export_graph(
+        self,
+        graph_id: str,
+        format_type: str = "json",
+        output_file: Optional[str] = None,
+        max_nodes: Optional[int] = None,
+        filter_by_centrality: Optional[float] = None,
+        include_metadata: bool = False
+    ) -> Dict[str, Any]:
+        """
+        Export knowledge graph in various formats.
+        
+        Args:
+            graph_id: Graph UUID
+            format_type: Export format (mermaid, json, d3, cytoscape, graphml)
+            output_file: Output file path
+            max_nodes: Maximum nodes to export
+            filter_by_centrality: Filter by centrality score
+            include_metadata: Include node/edge metadata
+        
+        Returns:
+            Dictionary with export results or error
+        """
+        try:
+            if not self.client:
+                raise RuntimeError("CLI engine not initialized")
+            
+            # Prepare export request
+            export_data = {
+                "format": format_type,
+                "include_metadata": include_metadata
+            }
+            
+            if max_nodes:
+                export_data["max_nodes"] = max_nodes
+            if filter_by_centrality is not None:
+                export_data["filter_by_centrality"] = filter_by_centrality
+            
+            # Make API request
+            response = await self.client.post(f"/api/v1/graph/{graph_id}/export", json=export_data)
+            
+            if response.status_code == 200:
+                result = response.json()
+                return {
+                    "status": "success",
+                    "export": result,
+                    "content": result.get("content", ""),
+                    "format": format_type,
+                    "output_file": output_file
+                }
+            elif response.status_code == 404:
+                return {
+                    "status": "not_found",
+                    "message": f"Graph {graph_id} not found"
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": f"API returned status {response.status_code}",
+                    "details": response.text
+                }
+        
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Failed to export graph: {e}"
+            }
+    
+    async def delete_graph(self, graph_id: str) -> Dict[str, Any]:
+        """
+        Delete a knowledge graph.
+        
+        Args:
+            graph_id: Graph UUID
+        
+        Returns:
+            Dictionary with deletion status or error
+        """
+        try:
+            if not self.client:
+                raise RuntimeError("CLI engine not initialized")
+            
+            response = await self.client.delete(f"/api/v1/graph/{graph_id}")
+            
+            if response.status_code == 200:
+                return {
+                    "status": "success",
+                    "message": f"Graph {graph_id} deleted successfully"
+                }
+            elif response.status_code == 404:
+                return {
+                    "status": "not_found",
+                    "message": f"Graph {graph_id} not found"
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": f"API returned status {response.status_code}",
+                    "details": response.text
+                }
+        
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Failed to delete graph: {e}"
+            }
+    
+    async def get_subgraph(
+        self,
+        graph_id: str,
+        center_node_id: str,
+        max_depth: int = 3,
+        max_nodes: int = 50,
+        min_edge_weight: float = 0.1,
+        include_edge_types: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
+        """
+        Extract subgraph around a specific node.
+        
+        Args:
+            graph_id: Graph UUID
+            center_node_id: Center node for subgraph extraction
+            max_depth: Maximum traversal depth
+            max_nodes: Maximum nodes to include
+            min_edge_weight: Minimum edge weight threshold
+            include_edge_types: Edge types to include
+        
+        Returns:
+            Dictionary with subgraph results or error
+        """
+        try:
+            if not self.client:
+                raise RuntimeError("CLI engine not initialized")
+            
+            # Prepare subgraph request
+            subgraph_data = {
+                "center_node_id": center_node_id,
+                "max_depth": max_depth,
+                "max_nodes": max_nodes,
+                "min_edge_weight": min_edge_weight
+            }
+            
+            if include_edge_types:
+                subgraph_data["include_edge_types"] = include_edge_types
+            
+            # Make API request
+            response = await self.client.post(f"/api/v1/graph/{graph_id}/subgraph", json=subgraph_data)
+            
+            if response.status_code == 200:
+                return {
+                    "status": "success",
+                    "subgraph": response.json()
+                }
+            elif response.status_code == 404:
+                return {
+                    "status": "not_found",
+                    "message": f"Graph {graph_id} or center node not found"
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": f"API returned status {response.status_code}",
+                    "details": response.text
+                }
+        
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Failed to get subgraph: {e}"
+            }
+    
     async def get_system_status(self) -> Dict[str, Any]:
         """
         Get comprehensive system status including API, database, and services.

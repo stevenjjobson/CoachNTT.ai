@@ -50,7 +50,7 @@ def main(ctx, version):
     Command Groups:
         status      System health and connectivity
         memory      Memory management operations
-        graph       Knowledge graph operations (coming soon)
+        graph       Knowledge graph operations
         sync        Vault synchronization (coming soon)
         docs        Documentation generation (coming soon)
     
@@ -86,7 +86,7 @@ def _show_version():
     print_info("Component Status:")
     print_info("  ✅ CLI Framework: Operational")
     print_info("  ✅ Memory Management: Available")
-    print_info("  🚧 Knowledge Graphs: Coming in Session 4.2c")
+    print_info("  ✅ Knowledge Graphs: Available")
     print_info("  🚧 Integration Tools: Coming in Session 4.2d")
     print()
     print_info("For system health check: coachntt status")
@@ -139,8 +139,8 @@ def version(components):
         print()
         print_info("Session Implementation Status:")
         print_info("  ✅ Session 4.2a: Basic CLI with status and memory list")
-        print_info("  🚧 Session 4.2b: Complete memory management (planned)")
-        print_info("  🚧 Session 4.2c: Knowledge graph operations (planned)")
+        print_info("  ✅ Session 4.2b: Complete memory management")
+        print_info("  ✅ Session 4.2c: Knowledge graph operations")
         print_info("  🚧 Session 4.2d: Integration and interactive mode (planned)")
 
 

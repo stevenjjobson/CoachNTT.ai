@@ -1,29 +1,29 @@
-# 🚀 Next Session: 4.2c CLI Knowledge Graph Operations
+# 🚀 Next Session: 4.2d CLI Integration & Interactive Mode
 
 ## 📋 Session Overview
 
-**Session**: 4.2c CLI Knowledge Graph Operations  
-**Prerequisites**: Session 4.2b complete ✅, Complete Memory Management ready ✅  
-**Focus**: Implement knowledge graph commands for building, querying, and visualizing graphs  
-**Context Budget**: ~1500 tokens (building on existing CLI foundation and memory commands)  
-**Estimated Output**: ~400-500 lines  
+**Session**: 4.2d CLI Integration & Interactive Mode  
+**Prerequisites**: Session 4.2c complete ✅, Complete Knowledge Graph Operations ready ✅  
+**Focus**: Implement integration commands (vault sync, docs generation) and interactive CLI mode  
+**Context Budget**: ~1500 tokens (building on complete CLI foundation)  
+**Estimated Output**: ~500-600 lines  
 
 ## 🎯 Quick Start Command
 
 ### Copy this to start the next session:
 ```
-I'm continuing work on CoachNTT.ai. We completed Session 4.2b (CLI Memory Management Operations).
+I'm continuing work on CoachNTT.ai. We completed Session 4.2c (CLI Knowledge Graph Operations).
 
 Please review:
 1. @.claude/NEXT_SESSION.md (this file)  
 2. @.claude/CLAUDE.md (current project state)
 3. @coachntt.py (main CLI entry point)
-4. @cli/commands/memory.py (complete memory management commands)
-5. @src/api/routers/graph.py (knowledge graph API endpoints)
+4. @cli/commands/graph.py (complete graph operations commands)
+5. @src/api/routers/integration.py (integration API endpoints)
 6. @docs/user-guide/cli-commands.md (living documentation to update)
 
-Ready to start Session 4.2c: CLI Knowledge Graph Operations.
-Note: Session 4.2b is complete with full memory management (create, search, export, update, delete).
+Ready to start Session 4.2d: CLI Integration & Interactive Mode.
+Note: Session 4.2c is complete with full knowledge graph operations (build, query, export, list, delete, subgraph).
 ```
 
 ## 📚 Context Files to Load
@@ -42,48 +42,50 @@ Note: Session 4.2b is complete with full memory management (create, search, expo
 
 ## ⚠️ Important Session Notes
 
-### Session 4.2b Status: COMPLETE ✅
-**Critical**: Session 4.2b (CLI Memory Management Operations) has been fully implemented with:
-- Complete memory management operations (create, search, export, update, delete)
-- Enhanced CLIEngine with 5 new async methods for full API integration
-- Advanced search with semantic similarity and intent analysis
-- Export functionality in 3 formats (JSON, CSV, Markdown)
-- Comprehensive input validation and error handling
-- Progress indicators and real-time feedback
+### Session 4.2c Status: COMPLETE ✅
+**Critical**: Session 4.2c (CLI Knowledge Graph Operations) has been fully implemented with:
+- Complete knowledge graph operations (build, query, export, list, show, delete, subgraph)
+- Enhanced CLIEngine with 6 new async methods for full graph API integration  
+- Advanced graph building with memory and code analysis support
+- Comprehensive graph querying with semantic pattern matching and filtering
+- Export functionality in 5 formats (Mermaid, JSON, D3, Cytoscape, GraphML)
+- Subgraph extraction with depth and weight controls
+- Progress indicators and real-time feedback for all operations
 - Safety-first design with complete abstraction enforcement
 
 **What's Already Done**:
-- ✅ Memory create command with type selection and metadata support
-- ✅ Memory search command with semantic similarity and filtering
-- ✅ Memory export command in JSON, CSV, and Markdown formats
-- ✅ Memory update command for modifying existing memories
-- ✅ Memory delete command with safety confirmations
-- ✅ Enhanced CLI user guide with all implemented features
+- ✅ Graph build command with memory/code analysis and customizable parameters
+- ✅ Graph query command with semantic pattern matching and multiple output formats
+- ✅ Graph export command in 5 formats with filtering and metadata options
+- ✅ Graph list and show commands for management and metadata display
+- ✅ Graph delete command with safety confirmations
+- ✅ Subgraph extraction command for focused exploration
+- ✅ Enhanced CLI user guide with all 7 graph commands documented
 - ✅ Comprehensive error handling and troubleshooting guidance
-- ✅ CLI engine enhancements for complete memory management
+- ✅ CLI engine enhancements for complete graph management
 
 ## 🏗️ Implementation Strategy
 
-### Phase 1: Knowledge Graph Building (40% of session)
-1. Implement `coachntt graph build` command with memory and code analysis
-2. Add support for similarity thresholds and graph size limits
-3. Enhance API integration for graph building with progress tracking
-4. Update CLI engine with graph building methods
+### Phase 1: Integration Commands (40% of session)
+1. Implement `coachntt sync vault` command for bidirectional Obsidian synchronization
+2. Add `coachntt docs generate` command for automated documentation creation
+3. Implement `coachntt checkpoint create` command for development checkpoints
+4. Enhance CLI engine with integration API methods
 5. Add comprehensive validation and error handling
 
-### Phase 2: Graph Querying and Exploration (35% of session)
-1. Implement `coachntt graph query` with semantic pattern matching
-2. Add support for traversal depth and filtering options
-3. Integrate with existing graph query API endpoints
-4. Support complex graph queries with relationship filtering
-5. Add query result ranking and path visualization
+### Phase 2: Interactive CLI Mode (35% of session)
+1. Implement `coachntt interactive` command with tab completion
+2. Add command history and session management
+3. Create built-in help system and command discovery
+4. Integrate with existing commands for seamless experience
+5. Add configuration and preference management
 
-### Phase 3: Graph Export and Visualization (25% of session)
-1. Implement `coachntt graph export` in multiple formats (Mermaid, JSON, GraphML, D3)
-2. Add subgraph extraction and filtering capabilities
-3. Create graph visualization generation commands
-4. Add interactive HTML output with D3.js integration
-5. Update living documentation with graph command examples
+### Phase 3: CLI Polish and Completion (25% of session)
+1. Add configuration management commands (`coachntt config`)
+2. Implement advanced output formatting and themes
+3. Add comprehensive testing and validation
+4. Update documentation with complete feature coverage
+5. Prepare for Phase 4 completion and final validation
 
 ## 🔧 Technical Requirements
 
