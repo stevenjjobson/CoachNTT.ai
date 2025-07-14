@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from typing import Annotated, AsyncGenerator, Dict, Any, Optional
 
 import asyncpg
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, WebSocket, WebSocketException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 
@@ -130,31 +130,79 @@ async def get_graph_builder() -> KnowledgeGraphBuilder:
     return _graph_builder
 
 
-async def get_vault_sync() -> VaultSyncEngine:
+async def get_vault_sync_engine() -> VaultSyncEngine:
     """Get vault sync engine instance."""
     global _vault_sync
     
     if _vault_sync is None:
-        memory_repo = await get_memory_repository()
         from pathlib import Path
-        vault_path = Path("vault")  # Default vault path
-        _vault_sync = VaultSyncEngine(vault_path, memory_repo)
+        from ...services.vault.models import VaultSyncConfig
+        
+        memory_repo = await get_memory_repository()
+        safety_validator = await get_safety_validator()
+        
+        # Create config with default vault path
+        config = VaultSyncConfig(
+            vault_path=Path("vault"),
+            enable_templates=True,
+            enable_backlinks=True,
+            enable_tag_extraction=True
+        )
+        
+        _vault_sync = VaultSyncEngine(
+            config=config,
+            memory_repository=memory_repo,
+            safety_validator=safety_validator
+        )
         logger.info("Vault sync engine initialized")
     
     return _vault_sync
 
 
-async def get_doc_generator() -> DocumentationGenerator:
+async def get_documentation_generator() -> DocumentationGenerator:
     """Get documentation generator instance."""
     global _doc_generator
     
     if _doc_generator is None:
         from pathlib import Path
-        project_root = Path(".")  # Default project root
-        _doc_generator = DocumentationGenerator(project_root)
+        from ...services.documentation.models import DocumentationConfig
+        
+        safety_validator = await get_safety_validator()
+        
+        # Create config with default settings
+        config = DocumentationConfig(
+            project_root=Path("."),
+            output_directory=Path("./docs"),
+            enable_api_docs=True,
+            enable_diagrams=True
+        )
+        
+        _doc_generator = DocumentationGenerator(
+            config=config,
+            safety_validator=safety_validator
+        )
         logger.info("Documentation generator initialized")
     
     return _doc_generator
+
+
+async def get_knowledge_graph_builder() -> KnowledgeGraphBuilder:
+    """Get knowledge graph builder instance."""
+    global _graph_builder
+    
+    if _graph_builder is None:
+        memory_repo = await get_memory_repository()
+        embedding_service = await get_embedding_service()
+        safety_validator = await get_safety_validator()
+        
+        _graph_builder = KnowledgeGraphBuilder(
+            memory_repository=memory_repo,
+            embedding_service=embedding_service,
+            safety_validator=safety_validator
+        )
+        logger.info("Knowledge graph builder initialized")
+    
+    return _graph_builder
 
 
 def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
@@ -277,3 +325,89 @@ async def get_pagination_params(
 
 # Type alias for pagination parameters
 PaginationParams = Annotated[Dict[str, int], Depends(get_pagination_params)]
+
+
+# WebSocket authentication functions
+async def verify_websocket_token(websocket: WebSocket, token: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    """Verify JWT token for WebSocket connections."""
+    settings = get_settings()
+    
+    try:
+        # Try to get token from different sources
+        auth_token = None
+        
+        if token:
+            # Token provided as parameter
+            auth_token = token
+        else:
+            # Try to get token from query parameters
+            auth_token = websocket.query_params.get("token")
+        
+        if not auth_token:
+            # Try to get token from headers
+            auth_header = websocket.headers.get("authorization")
+            if auth_header and auth_header.startswith("Bearer "):
+                auth_token = auth_header[7:]  # Remove "Bearer " prefix
+        
+        if not auth_token:
+            logger.warning("No token provided for WebSocket connection")
+            return None
+        
+        # Verify the token
+        payload = jwt.decode(
+            auth_token,
+            settings.jwt_secret_key.get_secret_value(),
+            algorithms=[settings.jwt_algorithm]
+        )
+        
+        # Check expiration
+        if "exp" not in payload:
+            logger.warning("WebSocket token missing expiration")
+            return None
+        
+        # Check if token is expired
+        exp_timestamp = payload["exp"]
+        current_timestamp = datetime.utcnow().timestamp()
+        
+        if exp_timestamp < current_timestamp:
+            logger.warning("WebSocket token expired")
+            return None
+        
+        logger.debug(f"WebSocket authentication successful for user {payload.get('sub', 'unknown')}")
+        return payload
+        
+    except JWTError as e:
+        logger.warning(f"WebSocket JWT verification failed: {str(e)}")
+        return None
+    except Exception as e:
+        logger.error(f"WebSocket authentication error: {str(e)}")
+        return None
+
+
+async def get_websocket_user(
+    websocket: WebSocket,
+    token: Optional[str] = None
+) -> Dict[str, Any]:
+    """Get authenticated user for WebSocket connections."""
+    payload = await verify_websocket_token(websocket, token)
+    
+    if not payload:
+        raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION, reason="Authentication failed")
+    
+    user_id = payload.get("sub")
+    if not user_id:
+        raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION, reason="Invalid token payload")
+    
+    # Return user information from token payload
+    return {
+        "sub": user_id,
+        "user_id": user_id,
+        "email": payload.get("email"),
+        "is_active": payload.get("is_active", True),
+        "permissions": payload.get("permissions", []),
+        "exp": payload.get("exp"),
+    }
+
+
+# WebSocket authentication dependency
+WebSocketUser = Annotated[Dict[str, Any], Depends(get_websocket_user)]

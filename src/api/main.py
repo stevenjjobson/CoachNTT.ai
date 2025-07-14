@@ -181,7 +181,7 @@ def create_application() -> FastAPI:
         }
     
     # Import and include routers
-    from .routers import memory, graph, integration
+    from .routers import memory, graph, integration, websocket
     
     app.include_router(
         memory.router,
@@ -199,6 +199,12 @@ def create_application() -> FastAPI:
         integration.router,
         prefix="/api/v1/integrations",
         tags=["Integrations"]
+    )
+    
+    app.include_router(
+        websocket.router,
+        prefix="/ws",
+        tags=["WebSocket"]
     )
     
     return app
