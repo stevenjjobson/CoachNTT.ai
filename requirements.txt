@@ -27,7 +27,7 @@ pre-commit==3.6.0
 bandit==1.7.5
 safety==2.3.4
 cryptography==41.0.7
-python-secrets-scanner==0.8.0
+# python-secrets-scanner==0.8.0  # REMOVED: Package not found in PyPI
 semgrep==1.45.0
 
 # Additional Safety Tools
