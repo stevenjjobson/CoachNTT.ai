@@ -1,88 +1,87 @@
-# 🚀 Next Session: 4.2 CLI Interface Development
+# 🚀 Next Session: 4.2b CLI Memory Management Operations
 
 ## 📋 Session Overview
 
-**Session**: 4.2 CLI Interface Development  
-**Prerequisites**: Session 4.1 complete ✅, Full API Foundation ready ✅  
-**Focus**: Create comprehensive CLI interface for memory management and graph operations  
-**Context Budget**: ~2000 tokens (clean window available)  
-**Estimated Output**: ~400-500 lines  
+**Session**: 4.2b CLI Memory Management Operations  
+**Prerequisites**: Session 4.2a complete ✅, CLI Foundation ready ✅  
+**Focus**: Complete memory CRUD operations and advanced search functionality  
+**Context Budget**: ~1500 tokens (building on existing CLI foundation)  
+**Estimated Output**: ~300-400 lines  
 
 ## 🎯 Quick Start Command
 
 ### Copy this to start the next session:
 ```
-I'm continuing work on CoachNTT.ai. We completed Session 4.1 (Complete REST API with Knowledge Graph & Integration APIs).
+I'm continuing work on CoachNTT.ai. We completed Session 4.2a (CLI Foundation with Immediate Usability).
 
 Please review:
 1. @.claude/NEXT_SESSION.md (this file)  
 2. @.claude/CLAUDE.md (current project state)
-3. @src/api/main.py (complete FastAPI application)
-4. @scripts/framework/ (existing script framework)
-5. @src/core/memory/repository.py (memory repository for CLI integration)
+3. @coachntt.py (main CLI entry point)
+4. @cli/commands/memory.py (existing memory commands to extend)
+5. @docs/user-guide/cli-commands.md (living documentation to update)
 
-Ready to start Session 4.2: CLI Interface Development.
-Note: Session 4.1 (4.1a + 4.1b) is now complete with comprehensive REST API, WebSocket support, and integration endpoints.
+Ready to start Session 4.2b: CLI Memory Management Operations.
+Note: Session 4.2a is complete with working CLI foundation, status command, and basic memory list functionality.
 ```
 
 ## 📚 Context Files to Load
 
 ### Essential Files (Load First)
 1. **`.claude/CLAUDE.md`** - Current project state and architecture
-2. **`scripts/framework/runner.py`** - Existing script execution framework to extend
-3. **`scripts/framework/config.py`** - Configuration management patterns
-4. **`src/core/memory/repository.py`** - Memory repository for CLI operations
-5. **`src/api/main.py`** - API endpoints to understand available operations
+2. **`cli/commands/memory.py`** - Existing memory commands to extend
+3. **`cli/core.py`** - CLI engine with API communication patterns
+4. **`docs/user-guide/cli-commands.md`** - Living documentation to update
+5. **`src/api/models/memory.py`** - Memory API models for request/response patterns
 
 ### Reference Files (Load as Needed)
-- `src/services/vault/sync_engine.py` - Vault operations for CLI commands
-- `src/services/vault/graph_builder.py` - Graph operations for CLI commands
-- `src/services/documentation/generator.py` - Documentation operations
+- `cli/utils.py` - Output formatting and utility functions
+- `src/api/routers/memory.py` - Memory API endpoints for integration
+- `coachntt.py` - Main CLI entry point for command registration
 
 ## ⚠️ Important Session Notes
 
-### Session 4.1 Status: COMPLETE ✅
-**Critical**: Session 4.1 (4.1a + 4.1b) has been fully implemented with:
-- Complete REST API foundation with memory CRUD operations
-- Knowledge graph API with build, query, export, and subgraph operations
-- Integration APIs for checkpoint, vault sync, and documentation generation
-- Real-time WebSocket support with authentication and channel management
-- Background task management and integration status monitoring
-- Comprehensive unit tests for all endpoints
+### Session 4.2a Status: COMPLETE ✅
+**Critical**: Session 4.2a (CLI Foundation with Immediate Usability) has been fully implemented with:
+- Comprehensive CLI user guide documenting all planned functionality (600+ lines)
+- Working CLI framework with status and memory list commands
+- Rich output formatting with table, JSON, and simple text modes
+- Safety-first design with automatic abstraction
+- Async API communication through CLIEngine
+- Comprehensive help system and error handling
 
 **What's Already Done**:
-- ✅ Complete FastAPI application with 15+ REST endpoints
-- ✅ WebSocket real-time updates with JWT authentication
-- ✅ Knowledge graph operations (build, query, export in multiple formats)
-- ✅ Integration endpoints (checkpoint, vault sync, documentation generation)
-- ✅ Background task management with progress tracking
-- ✅ Comprehensive Pydantic models and validation
-- ✅ Unit tests for graph, integration, and WebSocket functionality
-- ✅ Safety-first design with zero-tolerance for concrete references
+- ✅ CLI user guide with complete command documentation (docs/user-guide/cli-commands.md)
+- ✅ CLI framework structure (cli/ directory with core, utils, commands)
+- ✅ Main CLI entry point (coachntt.py) with command routing
+- ✅ Status command with system health checks and diagnostics
+- ✅ Memory list command with filtering and formatting options
+- ✅ Memory show command for detailed memory viewing
+- ✅ Rich output formatting and comprehensive help system
+- ✅ Safety abstraction and error handling throughout
 
 ## 🏗️ Implementation Strategy
 
-### Phase 1: CLI Framework Enhancement (40% of session)
-1. Enhance existing script framework for interactive CLI
-2. Add command parser with subcommands and options
-3. Implement configuration management for CLI settings
-4. Add interactive mode with command completion
-5. Create help system and command documentation
+### Phase 1: Memory Creation and Management (40% of session)
+1. Implement `coachntt memory create` command with full validation
+2. Add support for memory types, metadata, and intent specification
+3. Enhance API integration for memory creation with error handling
+4. Update CLI engine with memory creation methods
+5. Add comprehensive input validation and safety checks
 
-### Phase 2: Memory Management CLI (30% of session)
-1. CLI commands for memory operations
-2. `coachntt memory create` - Create new memories
-3. `coachntt memory search` - Search memories with filters
-4. `coachntt memory list` - List recent memories
-5. `coachntt memory export` - Export memories to various formats
+### Phase 2: Advanced Memory Search (35% of session)
+1. Implement `coachntt memory search` with semantic similarity
+2. Add filtering by intent type, memory type, and relevance score
+3. Integrate with existing intent analysis and embedding services
+4. Support complex search queries with multiple filters
+5. Add search result ranking and relevance display
 
-### Phase 3: Graph and Integration CLI (30% of session)
-1. CLI commands for graph operations
-2. `coachntt graph build` - Build knowledge graphs
-3. `coachntt graph query` - Query graphs with filters
-4. `coachntt graph export` - Export graphs to files
-5. `coachntt sync vault` - Trigger vault synchronization
-6. `coachntt docs generate` - Generate documentation
+### Phase 3: Memory Export and Utilities (25% of session)
+1. Implement `coachntt memory export` in multiple formats (JSON, CSV, Markdown)
+2. Add filtering options for export (date ranges, types, metadata)
+3. Create memory update and delete commands
+4. Add batch operations for memory management
+5. Update living documentation with implemented features
 
 ## 🔧 Technical Requirements
 
