@@ -30,6 +30,9 @@ from .models import (
 from ...core.analysis.ast_analyzer import ASTAnalyzer
 from ...core.validation.validator import SafetyValidator
 from ...core.analysis.models import AnalysisResult, LanguageType
+from ..vault.graph_builder import KnowledgeGraphBuilder
+from ..vault.graph_models import KnowledgeGraph, NodeType, EdgeType
+from ..vault.graph_exporters import MermaidExporter
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +49,8 @@ class DocumentationGenerator:
         self,
         config: DocumentationConfig,
         ast_analyzer: Optional[ASTAnalyzer] = None,
-        safety_validator: Optional[SafetyValidator] = None
+        safety_validator: Optional[SafetyValidator] = None,
+        graph_builder: Optional[KnowledgeGraphBuilder] = None
     ):
         """
         Initialize documentation generator.
@@ -55,10 +59,12 @@ class DocumentationGenerator:
             config: Documentation generation configuration
             ast_analyzer: AST analyzer for code understanding
             safety_validator: Safety validator for content validation
+            graph_builder: Knowledge graph builder for graph diagrams
         """
         self.config = config
         self.ast_analyzer = ast_analyzer or ASTAnalyzer()
         self.safety_validator = safety_validator or SafetyValidator()
+        self.graph_builder = graph_builder
         
         # Ensure output directory exists
         self.config.docs_output_dir.mkdir(parents=True, exist_ok=True)
@@ -276,6 +282,8 @@ class DocumentationGenerator:
                 await self._generate_architecture_docs(analysis_results, result)
             elif doc_type == DocumentationType.CODE_REFERENCE:
                 await self._generate_code_reference(analysis_results, result)
+            elif doc_type == DocumentationType.KNOWLEDGE_GRAPH:
+                await self._generate_knowledge_graph(analysis_results, result)
             else:
                 logger.warning(f"Unsupported documentation type: {doc_type}")
                 
@@ -620,6 +628,127 @@ class DocumentationGenerator:
         except Exception as e:
             logger.warning(f"Architecture diagram generation failed: {e}")
             return None
+    
+    async def _generate_knowledge_graph(
+        self,
+        analysis_results: Dict[str, AnalysisResult],
+        result: DocumentationResult
+    ) -> None:
+        """Generate knowledge graph documentation and diagrams."""
+        if not self.graph_builder:
+            logger.warning("Knowledge graph builder not available")
+            result.warnings.append("Knowledge graph generation skipped - builder not configured")
+            return
+        
+        try:
+            # Build knowledge graph from code analysis
+            code_paths = [Path(fp) for fp in analysis_results.keys()]
+            graph = await self.graph_builder.build_graph(
+                code_paths=code_paths,
+                max_memories=50,  # Limit for documentation
+                include_related=True,
+                graph_name="project_knowledge_graph"
+            )
+            
+            # Generate graph statistics section
+            metrics = graph.calculate_metrics()
+            stats_content = f"""## Knowledge Graph Statistics
+
+- **Total Nodes**: {metrics['node_count']}
+- **Total Edges**: {metrics['edge_count']}
+- **Average Degree**: {metrics['average_degree']:.2f}
+- **Graph Density**: {metrics['density']:.4f}
+- **Average Safety Score**: {metrics['average_safety_score']:.3f}
+
+### Node Types
+{self._format_node_type_stats(metrics['node_types'])}
+
+### Edge Types
+{self._format_edge_type_stats(metrics['edge_types'])}"""
+            
+            stats_section = DocumentationSection(
+                section_id="knowledge_graph_stats",
+                title="Knowledge Graph Overview",
+                content=stats_content,
+                order=1
+            )
+            result.sections.append(stats_section)
+            
+            # Generate Mermaid diagram
+            mermaid_exporter = MermaidExporter(
+                safety_validator=self.safety_validator,
+                max_nodes=30,
+                max_edges=50
+            )
+            
+            mermaid_code = mermaid_exporter.export_graph(
+                graph,
+                diagram_type="graph",
+                direction="LR",
+                include_subgraphs=True
+            )
+            
+            graph_diagram = DiagramResult(
+                diagram_type=DiagramType.KNOWLEDGE_GRAPH,
+                diagram_id="knowledge_graph",
+                mermaid_code=mermaid_code,
+                nodes_count=graph.node_count,
+                edges_count=graph.edge_count,
+                safety_compliant=True
+            )
+            result.diagrams.append(graph_diagram)
+            
+            # Generate subgraph for most connected nodes
+            if graph.nodes:
+                # Find node with highest centrality
+                central_node = max(
+                    graph.nodes.values(),
+                    key=lambda n: n.centrality_score
+                )
+                
+                subgraph_mermaid = mermaid_exporter.export_subgraph(
+                    graph,
+                    str(central_node.node_id),
+                    depth=2,
+                    max_neighbors=5
+                )
+                
+                subgraph_diagram = DiagramResult(
+                    diagram_type=DiagramType.KNOWLEDGE_SUBGRAPH,
+                    diagram_id="knowledge_subgraph_central",
+                    mermaid_code=subgraph_mermaid,
+                    description=f"Subgraph centered on {central_node.title_pattern}",
+                    safety_compliant=True
+                )
+                result.diagrams.append(subgraph_diagram)
+            
+            logger.debug(f"Knowledge graph documentation generated: {graph.node_count} nodes")
+            
+        except Exception as e:
+            logger.error(f"Knowledge graph generation failed: {e}")
+            result.errors.append(f"Knowledge graph generation failed: {str(e)}")
+    
+    def _format_node_type_stats(self, node_types: Dict[str, int]) -> str:
+        """Format node type statistics."""
+        if not node_types:
+            return "- No nodes found"
+        
+        lines = []
+        for node_type, count in sorted(node_types.items(), key=lambda x: x[1], reverse=True):
+            lines.append(f"- **{node_type}**: {count} nodes")
+        
+        return "\n".join(lines)
+    
+    def _format_edge_type_stats(self, edge_types: Dict[str, int]) -> str:
+        """Format edge type statistics."""
+        if not edge_types:
+            return "- No edges found"
+        
+        lines = []
+        for edge_type, count in sorted(edge_types.items(), key=lambda x: x[1], reverse=True):
+            lines.append(f"- **{edge_type}**: {count} edges")
+        
+        return "\n".join(lines)
     
     def _generate_project_overview(self, analysis_results: Dict[str, AnalysisResult]) -> str:
         """Generate project overview content."""

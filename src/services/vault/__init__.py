@@ -23,6 +23,21 @@ from .sync_engine import VaultSyncEngine
 from .markdown_converter import MarkdownConverter
 from .template_processor import TemplateProcessor
 from .conflict_resolver import ConflictResolver
+from .graph_builder import KnowledgeGraphBuilder
+from .graph_models import (
+    GraphNode,
+    GraphEdge,
+    KnowledgeGraph,
+    NodeType,
+    EdgeType,
+    GraphQuery,
+    GraphQueryResult
+)
+from .graph_exporters import (
+    MermaidExporter,
+    JSONExporter,
+    GraphMLExporter
+)
 
 __all__ = [
     # Core services
@@ -46,5 +61,20 @@ __all__ = [
     # Enums
     'ConflictStrategy',
     'TemplateType',
-    'SyncDirection'
+    'SyncDirection',
+    
+    # Knowledge graph
+    'KnowledgeGraphBuilder',
+    'GraphNode',
+    'GraphEdge',
+    'KnowledgeGraph',
+    'NodeType',
+    'EdgeType',
+    'GraphQuery',
+    'GraphQueryResult',
+    
+    # Graph exporters
+    'MermaidExporter',
+    'JSONExporter',
+    'GraphMLExporter'
 ]

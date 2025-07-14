@@ -21,6 +21,7 @@ class DocumentationType(Enum):
     ARCHITECTURE = "architecture"
     CODE_REFERENCE = "code_reference"
     DIAGRAMS = "diagrams"
+    KNOWLEDGE_GRAPH = "knowledge_graph"
 
 
 class DiagramType(Enum):
@@ -30,6 +31,8 @@ class DiagramType(Enum):
     CLASS_DIAGRAM = "class_diagram"
     SEQUENCE_DIAGRAM = "sequence_diagram"
     ARCHITECTURE_OVERVIEW = "architecture_overview"
+    KNOWLEDGE_GRAPH = "knowledge_graph"
+    KNOWLEDGE_SUBGRAPH = "knowledge_subgraph"
 
 
 @dataclass

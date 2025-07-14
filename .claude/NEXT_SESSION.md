@@ -1,222 +1,215 @@
-# 🚀 Next Session: 3.4 Knowledge Graph Builder
+# 🚀 Next Session: 4.1 REST API Development
 
 ## 📋 Session Overview
 
-**Session**: 3.4 Knowledge Graph Builder  
-**Prerequisites**: Phase 1-2 complete ✅, Sessions 2.2-3.3 complete ✅  
-**Focus**: Implement knowledge graph builder with semantic connections and temporal weighting  
+**Session**: 4.1 REST API Development  
+**Prerequisites**: Phase 1-3 complete ✅, All foundation sessions complete ✅  
+**Focus**: Implement REST API with FastAPI for memory operations and knowledge graph access  
 **Context Budget**: ~3000 tokens (clean window available)  
-**Estimated Output**: ~800-1000 lines  
+**Estimated Output**: ~1000-1200 lines  
 
 ## 🎯 Quick Start Command
 
 ### Copy this to start the next session:
 ```
-I'm continuing work on CoachNTT.ai. We completed Phase 1-2 and Sessions 2.2-3.3.
+I'm continuing work on CoachNTT.ai. We completed Phase 1-3 (all 14 sessions).
 
 Please review:
 1. @.claude/NEXT_SESSION.md (this file)  
 2. @.claude/CLAUDE.md (current project state)
-3. @project-docs/Implementation_Cadence.md (lines 471-492 for Session 3.4)
-4. @src/services/vault/sync_engine.py (vault synchronization system)
-5. @src/core/memory/repository.py (memory system for graph integration)
+3. @project-docs/Implementation_Cadence.md (lines 496-520 for Session 4.1)
+4. @src/core/memory/repository.py (memory operations)
+5. @src/services/vault/graph_builder.py (knowledge graph access)
 
-Ready to start Session 3.4: Knowledge Graph Builder.
-Note: Session 3.3 (Documentation Generator) is now complete with comprehensive automated documentation generation and safety-first design.
+Ready to start Session 4.1: REST API Development.
+Note: Session 3.4 (Knowledge Graph Builder) is now complete with semantic connections and visualization.
 ```
 
 ## 📚 Context Files to Load
 
 ### Essential Files (Load First)
 1. **`.claude/CLAUDE.md`** - Current project state and architecture
-2. **`project-docs/Implementation_Cadence.md`** (lines 471-492) - Session 3.4 specifications
-3. **`src/services/vault/sync_engine.py`** - Vault synchronization system for integration
-4. **`src/core/memory/repository.py`** - Memory system for graph node creation
-5. **`src/core/analysis/ast_analyzer.py`** - AST analysis for dependency extraction
+2. **`project-docs/Implementation_Cadence.md`** (lines 496-520) - Session 4.1 specifications
+3. **`src/core/memory/repository.py`** - Memory repository for API operations
+4. **`src/services/vault/graph_builder.py`** - Knowledge graph for API access
+5. **`src/core/validation/validator.py`** - Safety validation for API inputs
 
 ### Reference Files (Load as Needed)
-- `src/services/documentation/generator.py` - Documentation system for graph visualization
-- `src/core/intent/engine.py` - Intent analysis for connection weighting
-- `src/core/validation/validator.py` - Safety validation framework
-- `src/core/embeddings/service.py` - Embedding service for semantic similarity
+- `src/core/intent/engine.py` - Intent analysis for smart queries
+- `src/services/vault/sync_engine.py` - Vault sync for API endpoints
+- `src/services/documentation/generator.py` - Documentation generation API
+- `src/core/embeddings/service.py` - Embedding service for similarity search
 
 ## ⚠️ Important Session Notes
 
-### Session 3.3 Status: COMPLETE ✅
-**Critical**: Session 3.3 (Documentation Generator) has been fully implemented with comprehensive automated documentation generation and safety-first design. This session (3.4) builds on the documentation system for knowledge graph visualization and exploration.
+### Session 3.4 Status: COMPLETE ✅
+**Critical**: Session 3.4 (Knowledge Graph Builder) has been fully implemented with comprehensive semantic connection detection, temporal weighting, and multiple export formats. This session (4.1) will expose these capabilities through REST APIs.
 
 **What's Already Done**:
-- ✅ DocumentationGenerator with AST integration and safety-first design
-- ✅ Automated README, API docs, and changelog generation from code analysis
-- ✅ Mermaid diagram generation for architecture and dependency visualization
-- ✅ Documentation coverage calculator and safety validation reporting
-- ✅ Template system with variable substitution and safety validation
-- ✅ Git hook integration for automated documentation updates on commits
-- ✅ Script automation integration for command-line documentation generation
-- ✅ Performance targets achieved (<300ms code analysis, <200ms README generation, <500ms API docs)
-- ✅ Complete abstraction of concrete references in all generated documentation
+- ✅ KnowledgeGraphBuilder with node extraction from memories and code
+- ✅ Semantic similarity edge detection using embeddings
+- ✅ Temporal weighting system with exponential decay
+- ✅ Graph query system with filtering and traversal
+- ✅ Multiple export formats (Mermaid, JSON, GraphML)
+- ✅ Integration with DocumentationGenerator
+- ✅ Performance optimizations (caching, batch processing)
+- ✅ Comprehensive test suite with benchmarks
+- ✅ Zero-tolerance safety validation throughout
 
 ## 🏗️ Implementation Strategy
 
-### Phase 1: Graph Foundation (40% of session)
-1. Create `src/services/vault/graph_builder.py` - Main knowledge graph builder
-2. Implement node extraction from memory and analysis data
-3. Add edge detection algorithm with semantic similarity
-4. Create temporal weighting system for connections
+### Phase 1: API Foundation (40% of session)
+1. Set up FastAPI application structure
+2. Create authentication middleware with safety validation
+3. Implement core middleware (CORS, rate limiting, logging)
+4. Set up dependency injection for services
+5. Create API configuration and settings
 
-### Phase 2: Graph Intelligence (30% of session)
-1. Implement semantic connection detection using embeddings
-2. Add temporal proximity weighting for related memories
-3. Create graph filtering and query system
-4. Build performance optimization for large graphs
+### Phase 2: Memory Endpoints (30% of session)
+1. POST /memories - Create new memory with abstraction
+2. GET /memories/{id} - Retrieve specific memory
+3. GET /memories/search - Search with intent analysis
+4. PUT /memories/{id}/reinforce - Reinforce memory weight
+5. GET /memories/clusters - Get memory clusters
 
-### Phase 3: Visualization & Export (20% of session)
-1. Add graph visualization exporter for various formats
-2. Implement interactive graph exploration capabilities
-3. Create graph analysis and metrics calculation
-4. Build integration with documentation generator
+### Phase 3: Knowledge Graph Endpoints (20% of session)
+1. POST /graph/build - Build knowledge graph
+2. GET /graph/{graph_id} - Get graph metadata
+3. POST /graph/query - Query graph with filters
+4. GET /graph/{graph_id}/export - Export in various formats
+5. GET /graph/{graph_id}/subgraph - Get subgraph around node
 
-### Phase 4: Testing & Validation (10% of session)
-1. Write comprehensive graph builder tests
-2. Test graph generation with real memory data
-3. Validate safety compliance in graph content
-4. Performance benchmark graph operations
+### Phase 4: Integration Endpoints (10% of session)
+1. POST /checkpoints - Create memory checkpoint
+2. GET /vault/sync - Trigger vault synchronization
+3. POST /docs/generate - Generate documentation
+4. WebSocket /ws/realtime - Real-time updates
 
 ## 🔧 Technical Requirements
 
-### New Dependencies (if needed)
+### Dependencies
 ```toml
-# Script automation enhancements
-click = "^8.0"  # CLI framework for script interfaces
-psutil = "^5.9"  # System monitoring for context tracking
-gitpython = "^3.1"  # Git operations for checkpoint/rollback
-rich = "^13.0"  # Rich console output for script feedback
+fastapi = "^0.104.0"
+uvicorn = "^0.24.0"
+pydantic = "^2.4.0"
+python-multipart = "^0.0.6"
+httpx = "^0.25.0"
 ```
 
 ### New Files to Create
-- `scripts/framework/__init__.py`
-- `scripts/framework/runner.py` - Main script execution framework
-- `scripts/development/checkpoint.sh` - Git state capture and complexity analysis
-- `scripts/development/rollback.py` - Safe rollback with validation
-- `scripts/monitoring/context-monitor.py` - Context window and performance monitoring
-- `scripts/automation/vault-sync.py` - Automated vault synchronization
-- `scripts/testing/run-suite.py` - Comprehensive test execution
-- `tests/unit/scripts/` - Script unit tests
+- `src/api/__init__.py`
+- `src/api/main.py` - FastAPI application
+- `src/api/config.py` - API configuration
+- `src/api/dependencies.py` - Dependency injection
+- `src/api/middleware.py` - Custom middleware
+- `src/api/routers/__init__.py`
+- `src/api/routers/memory.py` - Memory endpoints
+- `src/api/routers/graph.py` - Graph endpoints
+- `src/api/routers/vault.py` - Vault sync endpoints
+- `src/api/models.py` - Pydantic models
+- `tests/unit/api/` - API tests
 
 ### Files to Enhance
-- `src/services/vault/sync_engine.py` - Add automation hooks
-- `src/core/memory/repository.py` - Add script integration points
-- `scripts/` - Create directory structure for organized automation
-- `.github/workflows/` - Prepare for CI/CD integration
+- Update `requirements.txt` with API dependencies
+- Create `docker-compose.api.yml` for API service
+- Add API documentation to `docs/`
 
 ## 🛡️ Safety Requirements
 
 ### Mandatory Safety Checks
-- [ ] All vault content must abstract concrete references (file paths, personal info, etc.)
-- [ ] Memory content abstracted before markdown conversion
-- [ ] No storage of actual sensitive data - only abstracted memory content
-- [ ] Template processing respects abstraction boundaries
-- [ ] Backlink generation abstracts concrete memory references
-- [ ] Conflict resolution maintains abstraction integrity
+- [ ] All input data must be validated and abstracted
+- [ ] API responses must not contain concrete references
+- [ ] Authentication tokens must be properly secured
+- [ ] Rate limiting must be enforced
+- [ ] All errors must be safely abstracted
+- [ ] Logging must abstract sensitive data
 
 ## 📊 Performance Targets
 
-### Vault Sync Performance
-- **Target**: <500ms for memory-to-markdown conversion (up to 100 memories)
-- **Template Processing**: <200ms for template variable substitution
-- **Conflict Detection**: <300ms for change comparison
-- **Backlink Resolution**: <100ms for link generation
+### API Performance
+- **Memory Creation**: <200ms including abstraction
+- **Memory Search**: <300ms with intent analysis
+- **Graph Build**: <1s for 100 nodes
+- **Graph Query**: <100ms for filtered results
+- **Documentation Generation**: <2s for small projects
 
 ### Quality Metrics
-- **Conversion Accuracy**: >95% fidelity for memory-to-markdown conversion
-- **Template Accuracy**: 100% variable substitution success
-- **Conflict Resolution**: >90% automatic merge success rate
-- **Safety Validation**: Zero tolerance for concrete reference leakage in vault
+- **API Availability**: >99.9% uptime
+- **Error Rate**: <0.1% of requests
+- **Safety Score**: 100% compliance
+- **Response Time**: P95 <500ms
 
 ## 📋 Session Completion Checklist
 
 ### Core Implementation
-- [ ] VaultSyncEngine class created and functional
-- [ ] Memory-to-markdown conversion working with frontmatter
-- [ ] Backlink resolver connecting related memories
-- [ ] Tag extraction and organization operational
-- [ ] Template processing system complete
+- [ ] FastAPI application created and configured
+- [ ] Authentication middleware implemented
+- [ ] Memory endpoints operational
+- [ ] Graph endpoints functional
+- [ ] Integration endpoints working
 
-### Template Processing
-- [ ] Checkpoint template implemented
-- [ ] Learning template implemented
-- [ ] Decision template implemented
-- [ ] Variable substitution system functional
-- [ ] Template validation and error handling
-
-### Conflict Detection & Resolution
-- [ ] Conflict detection for vault/memory sync
-- [ ] Merge strategies for handling conflicts
-- [ ] Bidirectional sync capabilities
-- [ ] Change tracking and version management
-- [ ] Integration with memory repository
+### API Features
+- [ ] OpenAPI documentation generated
+- [ ] CORS properly configured
+- [ ] Rate limiting active
+- [ ] Error handling comprehensive
+- [ ] Logging with abstraction
 
 ### Testing & Validation
-- [ ] Unit tests written and passing
-- [ ] Integration tests validate functionality
-- [ ] Mock filesystem testing successful
-- [ ] Template processing accuracy validated
-- [ ] Safety compliance verified
+- [ ] Unit tests for all endpoints
+- [ ] Integration tests for workflows
+- [ ] Performance benchmarks met
+- [ ] Safety validation verified
+- [ ] API documentation complete
 
 ### Session Wrap-up
 - [ ] All code committed to git
-- [ ] Performance results documented
-- [ ] Next session planned (Session 3.2 Script Automation Framework)
-- [ ] Session analysis completed
+- [ ] API documentation generated
+- [ ] Performance results recorded
+- [ ] Next session planned (Session 4.2 CLI Interface)
 
-## 🚀 Previous Achievements (Completed)
+## 🚀 Previous Achievements (Phase 3 Complete)
 
-### Phase 1: Secure Foundation (100% complete)
-- Session 1.1: Safety-First Project Initialization ✅
-- Session 1.2: Secure PostgreSQL & pgvector Setup ✅
-- Session 1.3: Safety-First Database Schema ✅
-- Session 1.4: Abstract Memory Model Implementation ✅
+### Phase 3: Knowledge Integration (100% complete)
+- Session 3.1: Obsidian Vault Sync ✅
+- Session 3.2: Script Automation Framework ✅
+- Session 3.3: Documentation Generator ✅
+- Session 3.4: Knowledge Graph Builder ✅
 
-### Phase 2: Intelligence Layer (100% complete)
-- Session 2.1: Time Degradation Algorithm ✅ (implemented in 1.4)
-- Session 2.2: Vector Embeddings Integration ✅
-- Session 2.3: Intent Engine Foundation ✅
-- Session 2.4: AST Code Analysis ✅ (just completed)
-
-**Key Session 2.4 Achievements**:
-- Complete AST analysis system for code understanding and pattern detection
-- Language detection for Python, JavaScript, TypeScript
-- Design pattern detection (Singleton, Factory, Observer)
-- Complexity metrics calculation (cyclomatic, cognitive)
-- Dependency graph builder for code relationships
-- Integration with intent engine for context-aware code insights
-- Performance targets achieved (<300ms Python analysis, <50ms language detection)
-- Comprehensive test suite with unit, integration, and performance validation
-- Safety-first design with complete abstraction of concrete references
+**Key Session 3.4 Achievements**:
+- Comprehensive knowledge graph system with semantic connections
+- Node extraction from memories and code analysis
+- Semantic similarity edge detection with embeddings
+- Temporal weighting system for time-based relationships
+- Advanced graph query and filtering system
+- Multiple visualization formats (Mermaid, JSON, GraphML)
+- Integration with documentation generator
+- Performance optimizations and caching
+- Zero-tolerance safety validation
 
 ## 📝 Session Completion Protocol
 
 ### End-of-Session Requirements
-Before committing Session 3.1 completion:
+Before committing Session 4.1 completion:
 
 1. **Update Session Status**:
-   - [ ] Update CLAUDE.md with Session 3.1 achievements
-   - [ ] Update progress tracking (Phase 3: 0% → 25%)
-   - [ ] Add vault sync to architecture summary
+   - [ ] Update CLAUDE.md with Session 4.1 achievements
+   - [ ] Update progress tracking (Phase 4: 0% → 20%)
+   - [ ] Add API components to architecture summary
 
 2. **Prepare Next Session**:
-   - [ ] Update NEXT_SESSION.md for Session 3.2 (Script Automation Framework)
-   - [ ] Update quick start command with Session 3.1 completion note
-   - [ ] Update context files list for continued Phase 3 development
+   - [ ] Update NEXT_SESSION.md for Session 4.2 (CLI Interface)
+   - [ ] Update quick start command with Session 4.1 completion note
+   - [ ] Update context files list for CLI development
 
 3. **Documentation Updates**:
-   - [ ] Document new vault synchronization capabilities
-   - [ ] Update performance benchmarks for vault operations
-   - [ ] Record any architectural decisions for template system
+   - [ ] Document API endpoints and usage
+   - [ ] Update performance benchmarks
+   - [ ] Record architectural decisions
 
 4. **Git Commit**:
    - [ ] Comprehensive commit message with session summary
-   - [ ] Include performance results and template processing overview
-   - [ ] Tag major vault sync achievements and integrations
+   - [ ] Include performance results and API overview
+   - [ ] Tag major API features and integrations
 
 This protocol ensures consistent session transitions and maintains comprehensive project state tracking.
