@@ -1,0 +1,15 @@
+{
+  "widthPercentage": 36,
+  "sliderWidth": 85,
+  "defaultNoteWidth": 100,
+  "yamlKey": "custom-width",
+  "enableSlider": true,
+  "enableTextInput": true,
+  "enableYAMLWidth": true,
+  "enableSaveWidthIndividually": true,
+  "enableChangeDefaultNoteWidth": true,
+  "priorityList": [
+    "Check for saved note width",
+    "Check for YAML-Frontmatter width"
+  ]
+}
