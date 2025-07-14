@@ -1,10 +1,10 @@
-# 🚀 Next Session: 3.3 Documentation Generator
+# 🚀 Next Session: 3.4 Knowledge Graph Builder
 
 ## 📋 Session Overview
 
-**Session**: 3.3 Documentation Generator  
-**Prerequisites**: Phase 1-2 complete ✅, Sessions 2.2-3.2 complete ✅  
-**Focus**: Implement automated documentation generation with safety-first design  
+**Session**: 3.4 Knowledge Graph Builder  
+**Prerequisites**: Phase 1-2 complete ✅, Sessions 2.2-3.3 complete ✅  
+**Focus**: Implement knowledge graph builder with semantic connections and temporal weighting  
 **Context Budget**: ~3000 tokens (clean window available)  
 **Estimated Output**: ~800-1000 lines  
 
@@ -12,74 +12,75 @@
 
 ### Copy this to start the next session:
 ```
-I'm continuing work on CoachNTT.ai. We completed Phase 1-2 and Sessions 2.2-3.2.
+I'm continuing work on CoachNTT.ai. We completed Phase 1-2 and Sessions 2.2-3.3.
 
 Please review:
 1. @.claude/NEXT_SESSION.md (this file)  
 2. @.claude/CLAUDE.md (current project state)
-3. @project-docs/Implementation_Cadence.md (lines 444-466 for Session 3.3)
-4. @scripts/framework/runner.py (script automation framework)
-5. @src/core/analysis/ast_analyzer.py (AST analysis for documentation)
+3. @project-docs/Implementation_Cadence.md (lines 471-492 for Session 3.4)
+4. @src/services/vault/sync_engine.py (vault synchronization system)
+5. @src/core/memory/repository.py (memory system for graph integration)
 
-Ready to start Session 3.3: Documentation Generator.
-Note: Session 3.2 (Script Automation Framework) is now complete with comprehensive development automation and safety-first script execution.
+Ready to start Session 3.4: Knowledge Graph Builder.
+Note: Session 3.3 (Documentation Generator) is now complete with comprehensive automated documentation generation and safety-first design.
 ```
 
 ## 📚 Context Files to Load
 
 ### Essential Files (Load First)
 1. **`.claude/CLAUDE.md`** - Current project state and architecture
-2. **`project-docs/Implementation_Cadence.md`** (lines 421-443) - Session 3.2 specifications
-3. **`src/services/vault/sync_engine.py`** - Vault synchronization system for script integration
-4. **`src/core/memory/repository.py`** - Memory system with vault sync capabilities
+2. **`project-docs/Implementation_Cadence.md`** (lines 471-492) - Session 3.4 specifications
+3. **`src/services/vault/sync_engine.py`** - Vault synchronization system for integration
+4. **`src/core/memory/repository.py`** - Memory system for graph node creation
+5. **`src/core/analysis/ast_analyzer.py`** - AST analysis for dependency extraction
 
 ### Reference Files (Load as Needed)
-- `src/services/vault/models.py` - Vault sync data models
-- `src/core/analysis/ast_analyzer.py` - Code analysis for script enhancement
+- `src/services/documentation/generator.py` - Documentation system for graph visualization
+- `src/core/intent/engine.py` - Intent analysis for connection weighting
 - `src/core/validation/validator.py` - Safety validation framework
-- `src/core/intent/engine.py` - Intent analysis integration
+- `src/core/embeddings/service.py` - Embedding service for semantic similarity
 
 ## ⚠️ Important Session Notes
 
-### Session 3.2 Status: COMPLETE ✅
-**Critical**: Session 3.2 (Script Automation Framework) has been fully implemented with comprehensive development automation and safety-first script execution. This session (3.3) builds on the script framework for automated documentation generation.
+### Session 3.3 Status: COMPLETE ✅
+**Critical**: Session 3.3 (Documentation Generator) has been fully implemented with comprehensive automated documentation generation and safety-first design. This session (3.4) builds on the documentation system for knowledge graph visualization and exploration.
 
 **What's Already Done**:
-- ✅ ScriptRunner with dependency validation, performance monitoring, and safety checks
-- ✅ Safety-first logging system with automatic content abstraction and compliance tracking
-- ✅ Git state capture and complexity analysis integration (checkpoint.sh)
-- ✅ Safe rollback system with multi-level validation and automatic backup creation (rollback.py)
-- ✅ Real-time context monitoring with system performance and safety score tracking
-- ✅ Automated vault sync integration with existing VaultSyncEngine
-- ✅ Comprehensive test execution framework with coverage reporting and safety validation
-- ✅ Performance targets achieved (<2s script execution, <5s checkpoint analysis, <10s vault automation)
-- ✅ Complete abstraction of concrete references in all script outputs
+- ✅ DocumentationGenerator with AST integration and safety-first design
+- ✅ Automated README, API docs, and changelog generation from code analysis
+- ✅ Mermaid diagram generation for architecture and dependency visualization
+- ✅ Documentation coverage calculator and safety validation reporting
+- ✅ Template system with variable substitution and safety validation
+- ✅ Git hook integration for automated documentation updates on commits
+- ✅ Script automation integration for command-line documentation generation
+- ✅ Performance targets achieved (<300ms code analysis, <200ms README generation, <500ms API docs)
+- ✅ Complete abstraction of concrete references in all generated documentation
 
 ## 🏗️ Implementation Strategy
 
-### Phase 1: Script Framework Foundation (40% of session)
-1. Create `scripts/framework/runner.py` - Main script execution framework
-2. Implement `scripts/development/checkpoint.sh` - Git state capture and analysis
-3. Add script logging and execution tracking system
-4. Create dependency management and validation
+### Phase 1: Graph Foundation (40% of session)
+1. Create `src/services/vault/graph_builder.py` - Main knowledge graph builder
+2. Implement node extraction from memory and analysis data
+3. Add edge detection algorithm with semantic similarity
+4. Create temporal weighting system for connections
 
-### Phase 2: Development Automation (30% of session)
-1. Implement `scripts/development/rollback.py` - Safe rollback capabilities
-2. Add `scripts/monitoring/context-monitor.py` - Context window monitoring
-3. Create performance tracking and benchmarking scripts
-4. Build automated documentation generation hooks
+### Phase 2: Graph Intelligence (30% of session)
+1. Implement semantic connection detection using embeddings
+2. Add temporal proximity weighting for related memories
+3. Create graph filtering and query system
+4. Build performance optimization for large graphs
 
-### Phase 3: Integration Scripts (20% of session)
-1. Add vault sync automation scripts
-2. Implement safety validation automation
-3. Create test execution and reporting scripts
-4. Build deployment preparation automation
+### Phase 3: Visualization & Export (20% of session)
+1. Add graph visualization exporter for various formats
+2. Implement interactive graph exploration capabilities
+3. Create graph analysis and metrics calculation
+4. Build integration with documentation generator
 
 ### Phase 4: Testing & Validation (10% of session)
-1. Write comprehensive script tests
-2. Test automation workflows end-to-end
-3. Validate safety compliance in all scripts
-4. Performance benchmark script execution
+1. Write comprehensive graph builder tests
+2. Test graph generation with real memory data
+3. Validate safety compliance in graph content
+4. Performance benchmark graph operations
 
 ## 🔧 Technical Requirements
 
