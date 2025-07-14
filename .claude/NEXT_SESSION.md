@@ -1,91 +1,89 @@
-# 🚀 Next Session: 4.2d CLI Integration & Interactive Mode
+# 🚀 Next Session: 5.1 Performance Optimization & Scalability
 
 ## 📋 Session Overview
 
-**Session**: 4.2d CLI Integration & Interactive Mode  
-**Prerequisites**: Session 4.2c complete ✅, Complete Knowledge Graph Operations ready ✅  
-**Focus**: Implement integration commands (vault sync, docs generation) and interactive CLI mode  
-**Context Budget**: ~1500 tokens (building on complete CLI foundation)  
-**Estimated Output**: ~500-600 lines  
+**Session**: 5.1 Performance Optimization & Scalability  
+**Prerequisites**: Phase 4 complete ✅, Complete CLI interface ready ✅  
+**Focus**: Implement performance optimizations, caching, and scalability improvements  
+**Context Budget**: ~2000 tokens (clean window for optimization work)  
+**Estimated Output**: ~800-1000 lines  
 
 ## 🎯 Quick Start Command
 
 ### Copy this to start the next session:
 ```
-I'm continuing work on CoachNTT.ai. We completed Session 4.2c (CLI Knowledge Graph Operations).
+I'm continuing work on CoachNTT.ai. We completed Phase 4 (Integration & Polish) with Session 4.2d.
 
 Please review:
 1. @.claude/NEXT_SESSION.md (this file)  
 2. @.claude/CLAUDE.md (current project state)
-3. @coachntt.py (main CLI entry point)
-4. @cli/commands/graph.py (complete graph operations commands)
-5. @src/api/routers/integration.py (integration API endpoints)
-6. @docs/user-guide/cli-commands.md (living documentation to update)
+3. @coachntt.py (complete CLI interface)
+4. @cli/core.py (CLIEngine with all methods)
+5. @src/core/embeddings/service.py (embedding service for optimization)
+6. @src/core/memory/repository.py (memory repository for performance tuning)
 
-Ready to start Session 4.2d: CLI Integration & Interactive Mode.
-Note: Session 4.2c is complete with full knowledge graph operations (build, query, export, list, delete, subgraph).
+Ready to start Session 5.1: Performance Optimization & Scalability.
+Note: Phase 4 is complete with full CLI interface (21 commands across 8 groups).
 ```
 
 ## 📚 Context Files to Load
 
 ### Essential Files (Load First)
 1. **`.claude/CLAUDE.md`** - Current project state and architecture
-2. **`cli/commands/memory.py`** - Existing memory commands to extend
-3. **`cli/core.py`** - CLI engine with API communication patterns
-4. **`docs/user-guide/cli-commands.md`** - Living documentation to update
-5. **`src/api/models/memory.py`** - Memory API models for request/response patterns
+2. **`src/core/embeddings/service.py`** - Embedding service for caching optimization
+3. **`src/core/memory/repository.py`** - Memory repository for query optimization
+4. **`src/api/main.py`** - FastAPI application for middleware optimization
+5. **`src/core/embeddings/cache.py`** - Existing LRU cache implementation
 
 ### Reference Files (Load as Needed)
-- `cli/utils.py` - Output formatting and utility functions
-- `src/api/routers/memory.py` - Memory API endpoints for integration
-- `coachntt.py` - Main CLI entry point for command registration
+- `src/core/intent/engine.py` - Intent engine for performance analysis
+- `src/services/vault/graph_builder.py` - Graph builder for optimization
+- `src/api/middleware/` - Middleware for performance improvements
 
 ## ⚠️ Important Session Notes
 
-### Session 4.2c Status: COMPLETE ✅
-**Critical**: Session 4.2c (CLI Knowledge Graph Operations) has been fully implemented with:
-- Complete knowledge graph operations (build, query, export, list, show, delete, subgraph)
-- Enhanced CLIEngine with 6 new async methods for full graph API integration  
-- Advanced graph building with memory and code analysis support
-- Comprehensive graph querying with semantic pattern matching and filtering
-- Export functionality in 5 formats (Mermaid, JSON, D3, Cytoscape, GraphML)
-- Subgraph extraction with depth and weight controls
-- Progress indicators and real-time feedback for all operations
-- Safety-first design with complete abstraction enforcement
+### Phase 4 Status: COMPLETE ✅
+**Critical**: Phase 4 (Integration & Polish) has been fully completed with Session 4.2d:
+- Complete CLI interface with 21 commands across 8 command groups
+- Integration commands: vault sync, documentation generation, checkpoints
+- Interactive CLI mode with tab completion and command history
+- Configuration management with file and environment variable support
+- Enhanced CLIEngine with all API integration methods
+- Comprehensive user guide with complete feature documentation
+- Safety-first design maintained throughout all new functionality
 
 **What's Already Done**:
-- ✅ Graph build command with memory/code analysis and customizable parameters
-- ✅ Graph query command with semantic pattern matching and multiple output formats
-- ✅ Graph export command in 5 formats with filtering and metadata options
-- ✅ Graph list and show commands for management and metadata display
-- ✅ Graph delete command with safety confirmations
-- ✅ Subgraph extraction command for focused exploration
-- ✅ Enhanced CLI user guide with all 7 graph commands documented
-- ✅ Comprehensive error handling and troubleshooting guidance
-- ✅ CLI engine enhancements for complete graph management
+- ✅ Complete memory management CLI (7 commands)
+- ✅ Complete knowledge graph CLI (7 commands)
+- ✅ Integration commands: sync, docs, checkpoint (3 command groups)
+- ✅ Interactive mode with tab completion and history
+- ✅ Configuration management with validation and reset
+- ✅ 21 total commands across 8 command groups
+- ✅ Complete CLI user guide with examples and troubleshooting
+- ✅ All CLI architecture ready for optimization work
 
 ## 🏗️ Implementation Strategy
 
-### Phase 1: Integration Commands (40% of session)
-1. Implement `coachntt sync vault` command for bidirectional Obsidian synchronization
-2. Add `coachntt docs generate` command for automated documentation creation
-3. Implement `coachntt checkpoint create` command for development checkpoints
-4. Enhance CLI engine with integration API methods
-5. Add comprehensive validation and error handling
+### Phase 1: Caching & Memory Optimization (40% of session)
+1. Enhance embedding service with Redis integration and advanced caching strategies
+2. Implement memory repository query optimization with indexing and caching
+3. Add database connection pooling and query optimization
+4. Implement smart cache invalidation and warm-up strategies
+5. Add comprehensive performance monitoring and metrics
 
-### Phase 2: Interactive CLI Mode (35% of session)
-1. Implement `coachntt interactive` command with tab completion
-2. Add command history and session management
-3. Create built-in help system and command discovery
-4. Integrate with existing commands for seamless experience
-5. Add configuration and preference management
+### Phase 2: API Performance Optimization (35% of session)
+1. Implement response compression and efficient serialization
+2. Add request batching and async processing optimization
+3. Enhance middleware for performance monitoring and bottleneck detection
+4. Implement rate limiting optimization and smart queuing
+5. Add background task optimization and job scheduling
 
-### Phase 3: CLI Polish and Completion (25% of session)
-1. Add configuration management commands (`coachntt config`)
-2. Implement advanced output formatting and themes
-3. Add comprehensive testing and validation
-4. Update documentation with complete feature coverage
-5. Prepare for Phase 4 completion and final validation
+### Phase 3: Scalability & Monitoring (25% of session)
+1. Implement horizontal scaling preparation and load balancing
+2. Add comprehensive performance metrics and monitoring
+3. Implement automated performance testing and benchmarking
+4. Add optimization recommendations and auto-tuning
+5. Prepare for production deployment and monitoring integration
 
 ## 🔧 Technical Requirements
 

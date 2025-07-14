@@ -915,6 +915,179 @@ class CLIEngine:
                 "message": f"Failed to get subgraph: {e}"
             }
     
+    async def sync_vault(
+        self,
+        direction: str = "both",
+        template_type: Optional[str] = None,
+        max_memories: int = 100,
+        vault_files: Optional[List[str]] = None,
+        dry_run: bool = False
+    ) -> Dict[str, Any]:
+        """
+        Synchronize memories with Obsidian vault.
+        
+        Args:
+            direction: Sync direction (both, to-vault, from-vault)
+            template_type: Template type for conversion
+            max_memories: Maximum memories to process
+            vault_files: Specific vault files to sync
+            dry_run: Preview mode without changes
+        
+        Returns:
+            Dictionary with sync results or error
+        """
+        try:
+            if not self.client:
+                raise RuntimeError("CLI engine not initialized")
+            
+            # Prepare sync request
+            sync_data = {
+                "sync_direction": direction,
+                "max_memories": max_memories,
+                "dry_run": dry_run
+            }
+            
+            if template_type:
+                sync_data["template_type"] = template_type
+            if vault_files:
+                sync_data["vault_files"] = vault_files
+            
+            # Make API request
+            response = await self.client.post("/api/v1/integration/vault/sync", json=sync_data)
+            
+            if response.status_code == 200:
+                return {
+                    "status": "success",
+                    "sync": response.json()
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": f"API returned status {response.status_code}",
+                    "details": response.text
+                }
+        
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Failed to sync vault: {e}"
+            }
+    
+    async def generate_docs(
+        self,
+        doc_types: List[str],
+        output_directory: str = "./docs",
+        include_diagrams: bool = False,
+        output_format: str = "markdown",
+        code_paths: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
+        """
+        Generate project documentation.
+        
+        Args:
+            doc_types: Types of documentation to generate
+            output_directory: Output directory path
+            include_diagrams: Include architecture diagrams
+            output_format: Output format (markdown, html)
+            code_paths: Code paths to analyze
+        
+        Returns:
+            Dictionary with generation results or error
+        """
+        try:
+            if not self.client:
+                raise RuntimeError("CLI engine not initialized")
+            
+            # Prepare docs generation request
+            docs_data = {
+                "doc_types": doc_types,
+                "output_directory": output_directory,
+                "include_diagrams": include_diagrams,
+                "output_format": output_format
+            }
+            
+            if code_paths:
+                docs_data["code_paths"] = code_paths
+            
+            # Make API request
+            response = await self.client.post("/api/v1/integration/docs/generate", json=docs_data)
+            
+            if response.status_code == 200:
+                return {
+                    "status": "success",
+                    "docs": response.json()
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": f"API returned status {response.status_code}",
+                    "details": response.text
+                }
+        
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Failed to generate documentation: {e}"
+            }
+    
+    async def create_checkpoint(
+        self,
+        checkpoint_name: str,
+        description: Optional[str] = None,
+        include_code_analysis: bool = False,
+        max_memories: int = 50,
+        memory_filters: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Create development checkpoint.
+        
+        Args:
+            checkpoint_name: Name for the checkpoint
+            description: Optional description
+            include_code_analysis: Include code complexity analysis
+            max_memories: Maximum memories to include
+            memory_filters: Filters for memory selection
+        
+        Returns:
+            Dictionary with checkpoint results or error
+        """
+        try:
+            if not self.client:
+                raise RuntimeError("CLI engine not initialized")
+            
+            # Prepare checkpoint request
+            checkpoint_data = {
+                "checkpoint_name": checkpoint_name,
+                "max_memories": max_memories,
+                "include_code_analysis": include_code_analysis
+            }
+            
+            if description:
+                checkpoint_data["description"] = description
+            if memory_filters:
+                checkpoint_data["memory_filters"] = memory_filters
+            
+            # Make API request
+            response = await self.client.post("/api/v1/integration/checkpoint", json=checkpoint_data)
+            
+            if response.status_code == 200:
+                return {
+                    "status": "success",
+                    "checkpoint": response.json()
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": f"API returned status {response.status_code}",
+                    "details": response.text
+                }
+        
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Failed to create checkpoint: {e}"
+            }
+    
     async def get_system_status(self) -> Dict[str, Any]:
         """
         Get comprehensive system status including API, database, and services.
