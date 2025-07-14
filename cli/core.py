@@ -234,6 +234,305 @@ class CLIEngine:
                 "message": f"Failed to get memory: {e}"
             }
     
+    async def create_memory(
+        self, 
+        memory_type: str, 
+        prompt: str, 
+        content: str, 
+        metadata: Optional[Dict[str, Any]] = None,
+        intent: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Create a new memory with automatic safety validation.
+        
+        Args:
+            memory_type: Type of memory (learning, decision, context, debug, optimization)
+            prompt: Original prompt or trigger for the memory
+            content: Actual memory content
+            metadata: Additional metadata dictionary
+            intent: Optional intent specification for better categorization
+        
+        Returns:
+            Dictionary with created memory data or error
+        """
+        try:
+            if not self.client:
+                raise RuntimeError("CLI engine not initialized")
+            
+            # Prepare request data
+            memory_data = {
+                "memory_type": memory_type,
+                "prompt": prompt,
+                "content": content,
+                "metadata": metadata or {}
+            }
+            
+            # Add intent to metadata if provided
+            if intent:
+                memory_data["metadata"]["intent"] = intent
+            
+            # Make API request
+            response = await self.client.post("/api/v1/memories/", json=memory_data)
+            
+            if response.status_code == 201:
+                return {
+                    "status": "success",
+                    "memory": response.json()
+                }
+            elif response.status_code == 400:
+                return {
+                    "status": "validation_error",
+                    "message": "Validation failed",
+                    "details": response.text
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": f"API returned status {response.status_code}",
+                    "details": response.text
+                }
+        
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Failed to create memory: {e}"
+            }
+    
+    async def update_memory(
+        self, 
+        memory_id: str, 
+        prompt: Optional[str] = None, 
+        content: Optional[str] = None, 
+        metadata: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """
+        Update an existing memory.
+        
+        Args:
+            memory_id: Memory UUID
+            prompt: Updated prompt (optional)
+            content: Updated content (optional)
+            metadata: Updated metadata (optional)
+        
+        Returns:
+            Dictionary with updated memory data or error
+        """
+        try:
+            if not self.client:
+                raise RuntimeError("CLI engine not initialized")
+            
+            # Prepare update data (only include non-None values)
+            update_data = {}
+            if prompt is not None:
+                update_data["prompt"] = prompt
+            if content is not None:
+                update_data["content"] = content
+            if metadata is not None:
+                update_data["metadata"] = metadata
+            
+            if not update_data:
+                return {
+                    "status": "error",
+                    "message": "No update data provided"
+                }
+            
+            # Make API request
+            response = await self.client.put(f"/api/v1/memories/{memory_id}", json=update_data)
+            
+            if response.status_code == 200:
+                return {
+                    "status": "success",
+                    "memory": response.json()
+                }
+            elif response.status_code == 404:
+                return {
+                    "status": "not_found",
+                    "message": f"Memory {memory_id} not found"
+                }
+            elif response.status_code == 400:
+                return {
+                    "status": "validation_error",
+                    "message": "Validation failed",
+                    "details": response.text
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": f"API returned status {response.status_code}",
+                    "details": response.text
+                }
+        
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Failed to update memory: {e}"
+            }
+    
+    async def delete_memory(self, memory_id: str, force: bool = False) -> Dict[str, Any]:
+        """
+        Delete a memory permanently.
+        
+        Args:
+            memory_id: Memory UUID
+            force: Skip confirmation prompts if True
+        
+        Returns:
+            Dictionary with deletion status or error
+        """
+        try:
+            if not self.client:
+                raise RuntimeError("CLI engine not initialized")
+            
+            # Make API request
+            response = await self.client.delete(f"/api/v1/memories/{memory_id}")
+            
+            if response.status_code == 200:
+                return {
+                    "status": "success",
+                    "message": f"Memory {memory_id} deleted successfully"
+                }
+            elif response.status_code == 404:
+                return {
+                    "status": "not_found",
+                    "message": f"Memory {memory_id} not found"
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": f"API returned status {response.status_code}",
+                    "details": response.text
+                }
+        
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Failed to delete memory: {e}"
+            }
+    
+    async def search_memories(
+        self, 
+        query: str,
+        memory_types: Optional[List[str]] = None,
+        intent_types: Optional[List[str]] = None,
+        min_score: Optional[float] = None,
+        limit: int = 10,
+        enable_intent_analysis: bool = True
+    ) -> Dict[str, Any]:
+        """
+        Search memories using semantic similarity and filters.
+        
+        Args:
+            query: Search query string
+            memory_types: Filter by memory types
+            intent_types: Filter by intent types
+            min_score: Minimum relevance score filter
+            limit: Maximum results to return
+            enable_intent_analysis: Enable intent-based search
+        
+        Returns:
+            Dictionary with search results or error
+        """
+        try:
+            if not self.client:
+                raise RuntimeError("CLI engine not initialized")
+            
+            # Prepare search request
+            search_data = {
+                "query": query,
+                "limit": min(limit, 50),  # Cap at 50 for safety
+                "enable_intent_analysis": enable_intent_analysis,
+                "include_peripheral": True
+            }
+            
+            if memory_types:
+                search_data["memory_types"] = memory_types
+            if min_score is not None:
+                search_data["min_safety_score"] = min_score
+            
+            # Make API request
+            response = await self.client.post("/api/v1/memories/search", json=search_data)
+            
+            if response.status_code == 200:
+                results = response.json()
+                return {
+                    "status": "success",
+                    "results": results,
+                    "total": len(results),
+                    "query": query
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": f"API returned status {response.status_code}",
+                    "details": response.text
+                }
+        
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Failed to search memories: {e}"
+            }
+    
+    async def export_memories(
+        self, 
+        format_type: str = "json",
+        filters: Optional[Dict[str, Any]] = None,
+        limit: Optional[int] = None
+    ) -> Dict[str, Any]:
+        """
+        Export memories in various formats.
+        
+        Args:
+            format_type: Export format (json, csv, markdown)
+            filters: Filter criteria for export
+            limit: Maximum memories to export
+        
+        Returns:
+            Dictionary with export data or error
+        """
+        try:
+            if not self.client:
+                raise RuntimeError("CLI engine not initialized")
+            
+            # Get all memories matching filters
+            params = {}
+            if limit:
+                params["limit"] = min(limit, 1000)  # Cap for safety
+            
+            # Apply filters if provided
+            if filters:
+                if "type" in filters:
+                    params["type"] = filters["type"]
+                if "since_days" in filters:
+                    params["since_days"] = filters["since_days"]
+            
+            # Fetch memories
+            response = await self.client.get("/api/v1/memories/", params=params)
+            
+            if response.status_code == 200:
+                data = response.json()
+                memories = data.get("memories", [])
+                
+                return {
+                    "status": "success",
+                    "memories": memories,
+                    "total": len(memories),
+                    "format": format_type,
+                    "filters": filters or {}
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": f"API returned status {response.status_code}",
+                    "details": response.text
+                }
+        
+        except Exception as e:
+            return {
+                "status": "error",
+                "message": f"Failed to export memories: {e}"
+            }
+    
     async def get_system_status(self) -> Dict[str, Any]:
         """
         Get comprehensive system status including API, database, and services.

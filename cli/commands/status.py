@@ -8,7 +8,7 @@ comprehensive status reporting for all system components.
 import click
 from typing import Dict, Any
 
-from ..core import CLIEngine, run_async_command
+from ..core import CLIEngine, CLIConfig, run_async_command
 from ..utils import (
     format_output,
     create_status_panel,
@@ -53,7 +53,7 @@ def status_command(output_json: bool, detailed: bool, debug: bool):
         coachntt status --json             # JSON output for scripts
     """
     async def _run_status_check():
-        config = CLIEngine.CLIConfig.load_from_env()
+        config = CLIConfig.load_from_env()
         if debug:
             config.debug = True
         
@@ -63,7 +63,7 @@ def status_command(output_json: bool, detailed: bool, debug: bool):
             
             # Show spinner for status check
             with show_spinner("Checking system status...") as progress:
-                task = progress.add_task("status", description="Checking API connectivity...")
+                task = progress.add_task(description="Checking API connectivity...")
                 
                 # Get comprehensive system status
                 status_data = await cli.get_system_status()

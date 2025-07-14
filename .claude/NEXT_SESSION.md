@@ -1,28 +1,29 @@
-# 🚀 Next Session: 4.2b CLI Memory Management Operations
+# 🚀 Next Session: 4.2c CLI Knowledge Graph Operations
 
 ## 📋 Session Overview
 
-**Session**: 4.2b CLI Memory Management Operations  
-**Prerequisites**: Session 4.2a complete ✅, CLI Foundation ready ✅  
-**Focus**: Complete memory CRUD operations and advanced search functionality  
-**Context Budget**: ~1500 tokens (building on existing CLI foundation)  
-**Estimated Output**: ~300-400 lines  
+**Session**: 4.2c CLI Knowledge Graph Operations  
+**Prerequisites**: Session 4.2b complete ✅, Complete Memory Management ready ✅  
+**Focus**: Implement knowledge graph commands for building, querying, and visualizing graphs  
+**Context Budget**: ~1500 tokens (building on existing CLI foundation and memory commands)  
+**Estimated Output**: ~400-500 lines  
 
 ## 🎯 Quick Start Command
 
 ### Copy this to start the next session:
 ```
-I'm continuing work on CoachNTT.ai. We completed Session 4.2a (CLI Foundation with Immediate Usability).
+I'm continuing work on CoachNTT.ai. We completed Session 4.2b (CLI Memory Management Operations).
 
 Please review:
 1. @.claude/NEXT_SESSION.md (this file)  
 2. @.claude/CLAUDE.md (current project state)
 3. @coachntt.py (main CLI entry point)
-4. @cli/commands/memory.py (existing memory commands to extend)
-5. @docs/user-guide/cli-commands.md (living documentation to update)
+4. @cli/commands/memory.py (complete memory management commands)
+5. @src/api/routers/graph.py (knowledge graph API endpoints)
+6. @docs/user-guide/cli-commands.md (living documentation to update)
 
-Ready to start Session 4.2b: CLI Memory Management Operations.
-Note: Session 4.2a is complete with working CLI foundation, status command, and basic memory list functionality.
+Ready to start Session 4.2c: CLI Knowledge Graph Operations.
+Note: Session 4.2b is complete with full memory management (create, search, export, update, delete).
 ```
 
 ## 📚 Context Files to Load
@@ -41,47 +42,48 @@ Note: Session 4.2a is complete with working CLI foundation, status command, and 
 
 ## ⚠️ Important Session Notes
 
-### Session 4.2a Status: COMPLETE ✅
-**Critical**: Session 4.2a (CLI Foundation with Immediate Usability) has been fully implemented with:
-- Comprehensive CLI user guide documenting all planned functionality (600+ lines)
-- Working CLI framework with status and memory list commands
-- Rich output formatting with table, JSON, and simple text modes
-- Safety-first design with automatic abstraction
-- Async API communication through CLIEngine
-- Comprehensive help system and error handling
+### Session 4.2b Status: COMPLETE ✅
+**Critical**: Session 4.2b (CLI Memory Management Operations) has been fully implemented with:
+- Complete memory management operations (create, search, export, update, delete)
+- Enhanced CLIEngine with 5 new async methods for full API integration
+- Advanced search with semantic similarity and intent analysis
+- Export functionality in 3 formats (JSON, CSV, Markdown)
+- Comprehensive input validation and error handling
+- Progress indicators and real-time feedback
+- Safety-first design with complete abstraction enforcement
 
 **What's Already Done**:
-- ✅ CLI user guide with complete command documentation (docs/user-guide/cli-commands.md)
-- ✅ CLI framework structure (cli/ directory with core, utils, commands)
-- ✅ Main CLI entry point (coachntt.py) with command routing
-- ✅ Status command with system health checks and diagnostics
-- ✅ Memory list command with filtering and formatting options
-- ✅ Memory show command for detailed memory viewing
-- ✅ Rich output formatting and comprehensive help system
-- ✅ Safety abstraction and error handling throughout
+- ✅ Memory create command with type selection and metadata support
+- ✅ Memory search command with semantic similarity and filtering
+- ✅ Memory export command in JSON, CSV, and Markdown formats
+- ✅ Memory update command for modifying existing memories
+- ✅ Memory delete command with safety confirmations
+- ✅ Enhanced CLI user guide with all implemented features
+- ✅ Comprehensive error handling and troubleshooting guidance
+- ✅ CLI engine enhancements for complete memory management
 
 ## 🏗️ Implementation Strategy
 
-### Phase 1: Memory Creation and Management (40% of session)
-1. Implement `coachntt memory create` command with full validation
-2. Add support for memory types, metadata, and intent specification
-3. Enhance API integration for memory creation with error handling
-4. Update CLI engine with memory creation methods
-5. Add comprehensive input validation and safety checks
+### Phase 1: Knowledge Graph Building (40% of session)
+1. Implement `coachntt graph build` command with memory and code analysis
+2. Add support for similarity thresholds and graph size limits
+3. Enhance API integration for graph building with progress tracking
+4. Update CLI engine with graph building methods
+5. Add comprehensive validation and error handling
 
-### Phase 2: Advanced Memory Search (35% of session)
-1. Implement `coachntt memory search` with semantic similarity
-2. Add filtering by intent type, memory type, and relevance score
-3. Integrate with existing intent analysis and embedding services
-4. Support complex search queries with multiple filters
-5. Add search result ranking and relevance display
+### Phase 2: Graph Querying and Exploration (35% of session)
+1. Implement `coachntt graph query` with semantic pattern matching
+2. Add support for traversal depth and filtering options
+3. Integrate with existing graph query API endpoints
+4. Support complex graph queries with relationship filtering
+5. Add query result ranking and path visualization
 
-### Phase 3: Memory Export and Utilities (25% of session)
-1. Implement `coachntt memory export` in multiple formats (JSON, CSV, Markdown)
-2. Add filtering options for export (date ranges, types, metadata)
-3. Create memory update and delete commands
-4. Add batch operations for memory management
-5. Update living documentation with implemented features
+### Phase 3: Graph Export and Visualization (25% of session)
+1. Implement `coachntt graph export` in multiple formats (Mermaid, JSON, GraphML, D3)
+2. Add subgraph extraction and filtering capabilities
+3. Create graph visualization generation commands
+4. Add interactive HTML output with D3.js integration
+5. Update living documentation with graph command examples
 
 ## 🔧 Technical Requirements
 

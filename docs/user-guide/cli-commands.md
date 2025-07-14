@@ -169,7 +169,7 @@ python coachntt.py memory list --format json --limit 5
 ---
 
 ### `coachntt memory create`
-🚧 **Status**: Planned for Session 4.2b  
+✅ **Status**: Implemented  
 **Description**: Create new memory with automatic safety validation
 
 ```bash
@@ -205,7 +205,7 @@ python coachntt.py memory create \
 ---
 
 ### `coachntt memory search`
-🚧 **Status**: Planned for Session 4.2b  
+✅ **Status**: Implemented  
 **Description**: Search memories using semantic similarity and filters
 
 ```bash
@@ -234,7 +234,7 @@ python coachntt.py memory search "error handling" --intent troubleshooting --lim
 ---
 
 ### `coachntt memory show`
-🚧 **Status**: Planned for Session 4.2b  
+✅ **Status**: Implemented  
 **Description**: Display detailed information about a specific memory
 
 ```bash
@@ -261,7 +261,7 @@ python coachntt.py memory show abc123 --format json
 ---
 
 ### `coachntt memory export`
-🚧 **Status**: Planned for Session 4.2b  
+✅ **Status**: Implemented  
 **Description**: Export memories to various formats
 
 ```bash
@@ -292,6 +292,56 @@ python coachntt.py memory export \
   --since 30 \
   --include-metadata \
   --output memory-analysis.csv
+```
+
+---
+
+### `coachntt memory update`
+✅ **Status**: Implemented  
+**Description**: Update an existing memory's content or metadata
+
+```bash
+python coachntt.py memory update MEMORY_ID [OPTIONS]
+```
+
+**Options**:
+- `--prompt TEXT` - Update the prompt text
+- `--content TEXT` - Update the content text
+- `--metadata KEY=VALUE` - Update metadata (can be used multiple times)
+
+**Examples**:
+```bash
+# Update content only
+python coachntt.py memory update abc123 --content "Updated content with new information"
+
+# Update multiple fields
+python coachntt.py memory update abc123 \
+  --prompt "Updated prompt" \
+  --content "Updated content" \
+  --metadata priority=high \
+  --metadata status=reviewed
+```
+
+---
+
+### `coachntt memory delete`
+✅ **Status**: Implemented  
+**Description**: Delete a memory permanently with safety confirmations
+
+```bash
+python coachntt.py memory delete MEMORY_ID [OPTIONS]
+```
+
+**Options**:
+- `--force` - Skip confirmation prompt
+
+**Examples**:
+```bash
+# Delete with confirmation prompt
+python coachntt.py memory delete abc123
+
+# Delete without confirmation (use with caution)
+python coachntt.py memory delete abc123 --force
 ```
 
 ---
@@ -646,9 +696,18 @@ python coachntt.py memory list --examples
 ## Implementation Status
 
 - ✅ **Session 4.2a Complete**: Basic CLI with status and memory list
-- 🚧 **Session 4.2b Planned**: Complete memory management
+- ✅ **Session 4.2b Complete**: Complete memory management operations
 - 🚧 **Session 4.2c Planned**: Knowledge graph operations  
 - 🚧 **Session 4.2d Planned**: Integration and interactive mode
+
+### Memory Management Features ✅
+- ✅ Memory creation with type and metadata support
+- ✅ Advanced semantic search with intent analysis
+- ✅ Memory export in JSON, CSV, and Markdown formats
+- ✅ Memory update operations with validation
+- ✅ Safe memory deletion with confirmations
+- ✅ Comprehensive error handling and troubleshooting guidance
+- ✅ Progress indicators and rich output formatting
 
 ---
 
