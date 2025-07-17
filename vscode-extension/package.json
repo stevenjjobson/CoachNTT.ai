@@ -1,0 +1,208 @@
+{
+  "name": "coachntt",
+  "displayName": "CoachNTT - AI Coding Assistant",
+  "description": "Cognitive coding partner with voice interaction and real-time monitoring",
+  "version": "0.1.0",
+  "publisher": "coachntt",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "AI",
+    "Other",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "ai",
+    "assistant",
+    "voice",
+    "monitoring",
+    "cognitive"
+  ],
+  "icon": "resources/icons/coachntt-128.png",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "CoachNTT",
+      "properties": {
+        "coachntt.apiUrl": {
+          "type": "string",
+          "default": "http://localhost:8000",
+          "description": "Backend API URL for local development",
+          "order": 1
+        },
+        "coachntt.vpsUrl": {
+          "type": "string",
+          "default": "",
+          "description": "VPS API URL for production deployment",
+          "order": 2
+        },
+        "coachntt.websocketUrl": {
+          "type": "string",
+          "default": "ws://localhost:8000/ws",
+          "description": "WebSocket URL for real-time updates",
+          "order": 3
+        },
+        "coachntt.safetyValidation": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable safety validation for all operations",
+          "order": 4
+        },
+        "coachntt.minSafetyScore": {
+          "type": "number",
+          "default": 0.8,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Minimum safety score required (0.0-1.0)",
+          "order": 5
+        },
+        "coachntt.autoConnect": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically connect to backend on startup",
+          "order": 6
+        },
+        "coachntt.logLevel": {
+          "type": "string",
+          "default": "info",
+          "enum": ["debug", "info", "warn", "error"],
+          "enumDescriptions": [
+            "Show all logs including debug information",
+            "Show informational messages and above",
+            "Show warnings and errors only",
+            "Show errors only"
+          ],
+          "description": "Logging level for extension output",
+          "order": 7
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "coachntt.connect",
+        "title": "Connect to Backend",
+        "category": "CoachNTT",
+        "icon": "$(plug)"
+      },
+      {
+        "command": "coachntt.disconnect",
+        "title": "Disconnect from Backend",
+        "category": "CoachNTT",
+        "icon": "$(debug-disconnect)"
+      },
+      {
+        "command": "coachntt.showLogs",
+        "title": "Show Extension Logs",
+        "category": "CoachNTT",
+        "icon": "$(output)"
+      },
+      {
+        "command": "coachntt.openSettings",
+        "title": "Open Extension Settings",
+        "category": "CoachNTT",
+        "icon": "$(settings-gear)"
+      },
+      {
+        "command": "coachntt.refreshView",
+        "title": "Refresh CoachNTT View",
+        "category": "CoachNTT",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "coachntt.checkStatus",
+        "title": "Check Connection Status",
+        "category": "CoachNTT",
+        "icon": "$(info)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "coachntt",
+          "title": "CoachNTT",
+          "icon": "resources/icons/coachntt-activity.svg"
+        }
+      ]
+    },
+    "views": {
+      "coachntt": [
+        {
+          "id": "coachntt.welcome",
+          "name": "Welcome",
+          "icon": "$(home)",
+          "contextualTitle": "CoachNTT Welcome"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "coachntt.refreshView",
+          "when": "view == coachntt.welcome",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "coachntt.disconnect",
+          "when": "coachntt.connected"
+        },
+        {
+          "command": "coachntt.connect",
+          "when": "!coachntt.connected"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "webpack --mode production",
+    "watch": "webpack --mode development --watch",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "18.x",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "@vscode/test-electron": "^2.3.8",
+    "eslint": "^8.56.0",
+    "glob": "^10.3.10",
+    "mocha": "^10.2.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.3.3",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/coachntt/vscode-extension"
+  },
+  "bugs": {
+    "url": "https://github.com/coachntt/vscode-extension/issues"
+  },
+  "homepage": "https://github.com/coachntt/vscode-extension#readme",
+  "license": "MIT",
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "badges": [
+    {
+      "url": "https://img.shields.io/badge/Safety-First-green",
+      "href": "https://github.com/coachntt/vscode-extension",
+      "description": "Safety-first design"
+    }
+  ]
+}

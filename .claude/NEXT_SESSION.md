@@ -1,139 +1,155 @@
-# 🚀 Next Session: 2.1.1 VSCode Extension Scaffold
+# 🚀 Next Session: 2.1.2 MCP Client Integration
 
 ## 📋 Session Overview
 
-**Session**: 2.1.1 VSCode Extension Scaffold  
+**Session**: 2.1.2 MCP Client Integration  
 **Phase**: 2 - VSCode Extension & Voice Integration  
-**Prerequisites**: Phase 1 complete ✅, VSCode extension dev environment  
-**Focus**: Create extension foundation with TypeScript and base structure  
-**Context Budget**: ~2500 tokens  
-**Estimated Output**: ~800 lines  
+**Prerequisites**: Session 2.1.1 complete ✅, Extension scaffold ready ✅  
+**Focus**: Implement MCP server communication with WebSocket  
+**Context Budget**: ~3000 tokens  
+**Estimated Output**: ~1000 lines  
 
 ## 🎯 Quick Start Command
 
 ### Copy this to start the next session:
 ```
-I'm starting Phase 2 of CoachNTT.ai. Phase 1 is complete with all backend functionality.
+I'm continuing Phase 2 of CoachNTT.ai. Session 2.1.1 (VSCode Extension Scaffold) is complete.
 
 Please review:
 1. @.claude/NEXT_SESSION.md (this file)  
-2. @.claude/CLAUDE.md (Phase 2 overview and VPS deployment target)
-3. @.claude/PHASE2_CONTEXT.md (Phase 2 objectives and architecture)
-4. @project-docs/Phase2_Implementation_Cadence.md (Session 2.1.1 requirements)
-5. @project-docs/VSCode_Extension_PRD.md (Product requirements)
+2. @.claude/CLAUDE.md (Session 2.1.1 complete ✅)
+3. @vscode-extension/src/extension.ts (Main entry point)
+4. @vscode-extension/src/commands/index.ts (Command infrastructure)
+5. @project-docs/Phase2_Implementation_Cadence.md (Session 2.1.2 requirements)
 
-Ready to start Session 2.1.1: VSCode Extension Scaffold.
-Note: We have a VPS (Ubuntu 24.04) ready for backend deployment.
+Ready to start Session 2.1.2: MCP Client Integration.
+Note: Extension foundation is ready with safety-first design.
 ```
 
 ## 📚 Context Files to Load
 
 ### Essential Files (Load First)
-1. **`.claude/CLAUDE.md`** - Current project state with Phase 2 overview
-2. **`.claude/PHASE2_CONTEXT.md`** - Phase 2 objectives and VPS integration
-3. **`project-docs/Phase2_Implementation_Cadence.md`** - Session 2.1.1 requirements
-4. **`project-docs/VSCode_Extension_PRD.md`** - Extension requirements and UI design
-5. **`package.json`** - If exists, or we'll create it
+1. **`vscode-extension/src/extension.ts`** - Main extension entry point
+2. **`vscode-extension/src/commands/index.ts`** - Command registry to extend
+3. **`vscode-extension/src/config/settings.ts`** - Configuration service
+4. **`src/api/routers/websocket.py`** - WebSocket endpoint reference
+5. **`project-docs/Phase2_Implementation_Cadence.md`** - Session 2.1.2 requirements
 
 ### Reference Files (Load as Needed)
-- `src/api/main.py` - Backend API for integration reference
-- `.claude/DEPLOYMENT_STRATEGY.md` - VPS deployment planning
-- `docker-compose.yml` - For understanding backend services
-- `src/core/safety/` - Safety patterns to implement in UI
+- `vscode-extension/package.json` - Extension manifest
+- `src/api/dependencies.py` - JWT authentication reference
+- `src/api/models/memory.py` - Memory models for MCP tools
+- `project-docs/VSCode_Extension_PRD.md` - MCP integration requirements
 
 ## ⚠️ Important Session Notes
 
-### Phase 1 Complete - Phase 2 Beginning
-**Phase 1 Achievements**:
-- ✅ Complete backend with REST API, WebSocket, and CLI
-- ✅ Safety-first architecture with zero-tolerance abstraction
-- ✅ Knowledge graph and memory system fully operational
-- ✅ Testing suite with >90% coverage
-- ✅ Production-ready with Docker deployment
+### Session 2.1.1 Complete - Ready for MCP Integration
+**Session 2.1.1 Achievements**:
+- ✅ Extension scaffolding with TypeScript strict mode
+- ✅ 6 commands registered and working
+- ✅ Status bar items with dynamic updates
+- ✅ Welcome view in activity bar
+- ✅ Logger with automatic abstraction
+- ✅ Configuration service with validation
+- ✅ F5 debugging environment ready
 
-**Phase 2 Context**:
-- **VSCode Extension**: TypeScript-based with WebView UI
-- **Backend Integration**: Connect to Phase 1 APIs (local and VPS)
-- **VPS Deployment**: Ubuntu 24.04 server ready for backend services
-- **Voice Features**: Will integrate in Sessions 2.3.x
-- **Safety Requirements**: Maintain abstraction in all UI components
+**Session 2.1.2 Focus**:
+- **MCP Client**: Create WebSocket client for MCP server
+- **Connection Management**: Retry logic and lifecycle handling
+- **Type Safety**: Define MCP tool interfaces
+- **Authentication**: JWT token support
+- **Event System**: MCP event emitter for real-time updates
 
 ## 🏗️ Implementation Strategy
 
-### Session 2.1.1 Deliverables
-1. **Initialize VSCode extension project structure**
-   - Create vscode-extension/ directory
-   - Set up TypeScript configuration
-   - Configure build pipeline (webpack/esbuild)
-   - Initialize package.json with extension manifest
+### Session 2.1.2 Deliverables
+1. **Create MCPClient service class**
+   - WebSocket connection handling
+   - Message serialization/deserialization
+   - Connection state management
+   - Error handling and recovery
 
-2. **Create base extension activation**
-   - Implement extension.ts entry point
-   - Set up activation events
-   - Create basic command registration
-   - Add output channel for logging
+2. **Implement WebSocket connection management**
+   - Connect/disconnect methods
+   - Automatic reconnection with backoff
+   - Connection status tracking
+   - Heartbeat/ping-pong mechanism
 
-3. **Implement extension configuration schema**
-   - Define settings in package.json
-   - Create configuration service
-   - Add VPS connection settings
-   - Include safety validation options
+3. **Add connection retry logic with backoff**
+   - Exponential backoff algorithm
+   - Maximum retry attempts
+   - Connection timeout handling
+   - User notification on failures
 
-4. **Add status bar items**
-   - Connection status indicator
-   - Safety score display
-   - Quick action buttons
+4. **Create type-safe MCP tool wrappers**
+   - Define MCP message interfaces
+   - Tool request/response types
+   - Memory operation interfaces
+   - Graph query interfaces
 
-5. **Create activity bar icon and view container**
-   - Design CoachNTT icon
-   - Set up sidebar view
-   - Create welcome view content
+5. **Implement connection status tracking**
+   - Real-time status updates
+   - Status bar integration
+   - Connection health monitoring
+   - Error state handling
 
-6. **Write initial test suite**
-   - Unit tests for activation
-   - Configuration tests
-   - Mock VSCode API
+6. **Add authentication support**
+   - JWT token management
+   - Token refresh logic
+   - Secure credential storage
+   - Authentication headers
 
-7. **Development environment setup**
-   - VSCode launch configuration
-   - Debugging setup
-   - Hot reload configuration
+7. **Create event emitter for MCP events**
+   - Event type definitions
+   - Event dispatching system
+   - Subscriber management
+   - Event filtering
+
+8. **Handle connection lifecycle in extension**
+   - Initialize on connect command
+   - Cleanup on disconnect
+   - State persistence
+   - Resource management
+
+9. **Add connection commands to palette**
+   - Connect with options
+   - Force reconnect
+   - Connection diagnostics
+   - Clear connection cache
+
+10. **Test MCP communication**
+    - Mock MCP server tests
+    - Connection scenario tests
+    - Error handling tests
+    - Performance tests
 
 ## 🔧 Technical Requirements
 
-### New Directory Structure
+### New Files to Create
 ```
-vscode-extension/
-├── src/
-│   ├── extension.ts          # Main entry point
-│   ├── config/
-│   │   └── settings.ts       # Configuration management
-│   ├── providers/
-│   │   └── welcomeView.ts    # Tree data providers
-│   ├── commands/
-│   │   └── index.ts          # Command handlers
-│   └── utils/
-│       └── logger.ts         # Logging utilities
-├── resources/
-│   └── icons/                # Extension icons
-├── test/
-│   └── suite/
-│       └── extension.test.ts # Extension tests
-├── package.json              # Extension manifest
-├── tsconfig.json             # TypeScript config
-├── webpack.config.js         # Build configuration
-├── .vscode/
-│   ├── launch.json          # Debug configuration
-│   └── tasks.json           # Build tasks
-└── README.md                # Extension documentation
+vscode-extension/src/
+├── services/
+│   ├── mcp-client.ts         # MCP WebSocket client
+│   └── connection-manager.ts # Connection lifecycle management
+├── types/
+│   └── mcp.types.ts          # MCP message type definitions
+└── events/
+    └── mcp-events.ts         # Event system for MCP updates
 ```
 
-### Key Dependencies
-- `@types/vscode`: VSCode API types
-- `typescript`: Language support
-- `webpack`: Build bundling
-- `ts-loader`: TypeScript loader
-- `vscode-test`: Testing framework
+### Key Dependencies to Add
+```json
+{
+  "dependencies": {
+    "ws": "^8.16.0",           // WebSocket client
+    "eventemitter3": "^5.0.1", // Event emitter
+    "p-retry": "^5.1.2"        // Retry with exponential backoff
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.10"     // WebSocket types
+  }
+}
+```
 
 ## 🛡️ Safety Requirements
 
