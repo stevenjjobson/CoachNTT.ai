@@ -427,11 +427,58 @@ Before creating new files or directories:
 4. **Update Tracker**: Mark newly created structure in status doc
 
 ## 📊 Progress Tracking
+
+### Phase 1 (Complete)
 - Phase 0: Safety Foundation [▓▓▓▓▓▓] 100% (3/3 sessions) ✅
 - Phase 1: Secure Foundation [▓▓▓▓▓▓] 100% (4/4 sessions) ✅
 - Phase 2: Intelligence Layer [▓▓▓▓▓▓] 100% (4/4 sessions) ✅
 - Phase 3: Knowledge Integration [▓▓▓▓▓▓] 100% (4/4 sessions) ✅
 - Phase 4: Integration & Polish [▓▓▓▓▓▓] 100% (7/7 sessions: 4.1a ✅, 4.1b ✅, 4.2a ✅, 4.2b ✅, 4.2c ✅, 4.2d ✅, 4.3 ✅)
+
+### Phase 2 (Starting)
+- Week 1-2: Foundation [░░░░░░] 0% (0/4 sessions)
+- Week 3-4: Core Features [░░░░░░] 0% (0/4 sessions)
+- Week 5: Voice Integration [░░░░░░] 0% (0/4 sessions)
+- Week 6: Polish & Advanced [░░░░░░] 0% (0/3 sessions)
+
+## 📦 Deployment Target
+
+### VPS Infrastructure
+- **Provider**: HostSlinger VPS
+- **OS**: Ubuntu 24.04 LTS
+- **Resources**: 2 vCPU, 8GB RAM, 100GB NVMe SSD, 8TB Bandwidth
+- **Access**: SSH to `<vps_host>`
+- **Docker**: Pre-installed and configured
+- **Purpose**: Production deployment for Phase 2 backend services
+
+### Deployment Strategy
+- **Phase 2 Integration**: VSCode extension will connect to VPS-hosted services
+- **Backend Services**: MCP server, REST API, WebSocket endpoints
+- **Security**: SSL/TLS via Let's Encrypt, Nginx reverse proxy
+- **Monitoring**: Grafana/Prometheus stack on VPS
+- **Staging**: Local development → VPS testing → Production release
+
+## 🚀 Phase 2: VSCode Extension & Voice Integration
+
+### Overview
+Phase 2 transforms CoachNTT.ai into a comprehensive IDE-integrated AI assistant with:
+- **Rich VSCode UI**: Memory management, monitoring, and voice interaction
+- **Voice Assistant**: Natural language interface for all operations
+- **Real-time Monitoring**: Integrated dashboards and alerts in IDE
+- **VPS Backend**: Production services hosted on Ubuntu 24.04 server
+
+### Key Objectives
+1. Build VSCode extension with TypeScript and WebView UI
+2. Implement voice command processing and synthesis
+3. Create real-time monitoring dashboards
+4. Deploy backend services to VPS for remote access
+5. Maintain zero-tolerance safety in all UI components
+
+### Session Structure (15 sessions over 6 weeks)
+- **Sessions 2.1.1-2.1.4**: Extension foundation and MCP integration
+- **Sessions 2.2.1-2.2.4**: Core features (audio, monitoring, WebSocket)
+- **Sessions 2.3.1-2.3.4**: Voice integration and NLQ
+- **Sessions 2.4.1-2.4.3**: Performance optimization and production readiness
 
 ## 📊 Context Management Protocol
 

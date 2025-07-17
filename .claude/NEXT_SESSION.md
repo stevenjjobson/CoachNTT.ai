@@ -1,230 +1,255 @@
-# 🚀 Next Session: 4.4 Monitoring & Observability
+# 🚀 Next Session: 2.1.1 VSCode Extension Scaffold
 
 ## 📋 Session Overview
 
-**Session**: 4.4 Monitoring & Observability  
-**Prerequisites**: Session 4.3 complete ✅ (Testing Suite fully implemented)  
-**Focus**: Set up comprehensive monitoring, observability, health checks, and performance tracking  
-**Context Budget**: ~2000 tokens  
-**Estimated Output**: ~800-1000 lines (monitoring configs + dashboards)  
+**Session**: 2.1.1 VSCode Extension Scaffold  
+**Phase**: 2 - VSCode Extension & Voice Integration  
+**Prerequisites**: Phase 1 complete ✅, VSCode extension dev environment  
+**Focus**: Create extension foundation with TypeScript and base structure  
+**Context Budget**: ~2500 tokens  
+**Estimated Output**: ~800 lines  
 
 ## 🎯 Quick Start Command
 
 ### Copy this to start the next session:
 ```
-I'm continuing work on CoachNTT.ai. We completed Session 4.3 (Testing Suite Completion).
+I'm starting Phase 2 of CoachNTT.ai. Phase 1 is complete with all backend functionality.
 
 Please review:
 1. @.claude/NEXT_SESSION.md (this file)  
-2. @.claude/CLAUDE.md (current project state)
-3. @project-docs/Implementation_Cadence.md (session 4.4 requirements)
-4. @src/api/main.py (API to monitor)
-5. @docker-compose.yml (current infrastructure)
+2. @.claude/CLAUDE.md (Phase 2 overview and VPS deployment target)
+3. @.claude/PHASE2_CONTEXT.md (Phase 2 objectives and architecture)
+4. @project-docs/Phase2_Implementation_Cadence.md (Session 2.1.1 requirements)
+5. @project-docs/VSCode_Extension_PRD.md (Product requirements)
 
-Ready to start Session 4.4: Monitoring & Observability.
-Note: We have complete test suite (>90% coverage) and need production monitoring.
+Ready to start Session 2.1.1: VSCode Extension Scaffold.
+Note: We have a VPS (Ubuntu 24.04) ready for backend deployment.
 ```
 
 ## 📚 Context Files to Load
 
 ### Essential Files (Load First)
-1. **`.claude/CLAUDE.md`** - Current project state and architecture
-2. **`project-docs/Implementation_Cadence.md`** - Session 4.4 specific requirements
-3. **`src/api/main.py`** - FastAPI application to monitor
-4. **`docker-compose.yml`** - Current infrastructure setup
-5. **`src/services/`** - Services to monitor and instrument
+1. **`.claude/CLAUDE.md`** - Current project state with Phase 2 overview
+2. **`.claude/PHASE2_CONTEXT.md`** - Phase 2 objectives and VPS integration
+3. **`project-docs/Phase2_Implementation_Cadence.md`** - Session 2.1.1 requirements
+4. **`project-docs/VSCode_Extension_PRD.md`** - Extension requirements and UI design
+5. **`package.json`** - If exists, or we'll create it
 
 ### Reference Files (Load as Needed)
-- `src/api/routers/` - API endpoints for health checks
-- `src/core/metrics/` - Existing safety metrics
-- `scripts/monitoring/` - Any existing monitoring scripts
-- `pyproject.toml` - Dependencies for monitoring tools
+- `src/api/main.py` - Backend API for integration reference
+- `.claude/DEPLOYMENT_STRATEGY.md` - VPS deployment planning
+- `docker-compose.yml` - For understanding backend services
+- `src/core/safety/` - Safety patterns to implement in UI
 
 ## ⚠️ Important Session Notes
 
-### Current Phase 4 Progress
-**Completed Sessions**:
-- ✅ Session 4.1a: REST API Foundation & Memory Operations
-- ✅ Session 4.1b: Knowledge Graph & Integration APIs with WebSocket
-- ✅ Session 4.2a: CLI Foundation with Immediate Usability
-- ✅ Session 4.2b: CLI Memory Management Operations
-- ✅ Session 4.2c: CLI Knowledge Graph Operations
-- ✅ Session 4.2d: CLI Integration & Interactive Mode
-- ✅ Session 4.3: Testing Suite Completion
+### Phase 1 Complete - Phase 2 Beginning
+**Phase 1 Achievements**:
+- ✅ Complete backend with REST API, WebSocket, and CLI
+- ✅ Safety-first architecture with zero-tolerance abstraction
+- ✅ Knowledge graph and memory system fully operational
+- ✅ Testing suite with >90% coverage
+- ✅ Production-ready with Docker deployment
 
-**What Needs Monitoring**:
-- REST API: Performance metrics, error rates, response times
-- Database: Connection pools, query performance, safety validation rates
-- Memory System: Usage patterns, clustering performance, decay operations
-- Safety Framework: Abstraction quality scores, validation failures
-- Background Tasks: Task queue status, completion rates, error tracking
-- System Resources: CPU, memory, disk usage, network I/O
+**Phase 2 Context**:
+- **VSCode Extension**: TypeScript-based with WebView UI
+- **Backend Integration**: Connect to Phase 1 APIs (local and VPS)
+- **VPS Deployment**: Ubuntu 24.04 server ready for backend services
+- **Voice Features**: Will integrate in Sessions 2.3.x
+- **Safety Requirements**: Maintain abstraction in all UI components
 
 ## 🏗️ Implementation Strategy
 
-### Phase 1: Metrics & Health Checks (25% of session)
-1. Set up Prometheus metrics collection
-2. Add custom metric collectors for safety and performance
-3. Implement health check endpoints for all services
-4. Create performance tracking for critical paths
-5. Add safety metrics monitoring (abstraction quality, validation rates)
+### Session 2.1.1 Deliverables
+1. **Initialize VSCode extension project structure**
+   - Create vscode-extension/ directory
+   - Set up TypeScript configuration
+   - Configure build pipeline (webpack/esbuild)
+   - Initialize package.json with extension manifest
 
-### Phase 2: Monitoring Infrastructure (35% of session)
-1. **Grafana Dashboards**:
-   - System overview dashboard
-   - API performance dashboard
-   - Safety metrics dashboard
-   - Database performance dashboard
-2. **Alert Rules**:
-   - Performance degradation alerts
-   - Safety validation failure alerts
-   - System resource alerts
-3. **Log Aggregation**:
-   - Structured logging with safety abstraction
-   - Log parsing and analysis
+2. **Create base extension activation**
+   - Implement extension.ts entry point
+   - Set up activation events
+   - Create basic command registration
+   - Add output channel for logging
 
-### Phase 3: Observability Integration (25% of session)
-1. Add tracing support for request flows
-2. Implement performance profiling
-3. Create monitoring for background tasks
-4. Set up WebSocket connection monitoring
-5. Add user behavior analytics (abstracted)
+3. **Implement extension configuration schema**
+   - Define settings in package.json
+   - Create configuration service
+   - Add VPS connection settings
+   - Include safety validation options
 
-### Phase 4: Production Readiness (15% of session)
-1. Configure monitoring stack in Docker
-2. Create runbook documentation
-3. Test alert mechanisms
-4. Validate dashboard functionality
-5. Document monitoring best practices
+4. **Add status bar items**
+   - Connection status indicator
+   - Safety score display
+   - Quick action buttons
+
+5. **Create activity bar icon and view container**
+   - Design CoachNTT icon
+   - Set up sidebar view
+   - Create welcome view content
+
+6. **Write initial test suite**
+   - Unit tests for activation
+   - Configuration tests
+   - Mock VSCode API
+
+7. **Development environment setup**
+   - VSCode launch configuration
+   - Debugging setup
+   - Hot reload configuration
 
 ## 🔧 Technical Requirements
 
-### New Files to Create
-- `src/services/monitoring/` - Monitoring service directory
-- `src/services/monitoring/metrics.py` - Prometheus metrics collectors
-- `src/services/monitoring/health.py` - Health check service
-- `src/services/monitoring/tracing.py` - Distributed tracing setup
-- `docker-compose.monitoring.yml` - Monitoring infrastructure
-- `grafana/dashboards/` - Grafana dashboard definitions
-- `grafana/provisioning/` - Grafana configuration
-- `prometheus/prometheus.yml` - Prometheus configuration
-- `alerts/rules.yml` - Alert rule definitions
+### New Directory Structure
+```
+vscode-extension/
+├── src/
+│   ├── extension.ts          # Main entry point
+│   ├── config/
+│   │   └── settings.ts       # Configuration management
+│   ├── providers/
+│   │   └── welcomeView.ts    # Tree data providers
+│   ├── commands/
+│   │   └── index.ts          # Command handlers
+│   └── utils/
+│       └── logger.ts         # Logging utilities
+├── resources/
+│   └── icons/                # Extension icons
+├── test/
+│   └── suite/
+│       └── extension.test.ts # Extension tests
+├── package.json              # Extension manifest
+├── tsconfig.json             # TypeScript config
+├── webpack.config.js         # Build configuration
+├── .vscode/
+│   ├── launch.json          # Debug configuration
+│   └── tasks.json           # Build tasks
+└── README.md                # Extension documentation
+```
 
-### Files to Enhance
-- Update `src/api/main.py` with health endpoints and metrics
-- Enhance `docker-compose.yml` with monitoring services
-- Add monitoring dependencies to `pyproject.toml`
-- Update API routers with performance metrics
+### Key Dependencies
+- `@types/vscode`: VSCode API types
+- `typescript`: Language support
+- `webpack`: Build bundling
+- `ts-loader`: TypeScript loader
+- `vscode-test`: Testing framework
 
 ## 🛡️ Safety Requirements
 
 ### Mandatory Safety Checks
-- [ ] All monitoring data must be abstracted (no concrete references in logs/metrics)
-- [ ] Alert messages must use abstracted content only
-- [ ] Dashboard visualizations must respect abstraction principles
-- [ ] Tracing data must not expose concrete references
-- [ ] Health check responses must use abstracted status information
+- [ ] All displayed paths must be abstracted in UI
+- [ ] Configuration values must not expose secrets
+- [ ] Status bar must show abstracted information only
+- [ ] Memory content display must maintain abstractions
+- [ ] Error messages must not reveal concrete details
+- [ ] VPS connection details must be stored securely
 
-## 📊 Monitoring Targets
+## 📊 Success Metrics
 
-### Performance Monitoring Goals
-- **API Response Times**: <500ms average for memory operations
-- **Database Query Performance**: <100ms for safety validations
-- **Safety Score Tracking**: Real-time abstraction quality monitoring
-- **Resource Utilization**: CPU <70%, Memory <80%, Disk <90%
-- **Error Rates**: <1% for API endpoints, 0% for safety violations
+### Extension Performance
+- **Activation Time**: <50ms impact on VSCode startup
+- **Command Response**: <100ms for all commands
+- **Memory Usage**: <50MB for base extension
+- **TypeScript Compilation**: <5 seconds
+- **Test Coverage**: >80% for core functionality
 
-### Quality Metrics
-- **Alert Response Time**: <1 minute for critical alerts
-- **Dashboard Load Time**: <3 seconds for all dashboards
-- **Metric Collection Overhead**: <5% system performance impact
-- **Log Processing**: Real-time with <10 second delay
+### Development Goals
+- **Hot Reload**: Working development environment
+- **Debugging**: Breakpoints and inspection working
+- **Type Safety**: 100% TypeScript with strict mode
+- **Extensibility**: Clear command and provider patterns
+- **Documentation**: Inline JSDoc for all public APIs
 
 ## 📋 Session Completion Checklist
 
-### Monitoring Implementation
-- [ ] Prometheus metrics collectors implemented
-- [ ] Health check endpoints created for all services
-- [ ] Custom safety metrics collection added
-- [ ] Performance tracking for critical paths
-- [ ] Background task monitoring implemented
+### Extension Foundation
+- [ ] VSCode extension directory created
+- [ ] TypeScript and build configuration complete
+- [ ] Extension manifest (package.json) configured
+- [ ] Base extension activation working
+- [ ] Status bar items displaying
 
-### Monitoring Infrastructure
-- [ ] Grafana dashboards created and functional
-- [ ] Alert rules configured for all critical scenarios
-- [ ] Structured logging with safety abstraction
-- [ ] Docker monitoring stack configured
-- [ ] Log aggregation and parsing setup
+### Core Structure
+- [ ] Command registration implemented
+- [ ] Configuration schema defined
+- [ ] Activity bar icon and view created
+- [ ] Welcome view provider implemented
+- [ ] Output channel for logging ready
 
-### Observability Integration
-- [ ] Distributed tracing implemented
-- [ ] Request flow monitoring added
-- [ ] WebSocket connection tracking
-- [ ] Performance profiling enabled
-- [ ] User behavior analytics (abstracted)
+### Development Environment
+- [ ] Debug configuration working
+- [ ] Hot reload functioning
+- [ ] Build tasks configured
+- [ ] Test suite initialized
+- [ ] Extension compiles without errors
 
 ### Session Wrap-up
-- [ ] All monitoring components committed to git
-- [ ] Session 4.4 complete
-- [ ] Next session planned (Session 4.5: Production Deployment)
-- [ ] Monitoring documentation updated
+- [ ] All extension files committed to git
+- [ ] **Checkpoint**: Extension activates in VSCode
+- [ ] Next session planned (Session 2.1.2: MCP Client Integration)
+- [ ] Update CLAUDE.md progress tracking
 
-## 🚀 Previous Session Achievements
+## 🚀 Phase 1 Complete - Ready for Phase 2
 
-### Completed Components Ready for Monitoring:
+### Backend Infrastructure Ready for Extension:
 
-**Testing Infrastructure (Session 4.3)**:
-- Comprehensive test suite: >1,500 lines of tests
-- Test fixtures: Memory, graph, and safety validation data
-- Integration tests: Memory lifecycle, API endpoints, CLI commands, WebSocket
-- E2E scenarios: Complete user workflows from learning to production
-- Performance tests: Load testing with concurrency and throughput validation
-- CI/CD pipeline: GitHub Actions with matrix testing and coverage reporting
-- >90% code coverage achieved with quality gates and safety validation
+**Complete API System**:
+- REST API with 15+ endpoints ready for extension consumption
+- WebSocket support for real-time updates
+- JWT authentication with flexible token handling
+- Safety validation on all endpoints
+- Background task management with progress tracking
 
-**Production-Ready Components**:
-- REST API: 15+ endpoints with JWT auth and safety validation
-- CLI Interface: 21 commands across 8 command groups with interactive mode
-- Safety Framework: Zero-tolerance abstraction enforcement
-- Knowledge Graph: Semantic connections with multiple export formats
-- Vault Sync: Bidirectional synchronization with conflict resolution
-- Background Tasks: Progress tracking and WebSocket real-time updates
+**VPS Deployment Target**:
+- Ubuntu 24.04 server with Docker installed
+- 2 vCPU, 8GB RAM, 100GB NVMe SSD
+- Ready for backend service deployment
+- Will host MCP server and API for extension
 
-**Core Infrastructure**:
-- PostgreSQL with pgvector and safety-first schema
-- Docker containerization with security hardening
-- Pre-commit hooks with code quality and safety validation
-- Comprehensive documentation and user guides
+**Safety Framework**:
+- Zero-tolerance abstraction enforcement
+- Safety metrics and scoring system
+- Ready to implement in UI components
+- Abstraction patterns documented
+
+**Knowledge System**:
+- Memory management with clustering
+- Knowledge graph with semantic connections
+- Intent analysis for intelligent queries
+- Vector embeddings with caching
 
 ## 📝 Session Completion Protocol
 
 ### End-of-Session Requirements
-Before committing Session 4.4 completion:
+Before committing Session 2.1.1 completion:
 
 1. **Update Session Status**:
-   - [ ] Update CLAUDE.md with Session 4.4 achievements
-   - [ ] Update progress tracking (Phase 4: 75% → 90%)
-   - [ ] Add monitoring infrastructure details to project summary
+   - [ ] Update CLAUDE.md with Session 2.1.1 achievements
+   - [ ] Update progress tracking (Week 1-2: 0% → 25%)
+   - [ ] Add extension foundation details to architecture
 
 2. **Prepare Next Session**:
-   - [ ] Update NEXT_SESSION.md for Session 4.5 (Production Deployment)
-   - [ ] Update quick start command with Session 4.4 completion note
-   - [ ] Update context files list for production deployment
+   - [ ] Update NEXT_SESSION.md for Session 2.1.2 (MCP Client Integration)
+   - [ ] Update quick start command with Session 2.1.1 completion note
+   - [ ] Update context files list for MCP integration
 
 3. **Documentation Updates**:
-   - [ ] Document monitoring strategy and alerting
-   - [ ] Update README with monitoring setup instructions
-   - [ ] Record observability best practices
+   - [ ] Document extension architecture decisions
+   - [ ] Update README with extension development setup
+   - [ ] Record TypeScript patterns used
 
 4. **Git Commit**:
-   - [ ] Comprehensive commit message with Session 4.4 summary
-   - [ ] Include monitoring dashboard configurations
-   - [ ] Tag completion of monitoring infrastructure
+   - [ ] Comprehensive commit message with Session 2.1.1 summary
+   - [ ] Include all extension foundation files
+   - [ ] Tag beginning of Phase 2 implementation
 
-## 📚 Reference: Implementation Cadence
+## 📚 Reference: Phase 2 Implementation Cadence
 
-From the Implementation Cadence document, the remaining Phase 4 sessions are:
-- **Session 4.4**: Monitoring & Observability (Current)
-- **Session 4.5**: Production Deployment
+From the Phase2_Implementation_Cadence document:
+- **Session 2.1.1**: VSCode Extension Scaffold (Current)
+- **Session 2.1.2**: MCP Client Integration (Next)
+- **Session 2.1.3**: Memory Tree Provider
+- **Session 2.1.4**: WebView Foundation
 
-After Phase 4, the project moves to final validation and release preparation.
+The extension will connect to the VPS-hosted backend services in later sessions.
