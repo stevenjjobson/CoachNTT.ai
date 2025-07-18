@@ -68,6 +68,7 @@ The abstraction framework represents a potential new security primitive for AI t
 - **Real-Time Safety Metrics**: Quality scoring and monitoring with alerting
 - **Database-Level Enforcement**: PostgreSQL triggers preventing unsafe data storage
 - **Safety Score**: Maintains ≥0.8 safety threshold across all operations
+- **Living Documents (.CoachNTT)**: Auto-abstracting documentation that evolves with code
 
 ### 🧠 Intelligence & Memory System
 - **Temporal Memory System**: Stores complete interaction contexts with time-weighted relevance
@@ -89,6 +90,16 @@ The abstraction framework represents a potential new security primitive for AI t
 - **Script Automation Framework**: Safe execution with performance monitoring
 - **Checkpoint System**: Git state capture with complexity analysis
 - **Template Processing**: Safe variable substitution with validation
+
+### 🎨 VSCode Extension (Phase 2 - In Progress)
+- **Extension Scaffold**: TypeScript foundation with activation lifecycle
+- **MCP Client Integration**: WebSocket connection with retry logic
+- **Memory Tree Provider**: Hierarchical view with lazy loading
+- **WebView Foundation**: Secure panel manager with theme support
+- **Voice Activity Detection**: Real-time audio capture and processing
+- **Monitoring Dashboard**: Real-time metrics with dynamic scaling
+- **Code Analysis**: AST-based pattern detection and CodeLens
+- **Living Documents**: Evolution tracking and preview panels
 
 ### 🌐 REST API & WebSocket Support
 - **Complete FastAPI Application**: 15+ REST endpoints with JWT authentication
@@ -115,6 +126,8 @@ The abstraction framework represents a potential new security primitive for AI t
 - **Containerization**: Docker & Docker Compose with security hardening
 - **API**: RESTful with WebSocket support and comprehensive validation
 - **Testing**: pytest with async support and comprehensive mocking
+- **VSCode Extension**: TypeScript, WebView API, TreeDataProvider
+- **Living Documents**: .CoachNTT extension with evolution tracking
 
 ## Quick Start
 
@@ -201,6 +214,14 @@ CoachNTT.ai/
 │   │   ├── routers/             # API endpoints
 │   │   └── middleware/          # Custom middleware
 │   └── database/                # Database migrations and schema
+├── vscode-extension/            # VSCode extension (Phase 2)
+│   ├── src/
+│   │   ├── commands/            # Command handlers
+│   │   ├── providers/           # Tree and content providers
+│   │   ├── services/            # Core services
+│   │   ├── webview/             # WebView panels
+│   │   └── types/               # TypeScript definitions
+│   └── media/                   # Extension resources
 ├── scripts/                     # Automation and development scripts
 │   ├── framework/               # Script execution framework
 │   ├── development/             # Development utilities
@@ -213,6 +234,7 @@ CoachNTT.ai/
 ├── vault/                       # Obsidian knowledge base
 ├── docker/                      # Docker configuration
 ├── docs/                        # Documentation
+├── .claude/                     # Living Documents & session tracking
 └── config/                      # Configuration files
 ```
 
@@ -298,16 +320,21 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### ✅ Completed Phases
 - **Phase 0**: Safety Foundation (100%) - Abstraction framework operational
-- **Phase 1**: Secure Foundation (100%) - Production-ready database and models
-- **Phase 2**: Intelligence Layer (100%) - Intent analysis and embeddings
-- **Phase 3**: Knowledge Integration (100%) - Graph builder and vault sync
-- **Phase 4**: Integration & Polish (40%) - REST API and WebSocket support
+- **Phase 1**: Core Backend (100%) - Production-ready database and models
+- **Phase 4**: Integration & API (100%) - REST API, WebSocket, monitoring
 
-### 🚧 Current Development
-- **Session 4.2**: CLI Interface Development (Planned)
-- **Session 4.3**: Performance Optimization (Planned)
-- **Session 4.4**: Security Hardening (Planned)
-- **Session 4.5**: Production Deployment (Planned)
+### 🚧 Current Development - Phase 2: VSCode Extension
+- **Session 2.1.1**: VSCode Extension Scaffold ✅
+- **Session 2.1.2**: MCP Client Integration ✅
+- **Session 2.1.3**: Memory Tree Provider ✅
+- **Session 2.1.4**: WebView Foundation ✅
+- **Session 2.2.1**: Audio Playback Service ✅
+- **Session 2.2.2**: Voice Activity Detection ✅
+- **Session 2.2.3**: Real-time Monitoring Dashboard ✅
+- **Session 2.2.4**: Advanced Code Analysis ✅
+- **Session 2.2.5**: Living Documents Integration ✅
+- **Session 2.3.1**: Voice Command Framework (Next)
+- **Session 2.3.2-2.4.3**: Voice integration and polish (Planned)
 
 ### Performance Targets (All Met)
 - Memory operations: <500ms
@@ -317,11 +344,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Safety validation: <1ms
 
 ### Upcoming Features
-- Command-line interface for all operations
-- Advanced performance optimization
-- Enhanced security features
-- Production deployment templates
-- Advanced monitoring and alerting
+- Voice command processing with natural language
+- Speech-to-text integration for hands-free coding
+- Voice synthesis for audio responses
+- Advanced monitoring with predictive analytics
+- Team collaboration features
+- Multi-IDE support (JetBrains, Sublime)
 
 ## Support
 
