@@ -2,10 +2,10 @@
 
 ---
 **Title**: Phase 2 Implementation Guide - Rich UI Extension with Voice & Monitoring  
-**Version**: 1.0  
-**Date**: 2025-01-17  
+**Version**: 1.1  
+**Date**: 2025-01-18  
 **Purpose**: Structured implementation plan for VSCode extension with voice assistant and monitoring integration  
-**Duration**: 6 weeks (15 sessions)  
+**Duration**: 6 weeks (16 sessions) - includes Session 2.2.5 out-of-cadence addition  
 
 ---
 
@@ -245,12 +245,48 @@
 
 ---
 
+### Session 2.2.5: Living Documents Integration (.CoachNTT)
+**Context Window**: ~2500 tokens  
+**Code Budget**: ~1850 lines  
+**Prerequisites**: Session 2.2.4  
+**Focus**: Implement Living Documents with automatic abstraction  
+**Status**: ✅ Core Complete, 🔧 Enhancements In Progress  
+**Type**: Out-of-Cadence Addition  
+
+**Rationale**: Added to provide evolving documentation that tracks with codebase changes while maintaining security through automatic abstraction.
+
+**Deliverables**:
+- [x] Implement .CoachNTT file type support
+- [x] Create document abstraction service
+- [x] Add context window management
+- [x] Integrate with VSCode tree view
+- [x] Connect to memory system (LIVING_DOCUMENT intent)
+- [x] Evolution tracking system
+- [x] Document preview panel
+- [x] Session-aware document loading
+- [x] Comprehensive error handling
+- [ ] Complete test suite
+- [x] **Checkpoint**: Living Documents fully integrated
+
+**Key Files**:
+- `vscode-extension/src/types/living-document.types.ts`
+- `vscode-extension/src/services/document-abstractor.ts`
+- `vscode-extension/src/services/context-window-manager.ts`
+- `vscode-extension/src/services/evolution-tracker.ts`
+- `vscode-extension/src/services/session-manager.ts`
+- `vscode-extension/src/services/error-handler.ts`
+- `vscode-extension/src/webview/document-preview.ts`
+
+**Impact**: Provides foundation for voice-driven documentation commands in Session 2.3.1
+
+---
+
 ## 🎤 Week 5: Voice Integration (Sessions 2.3.1 - 2.3.4)
 
 ### Session 2.3.1: Voice Command Framework
 **Context Window**: ~3000 tokens  
 **Code Budget**: ~1000 lines  
-**Prerequisites**: Session 2.2.4  
+**Prerequisites**: Session 2.2.5 (Living Documents)  
 **Focus**: Create voice command processing system
 
 **Deliverables**:

@@ -35,15 +35,6 @@ export enum ReferenceType {
     Credential = 'credential'
 }
 
-/**
- * Reference evolution tracking
- */
-export interface ReferenceEvolution {
-    timestamp: Date;
-    original: string;
-    abstracted: string;
-    confidence: number;
-}
 
 /**
  * Document safety metadata
@@ -179,6 +170,34 @@ export interface DocumentSearchOptions {
 }
 
 /**
+ * Document relevance scoring
+ */
+export interface DocumentRelevance {
+    documentId: string;
+    score: number;
+    factors: {
+        currentFile: number;
+        recentFiles: number;
+        symbols: number;
+        branch: number;
+        metadata: number;
+    };
+    timestamp: Date;
+}
+
+/**
+ * Validation issue for document integrity
+ */
+export interface ValidationIssue {
+    severity: 'info' | 'warning' | 'error';
+    category: 'structure' | 'safety' | 'reference' | 'abstraction' | 'compaction' | 'validation';
+    message: string;
+    suggestion: string;
+    line: number | null;
+    details?: any;
+}
+
+/**
  * Document update event
  */
 export interface DocumentUpdateEvent {
@@ -196,6 +215,32 @@ export interface DocumentChanges {
     metadata?: boolean;
     compaction?: CompactionEvent;
     references?: string[];
+}
+
+/**
+ * Evolution entry for tracking reference changes
+ */
+export interface EvolutionEntry {
+    timestamp: Date;
+    fromReference: string;
+    toReference: string;
+    abstractedForm: string;
+    changeType: 'rename' | 'move' | 'refactor' | 'update';
+    documentPath: string;
+    confidence: number;
+}
+
+/**
+ * Reference evolution tracking
+ */
+export interface ReferenceEvolution {
+    originalReference: string;
+    currentReference: string;
+    abstractedForm: string;
+    firstSeen: Date;
+    lastUpdated: Date;
+    documentPaths: Set<string>;
+    evolutionChain: EvolutionEntry[];
 }
 
 /**
