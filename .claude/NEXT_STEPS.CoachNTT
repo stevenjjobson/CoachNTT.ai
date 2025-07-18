@@ -1,0 +1,210 @@
+---
+title: Next Development Steps
+created: 2025-07-18T12:00:00Z
+updated: 2025-07-18T17:34:00Z
+category: planning
+tags: [roadmap, voice-integration, session-2.3.1, priorities]
+source: Development planning and task tracking
+session: 2.3.1
+---
+
+# 🎯 Next Steps for CoachNTT.ai
+
+## Immediate Priority: Session 2.3.1 - Voice Command Framework
+
+### Session Goals
+1. **Command Grammar Definition**
+   - Define supported voice commands
+   - Create command parsing system
+   - Implement intent matching
+
+2. **Speech-to-Text Integration**
+   - Web Speech API setup
+   - Transcription service connection
+   - Error handling for recognition
+
+3. **Command Router Implementation**
+   - Map voice commands to actions
+   - Create confirmation UI
+   - Add undo/redo support
+
+4. **Voice Feedback System**
+   - Text-to-speech responses
+   - Audio queue management
+   - Volume/speed controls
+
+### Prerequisites Check
+- [x] Audio playback service ready
+- [x] Voice activity detection working
+- [x] WebView infrastructure solid
+- [x] MCP client operational
+- [ ] Review speech recognition APIs
+- [ ] Plan command grammar
+
+## Technical Tasks
+
+### High Priority
+1. **Voice Command Framework**
+   - Create command parser service
+   - Define command grammar types
+   - Build intent matching system
+   - Implement command execution
+
+2. **Critical Test Coverage Gaps**
+   - Living Documents: No tests for document-abstractor, context-window-manager
+   - Audio Services: No tests for audio-playback, voice-activity-detector, audio-capture
+   - Monitoring: No tests for monitoring-service, code-analysis-service
+   - Only 5 test files exist for 30+ services - major technical debt
+
+3. **Documentation Updates**
+   - Update API documentation
+   - Document voice commands
+   - Create user guide for voice
+   - Update architecture diagrams
+
+### Medium Priority
+1. **Performance Optimization**
+   - Profile WebView loading
+   - Optimize tree refreshes
+   - Cache command patterns
+   - Reduce message overhead
+
+2. **Error Handling**
+   - Improve error messages
+   - Add retry mechanisms
+   - Create fallback options
+   - Log errors safely
+
+3. **UI Enhancements**
+   - Voice command hints
+   - Status indicators
+   - Progress feedback
+   - Accessibility improvements
+
+### Low Priority
+1. **Future Features**
+   - Multi-language support
+   - Custom voice models
+   - Advanced NLU integration
+   - Team collaboration
+
+## Session 2.3.1 Implementation Plan
+
+### 1. Command Grammar Service (~200 lines)
+```typescript
+interface VoiceCommand {
+  pattern: RegExp;
+  intent: CommandIntent;
+  action: CommandAction;
+  confirmation?: boolean;
+}
+```
+
+### 2. Speech Recognition Service (~300 lines)
+- Web Speech API wrapper
+- Continuous recognition mode
+- Language detection
+- Confidence scoring
+
+### 3. Command Router (~250 lines)
+- Intent matching algorithm
+- Command queue management
+- Execution with rollback
+- Result notification
+
+### 4. Voice Feedback Service (~200 lines)
+- TTS integration
+- Response templates
+- Queue prioritization
+- Interrupt handling
+
+### 5. Integration & Testing (~300 lines)
+- Connect to existing services
+- Update extension.ts
+- Add voice commands
+- Write comprehensive tests
+
+## Outstanding Issues
+
+### From Previous Sessions
+1. **Living Documents**
+   - Complete evolution tracking
+   - Implement preview panel
+   - Add session-aware loading
+
+2. **Monitoring Dashboard**
+   - Add more metric types
+   - Implement alerting
+   - Create metric history
+
+3. **Code Analysis**
+   - Support more languages
+   - Add refactoring suggestions
+   - Create fix actions
+
+### Known Bugs
+- None critical at this time
+- Minor UI glitches in dark theme
+- Occasional WebSocket reconnect delay
+
+## Resource Requirements
+
+### Development Time
+- Session 2.3.1: ~3-4 hours
+- Test coverage: ~2 hours
+- Documentation: ~1 hour
+
+### Context Budget
+- Estimated: ~2800 tokens
+- Output: ~1250 lines
+- Buffer: Adequate
+
+### Dependencies
+- No new npm packages needed
+- Existing infrastructure sufficient
+- Web Speech API browser support
+
+## Success Criteria
+
+### For Session 2.3.1
+- [ ] Basic voice commands working
+- [ ] Speech recognition integrated
+- [ ] Commands execute correctly
+- [ ] Voice feedback operational
+- [ ] Tests passing
+- [ ] Documentation updated
+
+### For Phase 2 Completion
+- [ ] All voice features integrated
+- [ ] Performance optimized
+- [ ] VPS deployment ready
+- [ ] Security hardened
+- [ ] User guide complete
+- [ ] >90% test coverage
+
+## Quick Start Commands
+
+```bash
+# Begin Session 2.3.1
+cd vscode-extension
+
+# Install any new dependencies
+npm install
+
+# Start development
+npm run watch
+
+# Open test instance
+F5 in VSCode
+
+# Test voice commands
+Ctrl+Shift+V (push to talk)
+```
+
+## Notes for Next Session
+
+- Review Web Speech API browser compatibility
+- Consider fallback for unsupported browsers
+- Plan natural language patterns
+- Think about multilingual support
+- Design command discovery UI

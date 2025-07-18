@@ -40,7 +40,7 @@ export class LivingDocumentService {
     /**
      * Process a .CoachNTT file
      */
-    public async processCoachNTTFile(uri: vscode.Uri): Promise<LivingDocument> {
+    public async processCoachNTTFile(uri: vscode.Uri, autoSave: boolean = true): Promise<LivingDocument> {
         try {
             // Read file content
             const content = await vscode.workspace.fs.readFile(uri);
@@ -55,6 +55,11 @@ export class LivingDocumentService {
             } else {
                 // Update existing document
                 document = await this.updateDocument(document, text);
+                
+                // Auto-save updated content with new timestamp
+                if (autoSave && document.content !== text) {
+                    await this.saveDocument(document);
+                }
             }
             
             // Store as memory if connected
@@ -71,11 +76,31 @@ export class LivingDocumentService {
     }
     
     /**
+     * Save document content back to disk
+     */
+    private async saveDocument(document: LivingDocument): Promise<void> {
+        try {
+            const content = Buffer.from(document.content, 'utf-8');
+            await vscode.workspace.fs.writeFile(document.uri, content);
+            this.logger.info(`Updated timestamps in ${document.uri.fsPath}`);
+        } catch (error) {
+            this.logger.error('Failed to save document', error);
+            throw error;
+        }
+    }
+    
+    /**
      * Create a new Living Document
      */
     private async createDocument(uri: vscode.Uri, content: string): Promise<LivingDocument> {
         // Abstract the content
         const abstractionResult = await this.abstractor.abstractDocument(content);
+        
+        // Extract timestamps from content
+        const timestamps = this.extractTimestamps(content);
+        const now = new Date();
+        const createdAt = timestamps.created ? new Date(timestamps.created) : now;
+        const updatedAt = timestamps.updated ? new Date(timestamps.updated) : now;
         
         // Create document
         const document: LivingDocument = {
@@ -87,8 +112,8 @@ export class LivingDocumentService {
             stage: DocumentStage.Active,
             safetyMetadata: this.abstractor.createSafetyMetadata(abstractionResult),
             safetyScore: abstractionResult.safetyScore,
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            createdAt,
+            updatedAt,
             lastAccessed: new Date(),
             accessCount: 1,
             relevanceScore: 1.0,
@@ -112,14 +137,17 @@ export class LivingDocumentService {
      * Update an existing document
      */
     private async updateDocument(document: LivingDocument, newContent: string): Promise<LivingDocument> {
+        // Update content with new timestamp in frontmatter
+        const updatedContent = this.updateContentTimestamps(newContent, document.createdAt);
+        
         // Abstract the new content
         const abstractionResult = await this.abstractor.abstractDocument(
-            newContent,
+            updatedContent,
             document.referenceEvolution
         );
         
         // Update document
-        document.content = newContent;
+        document.content = updatedContent;
         document.abstractedContent = abstractionResult.abstractedContent;
         document.safetyMetadata = this.abstractor.createSafetyMetadata(abstractionResult);
         document.safetyScore = abstractionResult.safetyScore;
@@ -129,7 +157,65 @@ export class LivingDocumentService {
         document.currentSize = this.estimateTokens(abstractionResult.abstractedContent);
         document.compactionRatio = document.currentSize / document.originalSize;
         
+        // Track timestamp evolution
+        if (!document.metadata.timestampHistory) {
+            document.metadata.timestampHistory = {
+                created: document.createdAt,
+                updates: []
+            };
+        }
+        
+        document.metadata.timestampHistory.updates.push({
+            timestamp: document.updatedAt,
+            session: this.getCurrentSession(),
+            changeType: 'content',
+            source: 'user'
+        });
+        
         return document;
+    }
+    
+    /**
+     * Update timestamps in content frontmatter
+     */
+    private updateContentTimestamps(content: string, originalCreated: Date): string {
+        const yamlMatch = content.match(/^---\s*\n([\s\S]*?)\n---/m);
+        if (!yamlMatch) {
+            // No frontmatter, add one
+            const header = this.createMinimalHeader(originalCreated);
+            return header + '\n\n' + content;
+        }
+        
+        const yaml = yamlMatch[1];
+        const now = new Date().toISOString();
+        
+        // Update or add timestamps
+        let updatedYaml = yaml;
+        
+        // Preserve created timestamp if it exists, otherwise use original
+        if (!yaml.match(/created:/)) {
+            updatedYaml += `\ncreated: ${originalCreated.toISOString()}`;
+        }
+        
+        // Update the updated timestamp
+        if (yaml.match(/updated:/)) {
+            updatedYaml = updatedYaml.replace(/updated:\s*.+$/m, `updated: ${now}`);
+        } else {
+            updatedYaml += `\nupdated: ${now}`;
+        }
+        
+        return content.replace(yamlMatch[0], `---\n${updatedYaml}\n---`);
+    }
+    
+    /**
+     * Create minimal frontmatter header
+     */
+    private createMinimalHeader(created: Date): string {
+        const now = new Date().toISOString();
+        return `---
+created: ${created.toISOString()}
+updated: ${now}
+---`;
     }
     
     /**
@@ -208,6 +294,7 @@ export class LivingDocumentService {
         return `---
 title: ${title}
 created: ${now}
+updated: ${now}
 category: ${category}
 tags: []
 source: ${sourceUri.fsPath}
@@ -242,17 +329,52 @@ source: ${sourceUri.fsPath}
             codeReferences: []
         };
         
-        // Extract tags from YAML frontmatter
+        // Extract metadata from YAML frontmatter
         const yamlMatch = content.match(/^---\s*\n([\s\S]*?)\n---/m);
         if (yamlMatch) {
             const yaml = yamlMatch[1];
+            
+            // Extract tags
             const tagsMatch = yaml.match(/tags:\s*\[([^\]]+)\]/);
             if (tagsMatch) {
                 metadata.tags = tagsMatch[1].split(',').map(t => t.trim());
             }
+            
+            // Extract category if specified
+            const categoryMatch = yaml.match(/category:\s*(.+)$/m);
+            if (categoryMatch) {
+                const cat = categoryMatch[1].trim() as DocumentCategory;
+                if (Object.values(DocumentCategory).includes(cat)) {
+                    metadata.category = cat;
+                }
+            }
         }
         
         return metadata;
+    }
+    
+    /**
+     * Extract timestamps from content
+     */
+    private extractTimestamps(content: string): { created?: string; updated?: string } {
+        const timestamps: { created?: string; updated?: string } = {};
+        
+        const yamlMatch = content.match(/^---\s*\n([\s\S]*?)\n---/m);
+        if (yamlMatch) {
+            const yaml = yamlMatch[1];
+            
+            const createdMatch = yaml.match(/created:\s*(.+)$/m);
+            if (createdMatch) {
+                timestamps.created = createdMatch[1].trim();
+            }
+            
+            const updatedMatch = yaml.match(/updated:\s*(.+)$/m);
+            if (updatedMatch) {
+                timestamps.updated = updatedMatch[1].trim();
+            }
+        }
+        
+        return timestamps;
     }
     
     /**
@@ -302,5 +424,19 @@ source: ${sourceUri.fsPath}
      */
     public getDocument(id: string): LivingDocument | undefined {
         return this.documents.get(id);
+    }
+    
+    /**
+     * Get current session from workspace configuration or environment
+     */
+    private getCurrentSession(): string | undefined {
+        // Try to get from configuration
+        const config = vscode.workspace.getConfiguration('coachntt');
+        const session = config.get<string>('currentSession');
+        if (session) return session;
+        
+        // Try to extract from recent git commits or workspace
+        // This is a placeholder - could be enhanced to read from git or project files
+        return undefined;
     }
 }

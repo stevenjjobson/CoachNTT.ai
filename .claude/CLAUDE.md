@@ -6,7 +6,7 @@
 **Tech Stack**: Python 3.10+, PostgreSQL with pgvector, FastAPI  
 **Status**: Phase 1 - Secure Foundation (In Progress)
 
-## 📍 Current State (Updated: 2025-01-13)
+## 📍 Current State (Updated: 2025-07-18)
 
 ### ✅ Completed Sessions
 - **Session 0.1**: Core Safety Principles & Architecture
@@ -356,6 +356,22 @@
   - **Bonus**: Added Living Documents (.CoachNTT) support with automatic abstraction (~300 lines)
   - Created minimal integration with existing memory and WebView infrastructure
 
+- **Session 2.2.5**: Living Documents Integration (.CoachNTT)
+  - Implemented comprehensive Living Documents system with automatic safety abstraction (~1,850 lines)
+  - Created DocumentAbstractor service with markdown-aware pattern detection (~400 lines)
+  - Built ContextWindowManager for intelligent document compaction (~350 lines)
+  - Implemented LivingDocumentService with .CoachNTT file processing (~300 lines)
+  - Created document type system with evolution tracking capabilities (~285 lines)
+  - Added DocumentTreeProvider for VSCode sidebar integration (~200 lines)
+  - Integrated with existing MCP client for memory storage (LIVING_DOCUMENT intent)
+  - Implemented three compaction strategies: Aggressive, Balanced, Conservative
+  - Added automatic YAML frontmatter extraction and metadata management
+  - Created document lifecycle stages: Draft, Active, Compacting, Archived
+  - Built reference evolution tracking for codebase changes over time
+  - Achieved safety score of 1.0 with complete abstraction of sensitive data
+  - Enabled context-aware documentation that evolves with the codebase
+  - **Out-of-Cadence Addition**: Critical feature for managing project documentation
+
 ### 🏗️ Architecture Summary
 ```
 src/
@@ -543,10 +559,14 @@ vscode-extension/              # VSCode Extension (Phase 2)
 │   │   ├── audio-playback-service.ts # Audio synthesis and playback
 │   │   ├── voice-activity-detector.ts # Energy-based VAD implementation
 │   │   ├── audio-capture-service.ts # WebRTC audio capture with streaming
-│   │   └── monitoring-service.ts # Real-time metrics with dynamic thresholds
+│   │   ├── monitoring-service.ts # Real-time metrics with dynamic thresholds
+│   │   ├── living-document-service.ts # Living Documents (.CoachNTT) processing
+│   │   ├── document-abstractor.ts # Markdown-aware safety abstraction
+│   │   └── context-window-manager.ts # Document compaction and optimization
 │   └── types/
 │       ├── mcp.types.ts       # MCP message type definitions
-│       └── monitoring.types.ts # Monitoring metrics and chart types
+│       ├── monitoring.types.ts # Monitoring metrics and chart types
+│       └── living-document.types.ts # Living Document models and interfaces
 ├── test/
 │   └── suite/
 │       ├── extension.test.ts  # Extension unit tests
@@ -594,15 +614,15 @@ docker-compose exec postgres psql -U ccp_user -d cognitive_coding_partner
 
 ## 📋 Next Session Plan
 
-**For detailed session preparation, see:** [NEXT_SESSION.md](.claude/NEXT_SESSION.md)
+**For detailed session preparation, see:** [NEXT_STEPS.CoachNTT](.claude/NEXT_STEPS.CoachNTT)
 
-### Quick Summary: Session 2.2.4 Advanced Code Analysis  
-- **Prerequisites**: Session 2.2.3 complete ✅, Monitoring dashboard ready ✅
-- **Focus**: Implement advanced code analysis features
-- **Context Budget**: ~2600 tokens
-- **Estimated Output**: ~850 lines
+### Quick Summary: Session 2.3.1 Voice Command Framework  
+- **Prerequisites**: Session 2.2.5 complete ✅, Living Documents ready ✅
+- **Focus**: Implement voice command processing system
+- **Context Budget**: ~2800 tokens
+- **Estimated Output**: ~1250 lines
 
-**Note**: Session 2.2.3 (Real-time Monitoring Dashboard) completed with dynamic memory scaling, Chart.js integration, and real-time WebSocket updates.
+**Note**: Session 2.2.5 (Living Documents Integration) completed with automatic abstraction, context management, and evolution tracking.
 
 ## 📁 Pre-Session Structure Check
 
@@ -623,7 +643,7 @@ Before creating new files or directories:
 
 ### Phase 2 (In Progress)
 - Week 1-2: Foundation [▓▓▓▓▓▓] 100% (4/4 sessions) - Sessions 2.1.1 ✅, 2.1.2 ✅, 2.1.3 ✅, 2.1.4 ✅
-- Week 3-4: Core Features [▓▓▓▓▓▓] 100% (4/4 sessions) - Session 2.2.1 ✅, 2.2.2 ✅, 2.2.3 ✅, 2.2.4 ✅
+- Week 3-4: Core Features [▓▓▓▓▓▓] 100% (5/5 sessions) - Sessions 2.2.1 ✅, 2.2.2 ✅, 2.2.3 ✅, 2.2.4 ✅, 2.2.5 ✅
 - Week 5: Voice Integration [░░░░░░] 0% (0/4 sessions)
 - Week 6: Polish & Advanced [░░░░░░] 0% (0/3 sessions)
 
@@ -660,11 +680,11 @@ Phase 2 transforms CoachNTT.ai into a comprehensive IDE-integrated AI assistant 
 4. Deploy backend services to VPS for remote access
 5. Maintain zero-tolerance safety in all UI components
 
-### Session Structure (15 sessions over 6 weeks)
-- **Sessions 2.1.1-2.1.4**: Extension foundation and MCP integration
-- **Sessions 2.2.1-2.2.4**: Core features (audio, monitoring, WebSocket)
-- **Sessions 2.3.1-2.3.4**: Voice integration and NLQ
-- **Sessions 2.4.1-2.4.3**: Performance optimization and production readiness
+### Session Structure (16 sessions over 6 weeks)
+- **Sessions 2.1.1-2.1.4**: Extension foundation and MCP integration ✅
+- **Sessions 2.2.1-2.2.5**: Core features (audio, monitoring, code analysis, Living Documents) ✅
+- **Sessions 2.3.1-2.3.4**: Voice integration and NLQ 🚧
+- **Sessions 2.4.1-2.4.3**: Performance optimization and production readiness ⏳
 
 ## 📊 Context Management Protocol
 

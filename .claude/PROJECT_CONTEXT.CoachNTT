@@ -1,0 +1,165 @@
+---
+title: CoachNTT.ai Project Context
+created: 2025-07-18T12:00:00Z
+updated: 2025-07-18T17:34:00Z
+category: architecture
+tags: [project-overview, architecture, phase2, safety-first]
+source: Consolidated from project documentation
+session: 2.2.5
+---
+
+# 🧠 CoachNTT.ai Project Context
+
+## Overview
+
+CoachNTT.ai (Cognitive Coding Partner) is a revolutionary AI development assistant built with **safety as the foundation**. The system features mandatory abstraction of all concrete references, temporal memory with privacy protection, and comprehensive validation at every layer.
+
+## Core Innovation: Safety-First Abstraction
+
+Our abstraction framework creates a protective barrier between AI tools and sensitive information:
+
+```
+Real World Data → Abstraction Engine → AI Processing → Safe Output
+<project>/<module>/<file> → AI sees only patterns → Safe suggestions
+```
+
+This approach enables:
+- **Enterprise AI Adoption**: Use AI tools without compromising security
+- **Regulatory Compliance**: GDPR, HIPAA, SOC2 friendly by design
+- **Zero-tolerance enforcement**: Minimum safety score of 0.8 required
+
+## Current State
+
+### Phase 1: Backend Complete ✅
+- Safety foundation with abstraction engine
+- PostgreSQL with pgvector for embeddings
+- Memory system with temporal decay
+- Intent analysis and AST code parsing
+- Knowledge graph builder
+- REST API with WebSocket support
+- CLI interface with full functionality
+
+### Phase 2: VSCode Extension (In Progress) 🚧
+- **Completed**: Extension scaffold, MCP client, memory tree, WebView foundation
+- **Completed**: Audio playback, voice activity detection, monitoring dashboard
+- **Completed**: Advanced code analysis with AST, Living Documents support
+- **Next**: Voice command framework (Session 2.3.1)
+
+## Architecture
+
+### Backend Stack
+- **Core**: Python 3.10+ with FastAPI
+- **Database**: PostgreSQL 15+ with pgvector
+- **AI/ML**: Sentence-transformers, scikit-learn
+- **Knowledge**: Obsidian vault integration
+- **Auth**: JWT with flexible token sources
+
+### VSCode Extension Stack
+- **Language**: TypeScript with strict mode
+- **UI**: TreeView + WebView panels
+- **Communication**: WebSocket with MCP protocol
+- **Build**: Webpack bundling
+- **Audio**: Web Audio API integration
+
+### Safety Architecture
+```
+Database Level: PostgreSQL triggers enforce abstraction
+     ↓
+Application Level: Multi-stage validation pipeline
+     ↓
+API Level: Automatic abstraction in responses
+     ↓
+UI Level: Real-time safety validation
+```
+
+**Important**: Temporal data (dates, times) is exempt from abstraction to preserve AI temporal reasoning capabilities (TRA fix implemented).
+
+## Key Features
+
+### Memory System
+- Temporal decay with configurable algorithms
+- Hierarchical clustering with embeddings
+- Intent analysis (12 intent types)
+- Vector similarity search
+
+### Knowledge Management
+- AST code analysis for Python/JS/TS
+- Pattern detection (design patterns, complexity)
+- Knowledge graph with semantic connections
+- Multiple export formats (Mermaid, JSON, GraphML)
+
+### Integration Services
+- Obsidian vault bidirectional sync
+- Automated documentation generation
+- Git checkpoint system
+- Script automation framework
+
+### VSCode Extension
+- Memory tree with hierarchical view
+- WebView panels for rich UI
+- Real-time monitoring dashboard
+- Audio playback and voice capture
+- Living Documents (.CoachNTT) support
+
+## Performance Metrics
+
+All performance targets achieved:
+- Memory operations: <500ms
+- Graph building: <1s for 100 nodes
+- API responses: <200ms average
+- WebSocket latency: <50ms
+- Safety validation: <1ms
+- Abstraction quality: 0.995/1.0
+
+## Development Workflow
+
+### Safety-First Principles
+1. **Mandatory Abstraction**: All concrete references must be abstracted
+2. **Validation at Every Layer**: Database, API, and application-level enforcement
+3. **Fail-Safe Defaults**: System refuses unsafe operations by design
+4. **Privacy by Design**: No personal data stored in concrete form
+
+### Session Management
+- Structured session-based development
+- Context-aware memory management
+- Progressive feature implementation
+- Comprehensive testing at each stage
+
+## Next Steps
+
+### Session 2.3.1: Voice Command Framework
+- Natural language command processing
+- Speech-to-text integration
+- Command routing system
+- Voice feedback mechanisms
+
+### Remaining Phase 2 Goals
+- Complete voice integration (4 sessions)
+- Performance optimization
+- Production deployment to VPS
+- Security hardening
+
+## Quick Reference
+
+### Key Directories
+- `src/core/`: Core business logic with safety
+- `src/api/`: FastAPI application
+- `vscode-extension/`: TypeScript extension
+- `.claude/`: Living documentation
+
+### Important Commands
+```bash
+# Start development
+docker-compose up -d
+
+# Run API server
+python -m uvicorn src.api.main:app --reload
+
+# Debug VSCode extension
+F5 in VSCode with extension folder open
+```
+
+### Safety Thresholds
+- Minimum safety score: 0.8
+- Abstraction coverage: >95%
+- Zero concrete references allowed

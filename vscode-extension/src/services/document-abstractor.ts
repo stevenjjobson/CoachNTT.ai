@@ -20,6 +20,15 @@ export class DocumentAbstractor {
     private patterns: Map<ReferenceType, RegExp[]>;
     private projectRoot: string;
     
+    // Temporal patterns that should NOT be abstracted
+    private temporalPatterns: RegExp[] = [
+        /\d{4}-\d{2}-\d{2}/,  // ISO dates: 2025-07-18
+        /\d{2}:\d{2}/,        // Times: 17:34
+        /\b(January|February|March|April|May|June|July|August|September|October|November|December)\b/i,
+        /\b(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)\b/i,
+        /\b(today|yesterday|tomorrow|now)\b/i
+    ];
+    
     private constructor() {
         this.logger = Logger.getInstance();
         this.patterns = this.initializePatterns();
@@ -183,6 +192,13 @@ export class DocumentAbstractor {
      * Abstract a specific reference based on its type
      */
     private abstractReference(type: ReferenceType, original: string, captures: any[]): string {
+        // Check if this is temporal data - if so, don't abstract it
+        for (const pattern of this.temporalPatterns) {
+            if (pattern.test(original)) {
+                return original; // Return unchanged
+            }
+        }
+        
         switch (type) {
             case ReferenceType.FilePath:
                 return this.abstractFilePath(original);

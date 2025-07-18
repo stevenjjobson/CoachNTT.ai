@@ -109,6 +109,20 @@ export interface DocumentMetadata {
     encoding: string;
     linkedDocuments: string[]; // IDs of related documents
     codeReferences: CodeReference[];
+    timestampHistory?: TimestampEvolution; // Track all timestamp changes
+}
+
+/**
+ * Timestamp evolution tracking
+ */
+export interface TimestampEvolution {
+    created: Date;
+    updates: Array<{
+        timestamp: Date;
+        session?: string;
+        changeType: 'content' | 'metadata' | 'compaction' | 'manual';
+        source: 'user' | 'system' | 'automation';
+    }>;
 }
 
 /**
