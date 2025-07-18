@@ -1,268 +1,210 @@
-# 🚀 Next Session: 2.2.1 Audio Playback Service
+# 🎯 Next Session: 2.2.2 Voice Activity Detection
 
 ## 📋 Session Overview
+- **Session**: 2.2.2
+- **Title**: Voice Activity Detection & Audio Capture
+- **Duration**: 1.5-2 hours
+- **Complexity**: Medium-High
+- **Prerequisites**: Session 2.2.1 complete ✅, Audio service ready ✅
 
-**Session**: 2.2.1 Audio Playback Service  
-**Phase**: 2 - VSCode Extension & Voice Integration  
-**Prerequisites**: Session 2.1.4 complete ✅, WebView foundation ready ✅  
-**Focus**: Implement audio synthesis and playback controls  
-**Context Budget**: ~3000 tokens  
-**Estimated Output**: ~1200 lines  
+## 🎯 Primary Goals
+1. Implement voice activity detection (VAD) for automatic recording
+2. Create audio capture service with streaming support
+3. Add push-to-talk functionality
+4. Integrate with MCP for speech-to-text processing
 
-## 🎯 Quick Start Command
+## 📁 Files to Create/Modify
+1. **vscode-extension/src/services/voice-activity-detector.ts** (~200 lines)
+   - VAD algorithm implementation
+   - Energy-based detection with adaptive thresholds
+   - Noise floor calibration
+   
+2. **vscode-extension/src/services/audio-capture-service.ts** (~300 lines)
+   - WebRTC audio capture
+   - Stream management
+   - Recording buffer with circular storage
+   
+3. **vscode-extension/src/webview/voice-input/voice-input-panel.ts** (~250 lines)
+   - Voice input UI with waveform visualization
+   - Recording status indicators
+   - Push-to-talk controls
+   
+4. **vscode-extension/media/voice-input.css** (~150 lines)
+   - Voice input panel styles
+   - Waveform animations
+   - Recording indicators
+   
+5. **vscode-extension/media/voice-input.js** (~200 lines)
+   - Client-side audio capture
+   - Waveform rendering
+   - VAD visualization
 
-### Copy this to start the next session:
-```
-I'm continuing Phase 2 of CoachNTT.ai. Session 2.1.4 (WebView Foundation) is complete.
+## 🔍 Technical Requirements
+### Voice Activity Detection
+- Energy-based detection with 40ms frames
+- Adaptive threshold based on noise floor
+- Pre-speech buffer (300ms) to capture beginning
+- Post-speech timeout (800ms) to avoid cutting off
+- Frequency analysis for speech/noise discrimination
 
-Please review:
-1. @.claude/NEXT_SESSION.md (this file)  
-2. @.claude/CLAUDE.md (Session 2.1.4 complete ✅)
-3. @vscode-extension/src/webview/webview-manager.ts (WebView manager)
-4. @vscode-extension/src/webview/panels/memory-detail-panel.ts (Example panel)
-5. @project-docs/Phase2_Implementation_Cadence.md (Session 2.2.1 requirements)
+### Audio Capture
+- WebRTC getUserMedia API
+- 16kHz sample rate for speech
+- Mono channel recording
+- Streaming to backend in chunks
+- Automatic gain control (AGC)
 
-Ready to start Session 2.2.1: Audio Playback Service.
-Note: WebView foundation is working with CSP security, message protocol, and theme support.
-```
+### Push-to-Talk
+- Configurable hotkey (default: Ctrl+Shift+V)
+- Visual feedback during recording
+- Auto-stop on key release
+- Maximum recording duration (30s)
 
-## 📚 Context Files to Load
-
-### Essential Files (Load First)
-1. **`vscode-extension/src/extension.ts`** - Extension state for audio service integration
-2. **`vscode-extension/src/webview/webview-manager.ts`** - For audio player WebView
-3. **`vscode-extension/package.json`** - Configuration and new commands
-4. **`project-docs/Phase2_Implementation_Cadence.md`** - Session 2.2.1 requirements
-5. **`vscode-extension/src/services/mcp-client.ts`** - For audio synthesis API calls
-
-### Reference Files (Load as Needed)
-- `vscode-extension/src/webview/message-protocol.ts` - For audio control messages
-- `vscode-extension/src/webview/templates/base-template.ts` - For audio player UI
-- `vscode-extension/media/webview.css` - Base styles for audio player
-- `vscode-extension/src/config/settings.ts` - For audio preferences
-
-## ⚠️ Important Session Notes
-
-### Session 2.1.4 Complete - WebView Ready
-**Session 2.1.4 Achievements**:
-- ✅ WebView manager with panel lifecycle management
-- ✅ Type-safe message protocol for bidirectional communication
-- ✅ Secure HTML templates with CSP and nonces
-- ✅ Memory detail panel with real-time updates
-- ✅ Theme support with VSCode CSS variables
-- ✅ Resource loading system with vscode-resource URIs
-- ✅ State persistence for panel recovery
-- ✅ Comprehensive test suite and documentation
-
-**Session 2.2.1 Focus**:
-- **AudioPlaybackService**: Central service for audio queue management
-- **Audio WebView Player**: Rich UI controls in WebView panel
-- **Status Bar Controls**: Quick playback controls
-- **Audio Queue**: Manage multiple audio items
-- **Volume/Speed Controls**: User preferences
-- **Audio Caching**: Performance optimization
-
-## 🏗️ Implementation Strategy
-
-### Session 2.2.1 Deliverables
-1. **Create AudioPlaybackService class**
-   - Audio queue management
-   - Playback state tracking
-   - Event emission for UI updates
-   - Integration with MCP audio synthesis
-
-2. **Implement audio queue management**
-   - Queue data structure
-   - Add/remove/reorder items
-   - Priority handling
-   - Persistence across sessions
-
-3. **Add playback controls in status bar**
-   - Play/pause button
-   - Skip forward/back
-   - Current track indicator
-   - Volume indicator
-
-4. **Create audio WebView player**
-   - Full playback controls
-   - Queue visualization
-   - Waveform display (optional)
-   - Progress tracking
-
-5. **Implement volume and speed controls**
-   - User preferences
-   - Keyboard shortcuts
-   - Saved settings
-   - Real-time adjustment
-
-6. **Add audio caching system**
-   - Cache synthesized audio
-   - LRU eviction policy
-   - Size limits
-   - Cache invalidation
-
-7. **Create audio format conversion**
-   - Support multiple formats
-   - Quality settings
-   - Compression options
-   - Streaming support
-
-8. **Implement pause/resume/skip**
-   - State management
-   - Smooth transitions
-   - Queue navigation
-   - Error recovery
-
-9. **Add audio progress tracking**
-   - Current position
-   - Total duration
-   - Seek functionality
-   - Progress events
-
-10. **Test cross-platform audio**
-    - Windows audio APIs
-    - macOS audio APIs
-    - Linux audio APIs
-    - Fallback strategies
-
-## 🔧 Technical Requirements
-
-### New Files to Create
-```
-vscode-extension/
-├── src/
-│   └── services/
-│       └── audio-playback-service.ts   # Central audio service
-│   └── webview/
-│       └── audio-player/
-│           ├── audio-player-panel.ts   # WebView panel for audio
-│           └── audio-queue-view.ts     # Queue visualization
-│   └── models/
-│       └── audio-queue.ts              # Audio queue data structures
-│   └── utils/
-│       └── audio-cache.ts              # Audio caching utilities
-└── media/
-    ├── audio-player.css                # Audio player styles
-    └── audio-player.js                 # Audio player client logic
+## 📝 Implementation Plan
+### Part 1: Voice Activity Detector
+```typescript
+export class VoiceActivityDetector {
+    private energyThreshold: number;
+    private noiseFloor: number;
+    private speechFrames: number = 0;
+    
+    public detectSpeech(audioData: Float32Array): boolean {
+        const energy = this.calculateEnergy(audioData);
+        const isSpeech = energy > this.energyThreshold;
+        // Implement hysteresis and smoothing
+        return this.smoothDetection(isSpeech);
+    }
+}
 ```
 
-### Key Implementation Points
-- Use Web Audio API in WebView for playback
-- Handle audio synthesis via MCP backend
-- Implement robust error handling
-- Support keyboard shortcuts
-- Ensure accessibility compliance
+### Part 2: Audio Capture Service
+```typescript
+export class AudioCaptureService {
+    private mediaStream: MediaStream | null = null;
+    private audioContext: AudioContext;
+    private processor: ScriptProcessorNode;
+    
+    public async startCapture(): Promise<void> {
+        this.mediaStream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+                sampleRate: 16000,
+                channelCount: 1,
+                echoCancellation: true,
+                noiseSuppression: true
+            }
+        });
+    }
+}
+```
 
-## 🛡️ Safety Requirements
+### Part 3: Voice Input Panel
+- Real-time waveform visualization
+- Recording status (idle, listening, recording, processing)
+- Settings for VAD sensitivity
+- Push-to-talk button and hotkey indicator
 
-### Mandatory Safety Checks
-- [ ] All audio metadata must be abstracted
-- [ ] No concrete file paths in audio queue
-- [ ] Audio URLs must use vscode-resource scheme
-- [ ] Error messages must not reveal system details
-- [ ] Cache paths must be abstracted
-- [ ] User preferences must be sanitized
+## ⚡ Performance Targets
+- VAD latency: <10ms per frame
+- Audio capture latency: <50ms
+- Waveform render: 60 FPS
+- Memory usage: <20MB for 30s recording
 
-## 📊 Success Metrics
+## 🧪 Testing Requirements
+1. Test VAD with various noise levels
+2. Verify audio quality at 16kHz
+3. Test push-to-talk responsiveness
+4. Validate maximum recording duration
+5. Test cross-platform audio capture
 
-### Audio Performance
-- **Playback Start**: <100ms from click
-- **Queue Operations**: <50ms for add/remove
-- **Seek Response**: <100ms for position change
-- **Cache Hit Rate**: >80% for repeated audio
-- **Memory Usage**: <50MB for audio cache
+## 📚 Key Concepts
+- **Voice Activity Detection**: Distinguishing speech from silence/noise
+- **Energy Calculation**: RMS of audio samples
+- **Adaptive Thresholding**: Dynamic adjustment based on ambient noise
+- **Circular Buffer**: Efficient pre-speech capture
+- **WebRTC**: Modern browser audio API
 
-### Development Goals
-- **Modularity**: Reusable audio components
-- **Extensibility**: Easy to add new audio sources
-- **Reliability**: Graceful error handling
-- **Performance**: Smooth playback without stuttering
-- **Accessibility**: Full keyboard/screen reader support
+## 🔗 Integration Points
+- AudioPlaybackService for playback of captured audio
+- MCPClient for speech-to-text requests
+- WebViewManager for voice input panel
+- Extension settings for VAD configuration
 
-## 📋 Session Completion Checklist
+## 📦 Deliverables
+1. ✅ Voice activity detection with adaptive thresholds
+2. ✅ Audio capture service with streaming
+3. ✅ Voice input WebView panel with waveform
+4. ✅ Push-to-talk functionality
+5. ✅ Integration with existing audio infrastructure
 
-### Audio Service
-- [ ] AudioPlaybackService created
-- [ ] Queue management implemented
-- [ ] Status bar controls working
-- [ ] WebView player functional
-- [ ] Volume/speed controls added
+## 🚨 Safety Considerations
+- Audio data must be abstracted before storage
+- No raw audio persisted without user consent
+- Clear visual indicators when recording
+- Automatic stop on maximum duration
+- Secure handling of microphone permissions
 
-### Integration & Features
-- [ ] MCP audio synthesis integrated
-- [ ] Caching system working
-- [ ] Cross-platform tested
-- [ ] Keyboard shortcuts added
-- [ ] Settings persistence implemented
+## 💡 Innovation Opportunities
+- Advanced VAD using frequency analysis
+- Real-time transcription preview
+- Voice commands detection
+- Multi-language support ready
+- Noise profile learning
 
-### Testing & Documentation
-- [ ] Audio service tests
-- [ ] WebView player tests
-- [ ] Cross-platform tests
-- [ ] Performance benchmarks
-- [ ] User documentation
+## 🔄 State Management
+```typescript
+interface VoiceInputState {
+    isRecording: boolean;
+    vadActive: boolean;
+    audioLevel: number;
+    noiseLevel: number;
+    recordingDuration: number;
+    transcriptionPending: boolean;
+}
+```
 
-### Session Wrap-up
-- [ ] All audio files committed
-- [ ] **Checkpoint**: Can play synthesized audio
-- [ ] Next session planned (Session 2.2.2: Monitoring Dashboard)
-- [ ] Update CLAUDE.md progress tracking
+## 📈 Success Metrics
+- VAD accuracy: >95% for clear speech
+- False positive rate: <5% for typical noise
+- User satisfaction with push-to-talk response
+- Successful integration with speech-to-text
+- Clean audio capture without artifacts
 
-## 🚀 Looking Ahead - Week 3-4: Core Features
+## 🎓 Learning Resources
+- [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
+- [MediaStream Recording](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream_Recording_API)
+- [Voice Activity Detection](https://en.wikipedia.org/wiki/Voice_activity_detection)
+- [WebRTC getUserMedia](https://webrtc.org/getting-started/media-capture-and-constraints)
 
-After audio playback, we'll build:
+## ✅ Pre-Session Checklist
+- [ ] Audio playback service working (Session 2.2.1)
+- [ ] WebView infrastructure ready
+- [ ] Microphone permissions understood
+- [ ] VAD algorithm researched
+- [ ] Performance profiling tools ready
 
-**Session 2.2.2: Monitoring Dashboard Integration**
-- Real-time metrics display
-- Sparkline charts
-- Alert notifications
-- Performance CodeLens
+## 🚀 Quick Start
+```bash
+# Continue from Session 2.2.1
+cd vscode-extension
 
-**Session 2.2.3: Unified WebSocket Service**
-- Channel multiplexing
-- Event aggregation
-- Backpressure handling
-- Single connection for all features
+# Create voice services
+mkdir -p src/services
+touch src/services/voice-activity-detector.ts
+touch src/services/audio-capture-service.ts
 
-**Session 2.2.4: Memory Operations & Search**
-- "Store Selection as Memory" command
-- Semantic search interface
-- Memory tagging
-- Bulk operations
+# Create voice input WebView
+mkdir -p src/webview/voice-input
+touch src/webview/voice-input/voice-input-panel.ts
 
-## 📝 Session Completion Protocol
+# Create media files
+touch media/voice-input.css
+touch media/voice-input.js
 
-### End-of-Session Requirements
-Before committing Session 2.2.1 completion:
+# Start development
+npm run watch
+```
 
-1. **Update Session Status**:
-   - [ ] Update CLAUDE.md with Session 2.2.1 achievements
-   - [ ] Update progress tracking (Week 3-4: 0% → 25%)
-   - [ ] Add audio components to architecture
+## 📝 Context for Next Session
+After completing voice activity detection, the next session (2.2.3) will focus on real-time monitoring features including resource usage tracking, performance metrics, and safety score visualization.
 
-2. **Prepare Next Session**:
-   - [ ] Update NEXT_SESSION.md for Session 2.2.2 (Monitoring Dashboard)
-   - [ ] Update quick start command with completion note
-   - [ ] Update context files for monitoring integration
-
-3. **Documentation Updates**:
-   - [ ] Document audio architecture patterns
-   - [ ] Update README with audio features
-   - [ ] Record performance benchmarks
-
-4. **Git Commit**:
-   - [ ] Comprehensive commit message with audio summary
-   - [ ] Include all audio service files
-   - [ ] Tag audio playback milestone
-
-## 📚 Reference: Phase 2 Implementation Cadence
-
-From the Phase2_Implementation_Cadence document:
-- **Session 2.1.1**: VSCode Extension Scaffold ✅
-- **Session 2.1.2**: MCP Client Integration ✅
-- **Session 2.1.3**: Memory Tree Provider ✅
-- **Session 2.1.4**: WebView Foundation ✅
-- **Session 2.2.1**: Audio Playback Service (Current)
-- **Session 2.2.2**: Monitoring Dashboard Integration (Next)
-
-The audio playback service will be essential for the voice integration features in Week 5.
+**Note**: Session 2.2.1 successfully implemented audio playback with queue management, caching, and MCP integration. The audio infrastructure is ready for voice input features.

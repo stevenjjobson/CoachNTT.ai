@@ -107,6 +107,12 @@ export class MCPEventEmitter extends EventEmitter<MCPEventMap> {
                 return;
             }
 
+            // Handle tool responses
+            if (message.type === 'tool_response') {
+                this.emit('tool_response', message as any);
+                return;
+            }
+
             // Log unhandled message types
             this.logger.debug(`Unhandled MCP message type: ${message.type}`);
             

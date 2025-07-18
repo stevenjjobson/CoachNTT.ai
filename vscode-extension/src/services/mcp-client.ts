@@ -408,6 +408,57 @@ export class MCPClient {
     }
 
     /**
+     * Call an MCP tool
+     */
+    public async callTool(toolName: string, params: any): Promise<any> {
+        if (!this.state.connected) {
+            throw new Error('Not connected to MCP server');
+        }
+
+        // Create a unique request ID
+        const requestId = `tool_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+        
+        return new Promise((resolve, reject) => {
+            // Set up timeout
+            const timeout = setTimeout(() => {
+                this.eventEmitter.off('tool_response', responseHandler);
+                reject(new Error(`Tool call timeout: ${toolName}`));
+            }, 30000); // 30 second timeout
+
+            // Set up response handler
+            const responseHandler = (response: any) => {
+                if (response.request_id === requestId) {
+                    clearTimeout(timeout);
+                    this.eventEmitter.off('tool_response', responseHandler);
+                    
+                    if (response.success) {
+                        resolve(response.result);
+                    } else {
+                        reject(new Error(response.error || 'Tool call failed'));
+                    }
+                }
+            };
+            
+            this.eventEmitter.on('tool_response', responseHandler);
+            
+            // Send tool call message
+            const message = {
+                type: 'tool_call',
+                request_id: requestId,
+                tool: toolName,
+                params: params,
+                timestamp: new Date().toISOString()
+            };
+            
+            this.send(message).catch(error => {
+                clearTimeout(timeout);
+                this.eventEmitter.off('tool_response', responseHandler);
+                reject(error);
+            });
+        });
+    }
+
+    /**
      * Update connection options
      */
     public updateOptions(options: Partial<MCPConnectionOptions>): void {

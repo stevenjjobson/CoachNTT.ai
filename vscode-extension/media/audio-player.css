@@ -1,0 +1,521 @@
+/**
+ * Audio Player WebView Styles
+ * 
+ * Comprehensive styling for the audio player with:
+ * - Theme-aware colors
+ * - Responsive design
+ * - Smooth animations
+ * - Accessibility support
+ */
+
+/* Audio Player Container */
+.audio-player {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--vscode-font-family);
+    color: var(--vscode-foreground);
+    background-color: var(--vscode-editor-background);
+}
+
+/* Player Header Section */
+.player-header {
+    background-color: var(--vscode-sideBar-background);
+    border-bottom: 1px solid var(--vscode-widget-border);
+    padding: 20px;
+    flex-shrink: 0;
+}
+
+.player-header h2 {
+    margin: 0 0 15px 0;
+    font-size: 1.4em;
+    font-weight: 500;
+}
+
+/* Current Track Display */
+.current-track {
+    text-align: center;
+    margin-bottom: 20px;
+    min-height: 50px;
+}
+
+#current-title {
+    font-size: 1.1em;
+    font-weight: 500;
+    margin-bottom: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#current-meta {
+    font-size: 0.9em;
+    color: var(--vscode-descriptionForeground);
+    opacity: 0.8;
+}
+
+/* Player Controls */
+.player-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.control-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    background-color: transparent;
+    color: var(--vscode-foreground);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.control-button:hover {
+    background-color: var(--vscode-toolbar-hoverBackground);
+    border-color: var(--vscode-contrastBorder);
+}
+
+.control-button:active {
+    transform: scale(0.95);
+}
+
+.control-button.primary {
+    width: 48px;
+    height: 48px;
+    background-color: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+}
+
+.control-button.primary:hover {
+    background-color: var(--vscode-button-hoverBackground);
+}
+
+.control-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.control-button .codicon {
+    font-size: 16px;
+}
+
+.control-button.primary .codicon {
+    font-size: 20px;
+}
+
+/* Progress Bar */
+.progress-container {
+    margin: 25px 0;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background-color: var(--vscode-progressBar-background);
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar:hover {
+    height: 8px;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--vscode-progressBar-foreground);
+    border-radius: 3px;
+    position: relative;
+    transition: width 0.1s linear;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    right: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    background-color: var(--vscode-button-background);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.progress-bar:hover .progress-fill::after {
+    opacity: 1;
+}
+
+/* Time Display */
+.time-display {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 0.85em;
+    color: var(--vscode-descriptionForeground);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Volume and Speed Controls */
+.volume-speed-controls {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0 10px;
+}
+
+.slider-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.slider-control .codicon {
+    font-size: 16px;
+    color: var(--vscode-foreground);
+    opacity: 0.8;
+}
+
+.slider {
+    width: 100px;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: var(--vscode-input-background);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+}
+
+.slider:hover {
+    background: var(--vscode-input-border);
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: var(--vscode-button-background);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.slider::-webkit-slider-thumb:hover {
+    width: 16px;
+    height: 16px;
+}
+
+.slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: var(--vscode-button-background);
+    cursor: pointer;
+    border-radius: 50%;
+    border: none;
+    transition: all 0.2s;
+}
+
+.slider::-moz-range-thumb:hover {
+    width: 16px;
+    height: 16px;
+}
+
+#volume-value,
+#speed-value {
+    min-width: 40px;
+    text-align: right;
+    font-size: 0.9em;
+    color: var(--vscode-descriptionForeground);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Queue Container */
+.queue-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background-color: var(--vscode-editor-background);
+}
+
+.queue-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--vscode-widget-border);
+}
+
+.queue-header h3 {
+    margin: 0;
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+#queue-count {
+    color: var(--vscode-descriptionForeground);
+    font-weight: normal;
+}
+
+.queue-header button {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--vscode-foreground);
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 0.9em;
+    transition: all 0.2s;
+}
+
+.queue-header button:hover {
+    background-color: var(--vscode-toolbar-hoverBackground);
+    border-color: var(--vscode-contrastBorder);
+}
+
+/* Queue List */
+.queue-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.queue-item {
+    padding: 12px 15px;
+    margin-bottom: 5px;
+    background-color: var(--vscode-list-inactiveSelectionBackground);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.queue-item:hover {
+    background-color: var(--vscode-list-hoverBackground);
+}
+
+.queue-item.current {
+    background-color: var(--vscode-list-activeSelectionBackground);
+    color: var(--vscode-list-activeSelectionForeground);
+}
+
+.queue-item.playing .queue-item-status {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+/* Queue Item Status */
+.queue-item-status {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.queue-item-status .codicon {
+    font-size: 14px;
+}
+
+.status-pending { color: var(--vscode-descriptionForeground); }
+.status-downloading { color: var(--vscode-progressBar-background); }
+.status-ready { color: var(--vscode-testing-iconPassed); }
+.status-playing { color: var(--vscode-terminal-ansiGreen); }
+.status-paused { color: var(--vscode-terminal-ansiYellow); }
+.status-completed { color: var(--vscode-descriptionForeground); opacity: 0.6; }
+.status-error { color: var(--vscode-errorForeground); }
+
+/* Queue Item Content */
+.queue-item-content {
+    flex: 1;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.queue-item-title {
+    font-size: 0.95em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 3px;
+}
+
+.queue-item-meta {
+    font-size: 0.85em;
+    color: var(--vscode-descriptionForeground);
+    display: flex;
+    gap: 15px;
+    opacity: 0.8;
+}
+
+.queue-item-duration {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Queue Item Actions */
+.queue-item-actions {
+    display: flex;
+    gap: 5px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.queue-item:hover .queue-item-actions {
+    opacity: 1;
+}
+
+.queue-item-actions button {
+    background: transparent;
+    border: none;
+    color: var(--vscode-foreground);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 3px;
+    opacity: 0.7;
+    transition: all 0.2s;
+}
+
+.queue-item-actions button:hover {
+    opacity: 1;
+    background-color: var(--vscode-toolbar-hoverBackground);
+}
+
+/* Priority Badge */
+.priority-badge {
+    font-size: 0.75em;
+    padding: 2px 6px;
+    border-radius: 10px;
+    background-color: var(--vscode-badge-background);
+    color: var(--vscode-badge-foreground);
+}
+
+.priority-urgent {
+    background-color: var(--vscode-notificationsErrorIcon-foreground);
+    color: var(--vscode-errorForeground);
+}
+
+.priority-high {
+    background-color: var(--vscode-notificationsWarningIcon-foreground);
+    color: var(--vscode-warningForeground);
+}
+
+/* Empty Queue State */
+.empty-queue {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--vscode-descriptionForeground);
+}
+
+.empty-queue .codicon {
+    font-size: 48px;
+    opacity: 0.3;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.empty-queue p {
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+/* Drag and Drop */
+.queue-item.dragging {
+    opacity: 0.5;
+}
+
+.queue-item.drag-over {
+    border-top: 2px solid var(--vscode-progressBar-foreground);
+}
+
+/* Loading State */
+.loading-spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--vscode-foreground);
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Scrollbar Styling */
+.queue-container::-webkit-scrollbar {
+    width: 10px;
+}
+
+.queue-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.queue-container::-webkit-scrollbar-thumb {
+    background: var(--vscode-scrollbarSlider-background);
+    border-radius: 5px;
+}
+
+.queue-container::-webkit-scrollbar-thumb:hover {
+    background: var(--vscode-scrollbarSlider-hoverBackground);
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .volume-speed-controls {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .queue-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .queue-item-meta {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+
+/* Focus Styles for Accessibility */
+button:focus,
+.control-button:focus,
+.slider:focus,
+.queue-item:focus {
+    outline: 1px solid var(--vscode-focusBorder);
+    outline-offset: 2px;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

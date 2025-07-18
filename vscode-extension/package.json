@@ -253,6 +253,61 @@
         "title": "Test WebView Foundation",
         "category": "CoachNTT: Developer",
         "icon": "$(beaker)"
+      },
+      {
+        "command": "coachntt.togglePlayback",
+        "title": "Toggle Audio Playback",
+        "category": "CoachNTT: Audio",
+        "icon": "$(play)"
+      },
+      {
+        "command": "coachntt.openAudioPlayer",
+        "title": "Open Audio Player",
+        "category": "CoachNTT: Audio",
+        "icon": "$(unmute)"
+      },
+      {
+        "command": "coachntt.addSelectionToAudioQueue",
+        "title": "Add Selection to Audio Queue",
+        "category": "CoachNTT: Audio",
+        "icon": "$(add)",
+        "enablement": "editorHasSelection"
+      },
+      {
+        "command": "coachntt.audioPlay",
+        "title": "Play Audio",
+        "category": "CoachNTT: Audio",
+        "icon": "$(play)"
+      },
+      {
+        "command": "coachntt.audioPause",
+        "title": "Pause Audio",
+        "category": "CoachNTT: Audio",
+        "icon": "$(debug-pause)"
+      },
+      {
+        "command": "coachntt.audioNext",
+        "title": "Next Track",
+        "category": "CoachNTT: Audio",
+        "icon": "$(arrow-right)"
+      },
+      {
+        "command": "coachntt.audioPrevious",
+        "title": "Previous Track",
+        "category": "CoachNTT: Audio",
+        "icon": "$(arrow-left)"
+      },
+      {
+        "command": "coachntt.audioVolumeUp",
+        "title": "Volume Up",
+        "category": "CoachNTT: Audio",
+        "icon": "$(arrow-up)"
+      },
+      {
+        "command": "coachntt.audioVolumeDown",
+        "title": "Volume Down",
+        "category": "CoachNTT: Audio",
+        "icon": "$(arrow-down)"
       }
     ],
     "viewsContainers": {
@@ -347,6 +402,11 @@
           "command": "coachntt.createMemoryFromSelection",
           "when": "editorHasSelection",
           "group": "coachntt@1"
+        },
+        {
+          "command": "coachntt.addSelectionToAudioQueue",
+          "when": "editorHasSelection && coachntt.connected",
+          "group": "coachntt@2"
         }
       ],
       "commandPalette": [
@@ -359,7 +419,45 @@
           "when": "!coachntt.connected"
         }
       ]
-    }
+    },
+    "keybindings": [
+      {
+        "command": "coachntt.togglePlayback",
+        "key": "ctrl+shift+space",
+        "mac": "cmd+shift+space",
+        "when": "coachntt.connected"
+      },
+      {
+        "command": "coachntt.audioNext",
+        "key": "ctrl+shift+right",
+        "mac": "cmd+shift+right",
+        "when": "coachntt.connected"
+      },
+      {
+        "command": "coachntt.audioPrevious",
+        "key": "ctrl+shift+left",
+        "mac": "cmd+shift+left",
+        "when": "coachntt.connected"
+      },
+      {
+        "command": "coachntt.audioVolumeUp",
+        "key": "ctrl+shift+up",
+        "mac": "cmd+shift+up",
+        "when": "coachntt.connected"
+      },
+      {
+        "command": "coachntt.audioVolumeDown",
+        "key": "ctrl+shift+down",
+        "mac": "cmd+shift+down",
+        "when": "coachntt.connected"
+      },
+      {
+        "command": "coachntt.openAudioPlayer",
+        "key": "ctrl+shift+p",
+        "mac": "cmd+shift+p",
+        "when": "coachntt.connected"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

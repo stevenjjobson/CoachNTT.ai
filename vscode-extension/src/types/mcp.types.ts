@@ -191,6 +191,9 @@ export interface MCPEventMap {
     subscribed: (channels: string[]) => void;
     unsubscribed: (channels: string[]) => void;
     
+    // Tool response event
+    tool_response: (response: any) => void;
+    
     // Raw message event
     message: (message: MCPMessage) => void;
 }

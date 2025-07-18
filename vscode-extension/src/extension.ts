@@ -10,6 +10,8 @@ import { MemoryCommands } from './commands/memory-commands';
 import { MemoryContentProvider } from './providers/memory-content-provider';
 import { WebViewManager } from './webview/webview-manager';
 import { MemoryDetailPanel } from './webview/panels/memory-detail-panel';
+import { AudioPlaybackService } from './services/audio-playback-service';
+import { AudioPlayerPanel } from './webview/audio-player/audio-player-panel';
 
 /**
  * Extension state management
@@ -26,6 +28,7 @@ export class ExtensionState {
     private mcpClient: MCPClient | undefined;
     private connectionManager: ConnectionManager | undefined;
     private webViewManager: WebViewManager | undefined;
+    private audioService: AudioPlaybackService | undefined;
     private statusBarItems: Map<string, vscode.StatusBarItem>;
     private disposables: vscode.Disposable[];
 
@@ -57,6 +60,9 @@ export class ExtensionState {
             // Initialize WebView manager
             this.webViewManager = WebViewManager.getInstance(context);
             
+            // Initialize Audio service
+            this.audioService = AudioPlaybackService.getInstance(context);
+            
             // Set connection manager getter to avoid circular dependency
             this.commands.setConnectionManagerGetter(() => this.connectionManager);
             
@@ -71,6 +77,15 @@ export class ExtensionState {
             
             // Register WebView commands
             this.registerWebViewCommands(context);
+            
+            // Register audio commands
+            this.registerAudioCommands(context);
+            
+            // Create audio status bar item
+            if (this.audioService) {
+                const audioStatusBar = this.audioService.createStatusBarItem();
+                context.subscriptions.push(audioStatusBar);
+            }
             
             // Auto-connect if configured
             if (this.config.getAutoConnect()) {
@@ -357,6 +372,127 @@ export class ExtensionState {
     }
     
     /**
+     * Register audio commands
+     */
+    private registerAudioCommands(context: vscode.ExtensionContext): void {
+        if (!this.audioService) return;
+        
+        // Toggle playback command
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.togglePlayback', () => {
+                if (!this.audioService) return;
+                
+                if (this.audioService.getState() === 'playing') {
+                    this.audioService.pause();
+                } else {
+                    this.audioService.play();
+                }
+            })
+        );
+        
+        // Open audio player command
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.openAudioPlayer', () => {
+                if (!this.webViewManager || !this.audioService) {
+                    vscode.window.showErrorMessage('Audio service not initialized');
+                    return;
+                }
+                
+                this.webViewManager.createOrShowPanel(
+                    'audio-player',
+                    {
+                        viewType: 'coachntt.audioPlayer',
+                        title: 'Audio Player',
+                        showOptions: vscode.ViewColumn.Two,
+                        options: {
+                            enableScripts: true,
+                            retainContextWhenHidden: true
+                        }
+                    },
+                    (panel) => new AudioPlayerPanel(
+                        panel,
+                        context,
+                        this.logger,
+                        this.audioService!
+                    )
+                );
+            })
+        );
+        
+        // Add to queue from selection command
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.addSelectionToAudioQueue', async () => {
+                const editor = vscode.window.activeTextEditor;
+                if (!editor || !this.audioService) return;
+                
+                const selection = editor.selection;
+                const text = editor.document.getText(selection);
+                
+                if (!text) {
+                    vscode.window.showWarningMessage('No text selected');
+                    return;
+                }
+                
+                try {
+                    await this.audioService.addToQueue(text, 'synthesis', {
+                        metadata: {
+                            source: vscode.workspace.asRelativePath(editor.document.fileName)
+                        }
+                    });
+                    
+                    vscode.window.showInformationMessage('Added to audio queue');
+                } catch (error) {
+                    this.logger.error('Failed to add to audio queue', error);
+                    vscode.window.showErrorMessage('Failed to add to audio queue');
+                }
+            })
+        );
+        
+        // Play/pause command
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.audioPlay', () => {
+                this.audioService?.play();
+            })
+        );
+        
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.audioPause', () => {
+                this.audioService?.pause();
+            })
+        );
+        
+        // Skip commands
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.audioNext', () => {
+                this.audioService?.next();
+            })
+        );
+        
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.audioPrevious', () => {
+                this.audioService?.previous();
+            })
+        );
+        
+        // Volume commands
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.audioVolumeUp', () => {
+                if (!this.audioService) return;
+                const currentVolume = this.audioService.getVolume();
+                this.audioService.setVolume(Math.min(100, currentVolume + 10));
+            })
+        );
+        
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.audioVolumeDown', () => {
+                if (!this.audioService) return;
+                const currentVolume = this.audioService.getVolume();
+                this.audioService.setVolume(Math.max(0, currentVolume - 10));
+            })
+        );
+    }
+    
+    /**
      * Cleanup extension state
      */
     public dispose(): void {
@@ -371,6 +507,7 @@ export class ExtensionState {
         // Dispose services
         this.memoryContentProvider?.dispose();
         this.memoryTreeProvider?.dispose();
+        this.audioService?.dispose();
         this.webViewManager?.dispose();
         this.connectionManager?.dispose();
         this.mcpClient?.disconnect();
