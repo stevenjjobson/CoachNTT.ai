@@ -8,6 +8,8 @@ import { ConnectionManager } from './services/connection-manager';
 import { MemoryTreeProvider } from './providers/memory-tree-provider';
 import { MemoryCommands } from './commands/memory-commands';
 import { MemoryContentProvider } from './providers/memory-content-provider';
+import { WebViewManager } from './webview/webview-manager';
+import { MemoryDetailPanel } from './webview/panels/memory-detail-panel';
 
 /**
  * Extension state management
@@ -23,6 +25,7 @@ export class ExtensionState {
     private memoryContentProvider: MemoryContentProvider | undefined;
     private mcpClient: MCPClient | undefined;
     private connectionManager: ConnectionManager | undefined;
+    private webViewManager: WebViewManager | undefined;
     private statusBarItems: Map<string, vscode.StatusBarItem>;
     private disposables: vscode.Disposable[];
 
@@ -51,6 +54,9 @@ export class ExtensionState {
             // Initialize MCP client and connection manager first
             this.initializeMCPServices(context);
             
+            // Initialize WebView manager
+            this.webViewManager = WebViewManager.getInstance(context);
+            
             // Set connection manager getter to avoid circular dependency
             this.commands.setConnectionManagerGetter(() => this.connectionManager);
             
@@ -62,6 +68,9 @@ export class ExtensionState {
             
             // Register views
             this.registerViews(context);
+            
+            // Register WebView commands
+            this.registerWebViewCommands(context);
             
             // Auto-connect if configured
             if (this.config.getAutoConnect()) {
@@ -299,6 +308,55 @@ export class ExtensionState {
     }
     
     /**
+     * Register WebView commands
+     */
+    private registerWebViewCommands(context: vscode.ExtensionContext): void {
+        // Command to open memory detail in WebView
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.openMemoryWebView', async (memory: any) => {
+                if (!this.webViewManager || !this.mcpClient) {
+                    vscode.window.showErrorMessage('WebView manager not initialized');
+                    return;
+                }
+                
+                const panelId = `memory-detail-${memory.id}`;
+                
+                this.webViewManager.createOrShowPanel(
+                    panelId,
+                    {
+                        viewType: 'coachntt.memoryDetail',
+                        title: 'Memory Details',
+                        showOptions: vscode.ViewColumn.Two,
+                        options: {
+                            enableScripts: true,
+                            retainContextWhenHidden: true
+                        }
+                    },
+                    (panel) => new MemoryDetailPanel(
+                        panel,
+                        context,
+                        this.logger,
+                        this.mcpClient!,
+                        memory
+                    )
+                );
+            })
+        );
+        
+        // Command to open WebView panel test
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.testWebView', () => {
+                if (!this.webViewManager) {
+                    vscode.window.showErrorMessage('WebView manager not initialized');
+                    return;
+                }
+                
+                vscode.window.showInformationMessage('WebView foundation is ready!');
+            })
+        );
+    }
+    
+    /**
      * Cleanup extension state
      */
     public dispose(): void {
@@ -313,6 +371,7 @@ export class ExtensionState {
         // Dispose services
         this.memoryContentProvider?.dispose();
         this.memoryTreeProvider?.dispose();
+        this.webViewManager?.dispose();
         this.connectionManager?.dispose();
         this.mcpClient?.disconnect();
         this.commands.dispose();

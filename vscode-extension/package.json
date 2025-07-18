@@ -241,6 +241,18 @@
         "title": "Configure Memory View",
         "category": "CoachNTT: Memory",
         "icon": "$(settings-gear)"
+      },
+      {
+        "command": "coachntt.openMemoryWebView",
+        "title": "Open Memory in WebView",
+        "category": "CoachNTT: Memory",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "coachntt.testWebView",
+        "title": "Test WebView Foundation",
+        "category": "CoachNTT: Developer",
+        "icon": "$(beaker)"
       }
     ],
     "viewsContainers": {
@@ -307,7 +319,12 @@
         {
           "command": "coachntt.viewMemory",
           "when": "view == coachntt.memories && viewItem == memory",
-          "group": "1_view"
+          "group": "1_view@1"
+        },
+        {
+          "command": "coachntt.openMemoryWebView",
+          "when": "view == coachntt.memories && viewItem == memory",
+          "group": "1_view@2"
         },
         {
           "command": "coachntt.editMemory",

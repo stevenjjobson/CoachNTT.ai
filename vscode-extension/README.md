@@ -19,11 +19,15 @@
   - Automatic abstraction of paths, URLs, and sensitive data
   - Safety score monitoring in status bar
   - Validation at every layer
+- **🖼️ Rich WebViews**: Advanced UI panels with secure content display
+  - Memory detail panels with real-time updates
+  - Type-safe message protocol
+  - Strict Content Security Policy (CSP)
+  - VSCode theme integration
 
 ### 🚧 Coming Soon
 - **🎤 Voice Commands**: Natural language interface for hands-free operation (Session 2.3)
 - **📊 Real-time Monitoring**: Performance metrics and alerts integrated into your IDE (Session 2.2)
-- **🖼️ Rich WebViews**: Advanced UI panels for memory details and monitoring (Session 2.1.4)
 - **🎵 Audio Playback**: Voice synthesis and playback controls (Session 2.2.1)
 
 ## Installation
@@ -109,6 +113,7 @@ All commands are available through the Command Palette (`Ctrl+Shift+P` / `Cmd+Sh
 - `CoachNTT: Export Memories` - Export memories to JSON
 - `CoachNTT: Import Memories` - Import memories from JSON
 - `CoachNTT: Configure Memory View` - Adjust memory view settings
+- `CoachNTT: Open Memory in WebView` - View memory details in rich WebView panel
 
 ### General Commands
 - `CoachNTT: Show Extension Logs` - View extension output logs
@@ -180,6 +185,11 @@ src/
 │   └── mcp-events.ts    # Real-time update events
 ├── types/               # TypeScript definitions
 │   └── mcp.types.ts     # MCP message types
+├── webview/             # WebView components
+│   ├── webview-manager.ts # Panel lifecycle management
+│   ├── message-protocol.ts # Type-safe messaging
+│   ├── panels/          # WebView implementations
+│   └── templates/       # HTML template generation
 └── utils/               # Utilities
     └── logger.ts        # Logger with abstraction
 ```
