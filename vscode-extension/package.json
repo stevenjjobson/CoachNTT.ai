@@ -454,6 +454,24 @@
         "title": "Show Performance Hints",
         "category": "CoachNTT: Analysis",
         "enablement": "false"
+      },
+      {
+        "command": "coachntt.convertToLivingDocument",
+        "title": "Convert to Living Document (.CoachNTT)",
+        "category": "CoachNTT: Documents",
+        "icon": "$(file-symlink-file)"
+      }
+    ],
+    "languages": [
+      {
+        "id": "coachntt-doc",
+        "aliases": ["CoachNTT Document", "Living Document"],
+        "extensions": [".CoachNTT"],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./resources/icons/coachntt-doc-light.svg",
+          "dark": "./resources/icons/coachntt-doc-dark.svg"
+        }
       }
     ],
     "viewsContainers": {
@@ -478,6 +496,14 @@
           "name": "Memories",
           "icon": "$(archive)",
           "contextualTitle": "CoachNTT Memories",
+          "visibility": "visible",
+          "when": "coachntt.connected"
+        },
+        {
+          "id": "coachntt.documents",
+          "name": "Living Documents",
+          "icon": "$(file-text)",
+          "contextualTitle": "CoachNTT Living Documents",
           "visibility": "visible",
           "when": "coachntt.connected"
         }
@@ -553,6 +579,11 @@
           "command": "coachntt.addSelectionToAudioQueue",
           "when": "editorHasSelection && coachntt.connected",
           "group": "coachntt@2"
+        },
+        {
+          "command": "coachntt.convertToLivingDocument",
+          "when": "resourceExtname != .CoachNTT",
+          "group": "coachntt@3"
         }
       ],
       "commandPalette": [

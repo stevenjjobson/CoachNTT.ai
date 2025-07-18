@@ -20,6 +20,7 @@ export enum MemoryIntent {
     WORKFLOW = 'workflow',
     REFERENCE = 'reference',
     DECISION = 'decision',
+    LIVING_DOCUMENT = 'living_document',
     UNKNOWN = 'unknown'
 }
 

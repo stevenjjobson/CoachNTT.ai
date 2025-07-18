@@ -1,0 +1,21 @@
+---
+title: CoachNTT VSCode Extension
+created: 2025-01-18T00:00:00Z
+category: architecture
+tags: [vscode, extension, living-documents]
+---
+
+# CoachNTT VSCode Extension
+
+This Living Document describes the architecture and features of the CoachNTT VSCode extension.
+
+## Overview
+
+The extension is located at /home/user/projects/CoachNTT.ai/vscode-extension and connects to the backend API at https://api.coachntt.com/v1.
+
+## Key Features
+
+### 1. Memory Management
+- Stores AI interactions in <project>/src/models/memory.model.ts
+- Connects via WebSocket to wss://api.coachntt.com/ws
+- Uses

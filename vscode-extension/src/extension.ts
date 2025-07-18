@@ -19,6 +19,8 @@ import { MonitoringDashboard } from './webview/monitoring/monitoring-dashboard';
 import { CodeAnalysisService } from './services/code-analysis-service';
 import { ComplexityCodeLensProvider } from './providers/code-lens-provider';
 import { CodeInsightsPanel } from './webview/code-insights/code-insights-panel';
+import { LivingDocumentService } from './services/living-document-service';
+import { DocumentTreeProvider } from './providers/document-tree-provider';
 
 /**
  * Extension state management
@@ -40,6 +42,8 @@ export class ExtensionState {
     private monitoringService: MonitoringService | undefined;
     private codeAnalysisService: CodeAnalysisService | undefined;
     private codeLensProvider: ComplexityCodeLensProvider | undefined;
+    private livingDocumentService: LivingDocumentService | undefined;
+    private documentTreeProvider: DocumentTreeProvider | undefined;
     private statusBarItems: Map<string, vscode.StatusBarItem>;
     private disposables: vscode.Disposable[];
 
@@ -81,6 +85,9 @@ export class ExtensionState {
             // Initialize Code Analysis service
             this.codeAnalysisService = CodeAnalysisService.getInstance();
             this.codeLensProvider = new ComplexityCodeLensProvider();
+            
+            // Initialize Living Documents (will be connected when MCP is ready)
+            this.documentTreeProvider = new DocumentTreeProvider();
             
             // Set connection manager getter to avoid circular dependency
             this.commands.setConnectionManagerGetter(() => this.connectionManager);
@@ -318,6 +325,12 @@ export class ExtensionState {
                 // Register memory view if not already registered
                 if (!this.memoryCommands) {
                     this.registerViews(context);
+                }
+                
+                // Initialize Living Document service when connected
+                if (!this.livingDocumentService) {
+                    this.livingDocumentService = LivingDocumentService.getInstance(this.mcpClient);
+                    this.registerLivingDocumentCommands(context);
                 }
             });
             
@@ -835,6 +848,58 @@ export class ExtensionState {
     private isSupportedDocument(document: vscode.TextDocument): boolean {
         const supportedLanguages = ['typescript', 'javascript', 'typescriptreact', 'javascriptreact'];
         return supportedLanguages.includes(document.languageId);
+    }
+    
+    /**
+     * Register Living Document commands
+     */
+    private registerLivingDocumentCommands(context: vscode.ExtensionContext): void {
+        if (!this.livingDocumentService) return;
+        
+        // Auto-handle .CoachNTT files
+        context.subscriptions.push(
+            vscode.workspace.onDidOpenTextDocument(async (document) => {
+                if (document.fileName.endsWith('.CoachNTT')) {
+                    await this.livingDocumentService!.processCoachNTTFile(document.uri);
+                }
+            })
+        );
+        
+        // Save handler for .CoachNTT files
+        context.subscriptions.push(
+            vscode.workspace.onDidSaveTextDocument(async (document) => {
+                if (document.fileName.endsWith('.CoachNTT')) {
+                    await this.livingDocumentService!.processCoachNTTFile(document.uri);
+                    vscode.window.showInformationMessage('Living Document updated and abstracted');
+                }
+            })
+        );
+        
+        // Convert to Living Document command
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.convertToLivingDocument', async () => {
+                const editor = vscode.window.activeTextEditor;
+                if (!editor) {
+                    vscode.window.showWarningMessage('No active editor');
+                    return;
+                }
+                
+                try {
+                    const newUri = await this.livingDocumentService!.convertToCoachNTT(editor.document.uri);
+                    await vscode.window.showTextDocument(newUri);
+                    vscode.window.showInformationMessage('Converted to Living Document');
+                } catch (error) {
+                    vscode.window.showErrorMessage('Failed to convert to Living Document');
+                }
+            })
+        );
+        
+        // Register document tree view
+        const documentTreeView = vscode.window.createTreeView('coachntt.documents', {
+            treeDataProvider: this.documentTreeProvider!,
+            showCollapseAll: true
+        });
+        context.subscriptions.push(documentTreeView);
     }
     
     /**
