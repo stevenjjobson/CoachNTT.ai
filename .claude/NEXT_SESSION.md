@@ -1,64 +1,65 @@
-# 🚀 Next Session: 2.1.2 MCP Client Integration
+# 🚀 Next Session: 2.1.3 Memory Tree Provider
 
 ## 📋 Session Overview
 
-**Session**: 2.1.2 MCP Client Integration  
+**Session**: 2.1.3 Memory Tree Provider  
 **Phase**: 2 - VSCode Extension & Voice Integration  
-**Prerequisites**: Session 2.1.1 complete ✅, Extension scaffold ready ✅  
-**Focus**: Implement MCP server communication with WebSocket  
-**Context Budget**: ~3000 tokens  
-**Estimated Output**: ~1000 lines  
+**Prerequisites**: Session 2.1.2 complete ✅, MCP client ready ✅  
+**Focus**: Create hierarchical memory view in sidebar  
+**Context Budget**: ~2800 tokens  
+**Estimated Output**: ~900 lines  
 
 ## 🎯 Quick Start Command
 
 ### Copy this to start the next session:
 ```
-I'm continuing Phase 2 of CoachNTT.ai. Session 2.1.1 (VSCode Extension Scaffold) is complete.
+I'm continuing Phase 2 of CoachNTT.ai. Session 2.1.2 (MCP Client Integration) is complete.
 
 Please review:
 1. @.claude/NEXT_SESSION.md (this file)  
-2. @.claude/CLAUDE.md (Session 2.1.1 complete ✅)
-3. @vscode-extension/src/extension.ts (Main entry point)
-4. @vscode-extension/src/commands/index.ts (Command infrastructure)
-5. @project-docs/Phase2_Implementation_Cadence.md (Session 2.1.2 requirements)
+2. @.claude/CLAUDE.md (Session 2.1.2 complete ✅)
+3. @vscode-extension/src/services/mcp-client.ts (WebSocket client)
+4. @vscode-extension/src/services/connection-manager.ts (Connection lifecycle)
+5. @project-docs/Phase2_Implementation_Cadence.md (Session 2.1.3 requirements)
 
-Ready to start Session 2.1.2: MCP Client Integration.
-Note: Extension foundation is ready with safety-first design.
+Ready to start Session 2.1.3: Memory Tree Provider.
+Note: MCP client is working with real-time WebSocket updates.
 ```
 
 ## 📚 Context Files to Load
 
 ### Essential Files (Load First)
-1. **`vscode-extension/src/extension.ts`** - Main extension entry point
-2. **`vscode-extension/src/commands/index.ts`** - Command registry to extend
-3. **`vscode-extension/src/config/settings.ts`** - Configuration service
-4. **`src/api/routers/websocket.py`** - WebSocket endpoint reference
-5. **`project-docs/Phase2_Implementation_Cadence.md`** - Session 2.1.2 requirements
+1. **`vscode-extension/src/providers/welcomeView.ts`** - Existing tree provider reference
+2. **`vscode-extension/src/services/mcp-client.ts`** - MCP client for data fetching
+3. **`vscode-extension/src/types/mcp.types.ts`** - Type definitions
+4. **`src/api/models/memory.py`** - Memory API models
+5. **`project-docs/Phase2_Implementation_Cadence.md`** - Session 2.1.3 requirements
 
 ### Reference Files (Load as Needed)
-- `vscode-extension/package.json` - Extension manifest
-- `src/api/dependencies.py` - JWT authentication reference
-- `src/api/models/memory.py` - Memory models for MCP tools
-- `project-docs/VSCode_Extension_PRD.md` - MCP integration requirements
+- `vscode-extension/package.json` - View contributions
+- `vscode-extension/src/events/mcp-events.ts` - Event system
+- `src/core/memory/models.py` - Memory types reference
+- `project-docs/VSCode_Extension_PRD.md` - Tree view requirements
 
 ## ⚠️ Important Session Notes
 
-### Session 2.1.1 Complete - Ready for MCP Integration
-**Session 2.1.1 Achievements**:
-- ✅ Extension scaffolding with TypeScript strict mode
-- ✅ 6 commands registered and working
-- ✅ Status bar items with dynamic updates
-- ✅ Welcome view in activity bar
-- ✅ Logger with automatic abstraction
-- ✅ Configuration service with validation
-- ✅ F5 debugging environment ready
+### Session 2.1.2 Complete - Ready for Memory Tree
+**Session 2.1.2 Achievements**:
+- ✅ WebSocket client with automatic reconnection
+- ✅ Connection manager with retry logic
+- ✅ Type-safe MCP message interfaces
+- ✅ JWT authentication with secure storage
+- ✅ Event system for real-time updates
+- ✅ Channel subscription management
+- ✅ Integration with extension commands
+- ✅ Comprehensive test suite
 
-**Session 2.1.2 Focus**:
-- **MCP Client**: Create WebSocket client for MCP server
-- **Connection Management**: Retry logic and lifecycle handling
-- **Type Safety**: Define MCP tool interfaces
-- **Authentication**: JWT token support
-- **Event System**: MCP event emitter for real-time updates
+**Session 2.1.3 Focus**:
+- **Tree Provider**: Create memory tree data provider
+- **Three-Tier Structure**: Working → Session → Long-term
+- **Icons & Decorations**: Visual memory type indicators
+- **Lazy Loading**: Efficient handling of large datasets
+- **Search & Filter**: Memory search functionality
 
 ## 🏗️ Implementation Strategy
 

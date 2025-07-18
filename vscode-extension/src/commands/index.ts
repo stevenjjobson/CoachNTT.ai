@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { Logger } from '../utils/logger';
 import { ConfigurationService } from '../config/settings';
+import { ConnectionManager } from '../services/connection-manager';
 
 /**
  * Command handler type
@@ -14,12 +15,13 @@ export class CommandRegistry {
     private static instance: CommandRegistry;
     private logger: Logger;
     private config: ConfigurationService;
+    private connectionManager: ConnectionManager;
     private commands: Map<string, vscode.Disposable>;
-    private isConnected: boolean = false;
 
     private constructor() {
         this.logger = Logger.getInstance();
         this.config = ConfigurationService.getInstance();
+        this.connectionManager = ConnectionManager.getInstance();
         this.commands = new Map();
     }
 
@@ -38,6 +40,9 @@ export class CommandRegistry {
      */
     public registerCommands(context: vscode.ExtensionContext): void {
         this.logger.info('Registering extension commands');
+
+        // Initialize connection manager with context
+        this.connectionManager.initialize(context);
 
         // Register each command
         this.register('coachntt.connect', () => this.handleConnect());
@@ -88,31 +93,25 @@ export class CommandRegistry {
                 return;
             }
 
-            // TODO: Implement actual connection logic in Session 2.1.2
-            // For now, just simulate connection
+            // Connect using ConnectionManager
             await vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
                 title: 'Connecting to CoachNTT backend...',
                 cancellable: false
             }, async (progress) => {
                 progress.report({ increment: 30 });
-                await new Promise(resolve => setTimeout(resolve, 500));
                 
-                progress.report({ increment: 50, message: 'Establishing connection...' });
-                await new Promise(resolve => setTimeout(resolve, 500));
-                
-                progress.report({ increment: 20, message: 'Connected!' });
-                await new Promise(resolve => setTimeout(resolve, 300));
+                try {
+                    await this.connectionManager.connect();
+                    progress.report({ increment: 70, message: 'Connected!' });
+                } catch (error) {
+                    throw error;
+                }
             });
-
-            this.isConnected = true;
-            await vscode.commands.executeCommand('setContext', 'coachntt.connected', true);
-            vscode.window.showInformationMessage('Connected to CoachNTT backend');
-            this.logger.info('Successfully connected to backend');
             
         } catch (error) {
             this.logger.error('Failed to connect', error);
-            vscode.window.showErrorMessage('Failed to connect to backend');
+            // Error already handled by ConnectionManager
         }
     }
 
@@ -123,10 +122,7 @@ export class CommandRegistry {
         this.logger.info('Disconnecting from backend');
         
         try {
-            // TODO: Implement actual disconnection logic in Session 2.1.2
-            this.isConnected = false;
-            await vscode.commands.executeCommand('setContext', 'coachntt.connected', false);
-            vscode.window.showInformationMessage('Disconnected from CoachNTT backend');
+            await this.connectionManager.disconnect();
             this.logger.info('Successfully disconnected from backend');
             
         } catch (error) {
@@ -166,15 +162,23 @@ export class CommandRegistry {
      */
     private async handleCheckStatus(): Promise<void> {
         const config = this.config.getConnectionConfig();
-        const status = this.isConnected ? 'Connected' : 'Disconnected';
+        const state = this.connectionManager.getState();
+        const status = state.connected ? 'Connected' : 'Disconnected';
         
-        const message = `
+        let message = `
 Status: ${status}
 API URL: ${config.url}
 WebSocket URL: ${config.websocketUrl}
 Safety Validation: ${this.config.getSafetyValidation() ? 'Enabled' : 'Disabled'}
 Min Safety Score: ${this.config.getMinSafetyScore()}
         `.trim();
+
+        if (state.connected) {
+            message += `\n\nConnection Details:`;
+            message += `\nUser ID: ${state.userId || 'Unknown'}`;
+            message += `\nChannels: ${state.channels.size} subscribed`;
+            message += `\nReconnect Attempts: ${state.reconnectAttempts}`;
+        }
 
         vscode.window.showInformationMessage(message, { modal: true });
     }
@@ -183,7 +187,7 @@ Min Safety Score: ${this.config.getMinSafetyScore()}
      * Get connection status
      */
     public getConnectionStatus(): boolean {
-        return this.isConnected;
+        return this.connectionManager.getState().connected;
     }
 
     /**
@@ -192,5 +196,6 @@ Min Safety Score: ${this.config.getMinSafetyScore()}
     public dispose(): void {
         this.commands.forEach(disposable => disposable.dispose());
         this.commands.clear();
+        this.connectionManager.dispose();
     }
 }

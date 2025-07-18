@@ -78,6 +78,13 @@
           ],
           "description": "Logging level for extension output",
           "order": 7
+        },
+        "coachntt.authToken": {
+          "type": "string",
+          "default": "",
+          "description": "JWT authentication token (stored securely)",
+          "order": 8,
+          "markdownDescription": "Your JWT authentication token. This will be stored securely in VSCode's secret storage. Leave empty to prompt for token on connection."
         }
       }
     },
@@ -172,19 +179,26 @@
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "18.x",
+    "@types/sinon": "^17.0.2",
     "@types/vscode": "^1.85.0",
+    "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "@vscode/test-electron": "^2.3.8",
     "eslint": "^8.56.0",
     "glob": "^10.3.10",
     "mocha": "^10.2.0",
+    "sinon": "^17.0.1",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
   },
-  "dependencies": {},
+  "dependencies": {
+    "ws": "^8.16.0",
+    "eventemitter3": "^5.0.1",
+    "p-retry": "^5.1.2"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/coachntt/vscode-extension"

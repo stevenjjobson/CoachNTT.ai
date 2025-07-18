@@ -257,6 +257,18 @@
   - Set up F5 debugging with launch.json and automated build tasks
   - Achieved all deliverables: extension activates, commands work, safety enforced (~900 lines)
 
+- **Session 2.1.2**: MCP Client Integration
+  - Implemented MCPClient service with WebSocket connection handling and automatic reconnection (~400 lines)
+  - Created ConnectionManager with retry logic using p-retry and exponential backoff strategy (~350 lines)
+  - Built comprehensive type system for MCP messages with type guards and interfaces (~250 lines)
+  - Implemented MCPEventEmitter with typed events and channel filtering capabilities (~200 lines)
+  - Added JWT authentication with VSCode SecretStorage for secure token management
+  - Integrated MCP client with existing commands for connect/disconnect functionality
+  - Created channel subscription system for memory_updates, graph_updates, and notifications
+  - Built real-time status bar updates reflecting connection state and safety scores
+  - Added comprehensive test suites for MCPClient and ConnectionManager with mocking
+  - Achieved all deliverables: WebSocket connection working, auth secure, events flowing (~1200 lines)
+
 ### 🏗️ Architecture Summary
 ```
 src/
@@ -404,15 +416,24 @@ vscode-extension/              # VSCode Extension (Phase 2)
 │   ├── config/
 │   │   └── settings.ts        # Configuration service with safety validation
 │   ├── commands/
-│   │   └── index.ts           # Command registry and handlers
+│   │   └── index.ts           # Command registry with MCP integration
+│   ├── services/
+│   │   ├── mcp-client.ts      # WebSocket client for MCP communication
+│   │   └── connection-manager.ts # Connection lifecycle and retry logic
+│   ├── events/
+│   │   └── mcp-events.ts      # Typed event emitter for real-time updates
+│   ├── types/
+│   │   └── mcp.types.ts       # MCP message type definitions
 │   ├── providers/
 │   │   └── welcomeView.ts     # Tree data provider for activity bar
 │   └── utils/
 │       └── logger.ts          # Logger with automatic abstraction
 ├── test/
 │   └── suite/
-│       └── extension.test.ts  # Extension unit tests
-├── package.json               # Extension manifest with contributions
+│       ├── extension.test.ts  # Extension unit tests
+│       ├── mcp-client.test.ts # MCP client tests with mocking
+│       └── connection-manager.test.ts # Connection manager tests
+├── package.json               # Extension manifest with WebSocket deps
 ├── tsconfig.json              # TypeScript strict configuration
 ├── webpack.config.js          # Build configuration
 └── .vscode/
@@ -442,13 +463,13 @@ docker-compose exec postgres psql -U ccp_user -d cognitive_coding_partner
 
 **For detailed session preparation, see:** [NEXT_SESSION.md](.claude/NEXT_SESSION.md)
 
-### Quick Summary: Session 2.1.2 MCP Client Integration
-- **Prerequisites**: Session 2.1.1 complete ✅, Extension scaffold ready ✅
-- **Focus**: Implement MCP server communication with WebSocket
-- **Context Budget**: ~3000 tokens
-- **Estimated Output**: ~1000 lines
+### Quick Summary: Session 2.1.3 Memory Tree Provider
+- **Prerequisites**: Session 2.1.2 complete ✅, MCP client ready ✅
+- **Focus**: Create hierarchical memory view in sidebar
+- **Context Budget**: ~2800 tokens
+- **Estimated Output**: ~900 lines
 
-**Note**: Session 2.1.1 (VSCode Extension Scaffold) completed with full TypeScript foundation, 6 commands, status bar items, welcome view, and safety-first logger.
+**Note**: Session 2.1.2 (MCP Client Integration) completed with WebSocket client, connection manager, event system, and secure JWT authentication.
 
 ## 📁 Pre-Session Structure Check
 
@@ -468,7 +489,7 @@ Before creating new files or directories:
 - Phase 4: Integration & Polish [▓▓▓▓▓▓] 100% (7/7 sessions: 4.1a ✅, 4.1b ✅, 4.2a ✅, 4.2b ✅, 4.2c ✅, 4.2d ✅, 4.3 ✅)
 
 ### Phase 2 (In Progress)
-- Week 1-2: Foundation [▓▓░░░░] 25% (1/4 sessions) - Session 2.1.1 ✅
+- Week 1-2: Foundation [▓▓▓▓░░] 50% (2/4 sessions) - Sessions 2.1.1 ✅, 2.1.2 ✅
 - Week 3-4: Core Features [░░░░░░] 0% (0/4 sessions)
 - Week 5: Voice Integration [░░░░░░] 0% (0/4 sessions)
 - Week 6: Polish & Advanced [░░░░░░] 0% (0/3 sessions)
