@@ -16,6 +16,9 @@ import { AudioCaptureService } from './services/audio-capture-service';
 import { VoiceInputPanel } from './webview/voice-input/voice-input-panel';
 import { MonitoringService } from './services/monitoring-service';
 import { MonitoringDashboard } from './webview/monitoring/monitoring-dashboard';
+import { CodeAnalysisService } from './services/code-analysis-service';
+import { ComplexityCodeLensProvider } from './providers/code-lens-provider';
+import { CodeInsightsPanel } from './webview/code-insights/code-insights-panel';
 
 /**
  * Extension state management
@@ -35,6 +38,8 @@ export class ExtensionState {
     private audioService: AudioPlaybackService | undefined;
     private audioCaptureService: AudioCaptureService | undefined;
     private monitoringService: MonitoringService | undefined;
+    private codeAnalysisService: CodeAnalysisService | undefined;
+    private codeLensProvider: ComplexityCodeLensProvider | undefined;
     private statusBarItems: Map<string, vscode.StatusBarItem>;
     private disposables: vscode.Disposable[];
 
@@ -73,6 +78,10 @@ export class ExtensionState {
             // Initialize Monitoring service
             this.monitoringService = MonitoringService.getInstance();
             
+            // Initialize Code Analysis service
+            this.codeAnalysisService = CodeAnalysisService.getInstance();
+            this.codeLensProvider = new ComplexityCodeLensProvider();
+            
             // Set connection manager getter to avoid circular dependency
             this.commands.setConnectionManagerGetter(() => this.connectionManager);
             
@@ -96,6 +105,9 @@ export class ExtensionState {
             
             // Register monitoring commands
             this.registerMonitoringCommands(context);
+            
+            // Register code analysis commands
+            this.registerCodeAnalysisCommands(context);
             
             // Create audio status bar item
             if (this.audioService) {
@@ -669,6 +681,163 @@ export class ExtensionState {
     }
     
     /**
+     * Register code analysis commands
+     */
+    private registerCodeAnalysisCommands(context: vscode.ExtensionContext): void {
+        if (!this.codeAnalysisService) return;
+        
+        // Register CodeLens provider
+        context.subscriptions.push(
+            vscode.languages.registerCodeLensProvider(
+                [
+                    { language: 'typescript' },
+                    { language: 'javascript' },
+                    { language: 'typescriptreact' },
+                    { language: 'javascriptreact' }
+                ],
+                this.codeLensProvider!
+            )
+        );
+        
+        // Open code insights panel
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.openCodeInsights', () => {
+                if (!this.webViewManager || !this.codeAnalysisService) {
+                    vscode.window.showErrorMessage('Code analysis service not initialized');
+                    return;
+                }
+                
+                this.webViewManager.createOrShowPanel(
+                    'code-insights',
+                    {
+                        viewType: 'coachntt.codeInsights',
+                        title: 'Code Insights',
+                        showOptions: vscode.ViewColumn.Two,
+                        options: {
+                            enableScripts: true,
+                            retainContextWhenHidden: true
+                        }
+                    },
+                    (panel) => new CodeInsightsPanel(
+                        panel,
+                        context,
+                        this.logger
+                    )
+                );
+            })
+        );
+        
+        // Analyze current file command
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.analyzeCurrentFile', async () => {
+                const editor = vscode.window.activeTextEditor;
+                if (!editor) {
+                    vscode.window.showWarningMessage('No active editor');
+                    return;
+                }
+                
+                try {
+                    const result = await this.codeAnalysisService!.analyzeFile(editor.document.uri);
+                    vscode.window.showInformationMessage(
+                        `Analysis complete - Score: ${result.summary.score} (${result.summary.grade})`
+                    );
+                } catch (error) {
+                    vscode.window.showErrorMessage('Analysis failed: ' + (error as Error).message);
+                }
+            })
+        );
+        
+        // Show complexity details command (for CodeLens)
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.showComplexityDetails', 
+                (uri: vscode.Uri, range: vscode.Range, metrics: any) => {
+                    vscode.window.showInformationMessage(
+                        `Complexity - Cyclomatic: ${metrics.cyclomatic}, Cognitive: ${metrics.cognitive}, Nesting: ${metrics.nestingDepth}`
+                    );
+                }
+            )
+        );
+        
+        // Show pattern details command
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.showPatternDetails',
+                (uri: vscode.Uri, pattern: any) => {
+                    vscode.window.showInformationMessage(
+                        `${pattern.name}: ${pattern.description}`
+                    );
+                }
+            )
+        );
+        
+        // Show class analysis command
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.showClassAnalysis',
+                (uri: vscode.Uri, range: vscode.Range, metrics: any) => {
+                    vscode.window.showInformationMessage(
+                        `Class Analysis - Methods: ${metrics.methodCount}, Properties: ${metrics.propertyCount}, Total Complexity: ${metrics.totalComplexity}`
+                    );
+                }
+            )
+        );
+        
+        // Show performance hints command
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.showPerformanceHints',
+                (uri: vscode.Uri, range: vscode.Range, issues: string[]) => {
+                    vscode.window.showWarningMessage(
+                        `Performance Issues: ${issues.join(', ')}`
+                    );
+                }
+            )
+        );
+        
+        // Enable/disable CodeLens command
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.toggleCodeLens', () => {
+                const config = vscode.workspace.getConfiguration('coachntt.codeAnalysis');
+                const enabled = config.get('enableCodeLens', true);
+                config.update('enableCodeLens', !enabled, vscode.ConfigurationTarget.Global);
+                vscode.window.showInformationMessage(
+                    `CodeLens ${!enabled ? 'enabled' : 'disabled'}`
+                );
+            })
+        );
+        
+        // Analysis status bar item
+        const analysisStatus = vscode.window.createStatusBarItem(
+            vscode.StatusBarAlignment.Left,
+            96
+        );
+        analysisStatus.text = '$(code) Analyze';
+        analysisStatus.tooltip = 'Open Code Insights';
+        analysisStatus.command = 'coachntt.openCodeInsights';
+        analysisStatus.show();
+        this.statusBarItems.set('analysis', analysisStatus);
+        context.subscriptions.push(analysisStatus);
+        
+        // Listen for file save to trigger analysis
+        context.subscriptions.push(
+            vscode.workspace.onDidSaveTextDocument(async (document) => {
+                if (this.isSupportedDocument(document)) {
+                    const config = vscode.workspace.getConfiguration('coachntt.codeAnalysis');
+                    if (config.get('analyzeOnSave', true)) {
+                        try {
+                            await this.codeAnalysisService!.analyzeFile(document.uri);
+                        } catch (error) {
+                            this.logger.error('Auto-analysis failed', error);
+                        }
+                    }
+                }
+            })
+        );
+    }
+    
+    private isSupportedDocument(document: vscode.TextDocument): boolean {
+        const supportedLanguages = ['typescript', 'javascript', 'typescriptreact', 'javascriptreact'];
+        return supportedLanguages.includes(document.languageId);
+    }
+    
+    /**
      * Cleanup extension state
      */
     public dispose(): void {
@@ -686,6 +855,8 @@ export class ExtensionState {
         this.audioService?.dispose();
         this.audioCaptureService?.dispose();
         this.monitoringService?.dispose();
+        this.codeAnalysisService?.dispose();
+        this.codeLensProvider?.dispose();
         this.webViewManager?.dispose();
         this.connectionManager?.dispose();
         this.mcpClient?.disconnect();

@@ -164,6 +164,32 @@
           "maximum": 95,
           "description": "Maximum memory threshold percentage",
           "order": 17
+        },
+        "coachntt.codeAnalysis.enableCodeLens": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable inline code complexity indicators",
+          "order": 18
+        },
+        "coachntt.codeAnalysis.analyzeOnSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically analyze files on save",
+          "order": 19
+        },
+        "coachntt.codeAnalysis.complexityThreshold": {
+          "type": "number",
+          "default": 10,
+          "minimum": 5,
+          "maximum": 50,
+          "description": "Cyclomatic complexity warning threshold",
+          "order": 20
+        },
+        "coachntt.codeAnalysis.enabledPatterns": {
+          "type": "array",
+          "default": ["long-method", "god-class", "nested-loops", "dead-code"],
+          "description": "Enabled pattern detectors",
+          "order": 21
         }
       }
     },
@@ -386,6 +412,48 @@
         "title": "Update Session Count",
         "category": "CoachNTT: Monitoring",
         "icon": "$(symbol-numeric)"
+      },
+      {
+        "command": "coachntt.openCodeInsights",
+        "title": "Open Code Insights",
+        "category": "CoachNTT: Analysis",
+        "icon": "$(code)"
+      },
+      {
+        "command": "coachntt.analyzeCurrentFile",
+        "title": "Analyze Current File",
+        "category": "CoachNTT: Analysis",
+        "icon": "$(play)"
+      },
+      {
+        "command": "coachntt.toggleCodeLens",
+        "title": "Toggle Code Complexity Indicators",
+        "category": "CoachNTT: Analysis",
+        "icon": "$(eye)"
+      },
+      {
+        "command": "coachntt.showComplexityDetails",
+        "title": "Show Complexity Details",
+        "category": "CoachNTT: Analysis",
+        "enablement": "false"
+      },
+      {
+        "command": "coachntt.showPatternDetails",
+        "title": "Show Pattern Details",
+        "category": "CoachNTT: Analysis",
+        "enablement": "false"
+      },
+      {
+        "command": "coachntt.showClassAnalysis",
+        "title": "Show Class Analysis",
+        "category": "CoachNTT: Analysis",
+        "enablement": "false"
+      },
+      {
+        "command": "coachntt.showPerformanceHints",
+        "title": "Show Performance Hints",
+        "category": "CoachNTT: Analysis",
+        "enablement": "false"
       }
     ],
     "viewsContainers": {
@@ -601,6 +669,7 @@
     "chart.js": "^4.5.0",
     "eventemitter3": "^5.0.1",
     "p-retry": "^5.1.2",
+    "typescript": "^5.3.3",
     "ws": "^8.16.0"
   },
   "repository": {
