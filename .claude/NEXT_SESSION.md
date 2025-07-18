@@ -1,210 +1,204 @@
-# 🎯 Next Session: 2.2.2 Voice Activity Detection
+# 🎯 Next Session: 2.2.3 Real-time Monitoring Dashboard
 
 ## 📋 Session Overview
-- **Session**: 2.2.2
-- **Title**: Voice Activity Detection & Audio Capture
+- **Session**: 2.2.3
+- **Title**: Real-time Monitoring Dashboard
 - **Duration**: 1.5-2 hours
-- **Complexity**: Medium-High
-- **Prerequisites**: Session 2.2.1 complete ✅, Audio service ready ✅
+- **Complexity**: Medium
+- **Prerequisites**: Sessions 2.2.1-2.2.2 complete ✅, WebSocket integration ready ✅
 
 ## 🎯 Primary Goals
-1. Implement voice activity detection (VAD) for automatic recording
-2. Create audio capture service with streaming support
-3. Add push-to-talk functionality
-4. Integrate with MCP for speech-to-text processing
+1. Create real-time monitoring dashboard WebView
+2. Implement resource usage tracking (CPU, memory, disk)
+3. Add performance metrics visualization
+4. Display safety score trends with charts
+5. Create system health indicators
 
 ## 📁 Files to Create/Modify
-1. **vscode-extension/src/services/voice-activity-detector.ts** (~200 lines)
-   - VAD algorithm implementation
-   - Energy-based detection with adaptive thresholds
-   - Noise floor calibration
+1. **vscode-extension/src/webview/monitoring/monitoring-dashboard.ts** (~400 lines)
+   - Dashboard WebView panel
+   - Real-time data handling
+   - Chart integration
    
-2. **vscode-extension/src/services/audio-capture-service.ts** (~300 lines)
-   - WebRTC audio capture
-   - Stream management
-   - Recording buffer with circular storage
+2. **vscode-extension/src/services/monitoring-service.ts** (~300 lines)
+   - Resource monitoring
+   - Performance metrics collection
+   - WebSocket subscription management
    
-3. **vscode-extension/src/webview/voice-input/voice-input-panel.ts** (~250 lines)
-   - Voice input UI with waveform visualization
-   - Recording status indicators
-   - Push-to-talk controls
+3. **vscode-extension/media/monitoring-dashboard.css** (~250 lines)
+   - Dashboard layout styles
+   - Chart container styles
+   - Status indicator animations
    
-4. **vscode-extension/media/voice-input.css** (~150 lines)
-   - Voice input panel styles
-   - Waveform animations
-   - Recording indicators
+4. **vscode-extension/media/monitoring-dashboard.js** (~350 lines)
+   - Chart.js integration
+   - Real-time chart updates
+   - Interactive controls
    
-5. **vscode-extension/media/voice-input.js** (~200 lines)
-   - Client-side audio capture
-   - Waveform rendering
-   - VAD visualization
+5. **vscode-extension/src/types/monitoring.types.ts** (~100 lines)
+   - Monitoring data types
+   - Chart configuration types
+   - Metric interfaces
 
 ## 🔍 Technical Requirements
-### Voice Activity Detection
-- Energy-based detection with 40ms frames
-- Adaptive threshold based on noise floor
-- Pre-speech buffer (300ms) to capture beginning
-- Post-speech timeout (800ms) to avoid cutting off
-- Frequency analysis for speech/noise discrimination
+### Dashboard Components
+- Resource usage gauges (CPU, Memory, Disk)
+- Safety score trend chart (line graph)
+- Performance metrics cards
+- System health status indicators
+- Real-time log stream viewer
 
-### Audio Capture
-- WebRTC getUserMedia API
-- 16kHz sample rate for speech
-- Mono channel recording
-- Streaming to backend in chunks
-- Automatic gain control (AGC)
+### Data Collection
+- Poll system resources every 5 seconds
+- Subscribe to WebSocket performance updates
+- Maintain 1-hour rolling window of data
+- Calculate moving averages for trends
+- Detect anomalies and alert thresholds
 
-### Push-to-Talk
-- Configurable hotkey (default: Ctrl+Shift+V)
-- Visual feedback during recording
-- Auto-stop on key release
-- Maximum recording duration (30s)
+### Visualization
+- Use Chart.js for interactive charts
+- Implement smooth animations
+- Support dark/light theme switching
+- Responsive layout for different panel sizes
+- Export capability for reports
 
 ## 📝 Implementation Plan
-### Part 1: Voice Activity Detector
+### Part 1: Monitoring Service
 ```typescript
-export class VoiceActivityDetector {
-    private energyThreshold: number;
-    private noiseFloor: number;
-    private speechFrames: number = 0;
+export class MonitoringService {
+    private metrics: Map<string, MetricData[]>;
+    private thresholds: ResourceThresholds;
     
-    public detectSpeech(audioData: Float32Array): boolean {
-        const energy = this.calculateEnergy(audioData);
-        const isSpeech = energy > this.energyThreshold;
-        // Implement hysteresis and smoothing
-        return this.smoothDetection(isSpeech);
+    public collectSystemMetrics(): SystemMetrics {
+        return {
+            cpu: process.cpuUsage(),
+            memory: process.memoryUsage(),
+            uptime: process.uptime()
+        };
     }
 }
 ```
 
-### Part 2: Audio Capture Service
+### Part 2: Dashboard WebView
 ```typescript
-export class AudioCaptureService {
-    private mediaStream: MediaStream | null = null;
-    private audioContext: AudioContext;
-    private processor: ScriptProcessorNode;
+export class MonitoringDashboard extends ManagedWebViewPanel {
+    private charts: Map<string, Chart>;
+    private updateInterval: NodeJS.Timer;
     
-    public async startCapture(): Promise<void> {
-        this.mediaStream = await navigator.mediaDevices.getUserMedia({
-            audio: {
-                sampleRate: 16000,
-                channelCount: 1,
-                echoCancellation: true,
-                noiseSuppression: true
-            }
-        });
+    protected setupCharts(): void {
+        this.charts.set('safety', this.createSafetyChart());
+        this.charts.set('resources', this.createResourceChart());
     }
 }
 ```
 
-### Part 3: Voice Input Panel
-- Real-time waveform visualization
-- Recording status (idle, listening, recording, processing)
-- Settings for VAD sensitivity
-- Push-to-talk button and hotkey indicator
+### Part 3: Real-time Updates
+- WebSocket subscription to 'performance_updates' channel
+- Efficient data buffering with circular arrays
+- Throttled UI updates (max 10 FPS)
+- Automatic reconnection on disconnect
 
 ## ⚡ Performance Targets
-- VAD latency: <10ms per frame
-- Audio capture latency: <50ms
-- Waveform render: 60 FPS
-- Memory usage: <20MB for 30s recording
+- Dashboard load time: <500ms
+- Chart update latency: <100ms
+- Memory usage: <50MB for 1 hour of data
+- Smooth 60 FPS animations
 
 ## 🧪 Testing Requirements
-1. Test VAD with various noise levels
-2. Verify audio quality at 16kHz
-3. Test push-to-talk responsiveness
-4. Validate maximum recording duration
-5. Test cross-platform audio capture
+1. Test with high-frequency updates
+2. Verify memory doesn't leak over time
+3. Test chart responsiveness
+4. Validate theme switching
+5. Test export functionality
 
 ## 📚 Key Concepts
-- **Voice Activity Detection**: Distinguishing speech from silence/noise
-- **Energy Calculation**: RMS of audio samples
-- **Adaptive Thresholding**: Dynamic adjustment based on ambient noise
-- **Circular Buffer**: Efficient pre-speech capture
-- **WebRTC**: Modern browser audio API
+- **Time-series Data**: Storing and visualizing temporal metrics
+- **Rolling Windows**: Efficient fixed-size data buffers
+- **Chart.js**: Popular JavaScript charting library
+- **Performance Observer**: Browser API for performance monitoring
+- **Gauge Charts**: Circular progress indicators
 
 ## 🔗 Integration Points
-- AudioPlaybackService for playback of captured audio
-- MCPClient for speech-to-text requests
-- WebViewManager for voice input panel
-- Extension settings for VAD configuration
+- MCPClient for WebSocket subscriptions
+- ConfigurationService for threshold settings
+- Logger for performance warnings
+- Extension state for global metrics
 
 ## 📦 Deliverables
-1. ✅ Voice activity detection with adaptive thresholds
-2. ✅ Audio capture service with streaming
-3. ✅ Voice input WebView panel with waveform
-4. ✅ Push-to-talk functionality
-5. ✅ Integration with existing audio infrastructure
+1. ✅ Real-time monitoring dashboard with 5+ chart types
+2. ✅ Resource usage tracking with alerts
+3. ✅ Safety score visualization with trends
+4. ✅ Performance metrics collection
+5. ✅ Export functionality for reports
 
 ## 🚨 Safety Considerations
-- Audio data must be abstracted before storage
-- No raw audio persisted without user consent
-- Clear visual indicators when recording
-- Automatic stop on maximum duration
-- Secure handling of microphone permissions
+- Abstract all file paths in logs
+- No sensitive data in metrics
+- Sanitize exported data
+- Rate limit metric collection
+- Graceful degradation on errors
 
 ## 💡 Innovation Opportunities
-- Advanced VAD using frequency analysis
-- Real-time transcription preview
-- Voice commands detection
-- Multi-language support ready
-- Noise profile learning
+- Predictive alerts using trends
+- Correlation analysis between metrics
+- Custom metric definitions
+- Webhook integration for alerts
+- Historical comparison views
 
 ## 🔄 State Management
 ```typescript
-interface VoiceInputState {
-    isRecording: boolean;
-    vadActive: boolean;
-    audioLevel: number;
-    noiseLevel: number;
-    recordingDuration: number;
-    transcriptionPending: boolean;
+interface DashboardState {
+    metrics: MetricCollection;
+    charts: ChartConfiguration;
+    alerts: Alert[];
+    isStreaming: boolean;
+    timeRange: TimeRange;
 }
 ```
 
 ## 📈 Success Metrics
-- VAD accuracy: >95% for clear speech
-- False positive rate: <5% for typical noise
-- User satisfaction with push-to-talk response
-- Successful integration with speech-to-text
-- Clean audio capture without artifacts
+- All charts update smoothly
+- No memory leaks after 1 hour
+- Alerts trigger within 5 seconds
+- Export includes all visible data
+- Dashboard remains responsive
 
 ## 🎓 Learning Resources
-- [Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API)
-- [MediaStream Recording](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream_Recording_API)
-- [Voice Activity Detection](https://en.wikipedia.org/wiki/Voice_activity_detection)
-- [WebRTC getUserMedia](https://webrtc.org/getting-started/media-capture-and-constraints)
+- [Chart.js Documentation](https://www.chartjs.org/docs/latest/)
+- [Performance Observer API](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver)
+- [VSCode WebView Best Practices](https://code.visualstudio.com/api/extension-guides/webview)
+- [Time-series Data Patterns](https://www.influxdata.com/time-series-database/)
 
 ## ✅ Pre-Session Checklist
-- [ ] Audio playback service working (Session 2.2.1)
-- [ ] WebView infrastructure ready
-- [ ] Microphone permissions understood
-- [ ] VAD algorithm researched
-- [ ] Performance profiling tools ready
+- [ ] Chart.js added to dependencies
+- [ ] WebSocket subscriptions working
+- [ ] Resource monitoring APIs researched
+- [ ] Dashboard mockup designed
+- [ ] Performance profiling ready
 
 ## 🚀 Quick Start
 ```bash
-# Continue from Session 2.2.1
+# Continue from Session 2.2.2
 cd vscode-extension
 
-# Create voice services
-mkdir -p src/services
-touch src/services/voice-activity-detector.ts
-touch src/services/audio-capture-service.ts
+# Install Chart.js
+npm install chart.js @types/chart.js
 
-# Create voice input WebView
-mkdir -p src/webview/voice-input
-touch src/webview/voice-input/voice-input-panel.ts
+# Create monitoring structure
+mkdir -p src/webview/monitoring
+touch src/webview/monitoring/monitoring-dashboard.ts
+touch src/services/monitoring-service.ts
+touch src/types/monitoring.types.ts
 
 # Create media files
-touch media/voice-input.css
-touch media/voice-input.js
+touch media/monitoring-dashboard.css
+touch media/monitoring-dashboard.js
 
 # Start development
 npm run watch
 ```
 
 ## 📝 Context for Next Session
-After completing voice activity detection, the next session (2.2.3) will focus on real-time monitoring features including resource usage tracking, performance metrics, and safety score visualization.
+After completing the monitoring dashboard, the next session (2.2.4) will focus on advanced code analysis features including pattern detection, complexity scoring, and intelligent suggestions based on coding patterns.
 
-**Note**: Session 2.2.1 successfully implemented audio playback with queue management, caching, and MCP integration. The audio infrastructure is ready for voice input features.
+**Note**: Session 2.2.2 successfully implemented voice activity detection with WebRTC audio capture, adaptive VAD thresholds, and push-to-talk functionality. The voice infrastructure is ready for transcription integration.

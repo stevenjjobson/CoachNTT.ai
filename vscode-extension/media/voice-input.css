@@ -1,0 +1,390 @@
+/* Voice Input Panel Styles */
+
+.voice-input-container {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+/* Status Indicator */
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--vscode-badge-background);
+    border-radius: 12px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--vscode-charts-green);
+    transition: all 0.3s ease;
+}
+
+.status-indicator[data-state="idle"] .status-dot {
+    background: var(--vscode-charts-gray);
+}
+
+.status-indicator[data-state="listening"] .status-dot {
+    background: var(--vscode-charts-yellow);
+    animation: pulse 2s infinite;
+}
+
+.status-indicator[data-state="recording"] .status-dot {
+    background: var(--vscode-charts-red);
+    animation: pulse 1s infinite;
+}
+
+.status-indicator[data-state="processing"] .status-dot {
+    background: var(--vscode-charts-blue);
+    animation: spin 1s linear infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Waveform Container */
+.waveform-container {
+    background: var(--vscode-editor-background);
+    border: 1px solid var(--vscode-panel-border);
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    min-height: 150px;
+}
+
+#waveformCanvas {
+    width: 100%;
+    height: 120px;
+    display: block;
+}
+
+.audio-level-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--vscode-input-background);
+    border-radius: 2px;
+    margin-top: 10px;
+    overflow: hidden;
+}
+
+.audio-level-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--vscode-charts-green);
+    transition: width 0.1s ease;
+    border-radius: 2px;
+}
+
+/* VAD Indicator */
+.vad-indicator {
+    background: var(--vscode-editor-background);
+    border: 1px solid var(--vscode-panel-border);
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.vad-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.vad-label {
+    font-weight: 600;
+}
+
+.vad-value {
+    color: var(--vscode-charts-gray);
+}
+
+.vad-value.active {
+    color: var(--vscode-charts-green);
+    font-weight: 600;
+}
+
+.vad-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.metric {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.metric-label {
+    font-size: 12px;
+    color: var(--vscode-descriptionForeground);
+}
+
+.metric-value {
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--vscode-editor-font-family);
+}
+
+/* Controls */
+.controls {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.control-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.control-button:hover {
+    background: var(--vscode-button-hoverBackground);
+}
+
+.control-button:active {
+    transform: scale(0.98);
+}
+
+.control-button.active {
+    background: var(--vscode-charts-red);
+}
+
+.control-button .icon {
+    font-size: 18px;
+}
+
+.push-to-talk-button:active {
+    background: var(--vscode-charts-green);
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Toggle Switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--vscode-input-background);
+    transition: .4s;
+    border-radius: 20px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: var(--vscode-input-foreground);
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--vscode-charts-green);
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+/* Transcription Container */
+.transcription-container {
+    background: var(--vscode-editor-background);
+    border: 1px solid var(--vscode-panel-border);
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.transcription-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--vscode-panel-border);
+}
+
+.transcription-header h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.clear-button {
+    padding: 4px 8px;
+    background: transparent;
+    color: var(--vscode-textLink-foreground);
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.clear-button:hover {
+    text-decoration: underline;
+}
+
+.transcription-content {
+    padding: 15px;
+    min-height: 100px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.transcription-content p {
+    margin: 0 0 10px 0;
+    line-height: 1.5;
+}
+
+.transcription-content .placeholder {
+    color: var(--vscode-descriptionForeground);
+    font-style: italic;
+}
+
+.transcription-content .timestamp {
+    font-size: 12px;
+    color: var(--vscode-descriptionForeground);
+    margin-right: 8px;
+}
+
+/* Playback Container */
+.playback-container {
+    margin-bottom: 20px;
+}
+
+#audioPlayer {
+    width: 100%;
+}
+
+/* Settings Container */
+.settings-container {
+    background: var(--vscode-editor-background);
+    border: 1px solid var(--vscode-panel-border);
+    border-radius: 4px;
+}
+
+.settings-container summary {
+    padding: 12px 15px;
+    cursor: pointer;
+    font-weight: 600;
+    list-style: none;
+}
+
+.settings-container summary::-webkit-details-marker {
+    display: none;
+}
+
+.settings-container summary::before {
+    content: '▶';
+    display: inline-block;
+    width: 20px;
+    transition: transform 0.2s;
+}
+
+.settings-container[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.settings-content {
+    padding: 0 15px 15px 15px;
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.setting-item label {
+    min-width: 120px;
+}
+
+.setting-item input[type="range"] {
+    flex: 1;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    cursor: pointer;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .vad-metrics {
+        grid-template-columns: 1fr;
+    }
+    
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .control-button {
+        justify-content: center;
+    }
+}

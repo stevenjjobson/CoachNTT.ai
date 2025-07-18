@@ -308,6 +308,36 @@
         "title": "Volume Down",
         "category": "CoachNTT: Audio",
         "icon": "$(arrow-down)"
+      },
+      {
+        "command": "coachntt.openVoiceInput",
+        "title": "Open Voice Input",
+        "category": "CoachNTT: Voice",
+        "icon": "$(mic)"
+      },
+      {
+        "command": "coachntt.startVoiceRecording",
+        "title": "Start Voice Recording",
+        "category": "CoachNTT: Voice",
+        "icon": "$(record)"
+      },
+      {
+        "command": "coachntt.stopVoiceRecording",
+        "title": "Stop Voice Recording",
+        "category": "CoachNTT: Voice",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "coachntt.togglePushToTalk",
+        "title": "Push to Talk",
+        "category": "CoachNTT: Voice",
+        "icon": "$(unmute)"
+      },
+      {
+        "command": "coachntt.toggleVAD",
+        "title": "Toggle Voice Activity Detection",
+        "category": "CoachNTT: Voice",
+        "icon": "$(wand)"
       }
     ],
     "viewsContainers": {
@@ -456,6 +486,30 @@
         "key": "ctrl+shift+p",
         "mac": "cmd+shift+p",
         "when": "coachntt.connected"
+      },
+      {
+        "command": "coachntt.togglePushToTalk",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v",
+        "when": "coachntt.connected"
+      },
+      {
+        "command": "coachntt.openVoiceInput",
+        "key": "ctrl+shift+m",
+        "mac": "cmd+shift+m",
+        "when": "coachntt.connected"
+      },
+      {
+        "command": "coachntt.startVoiceRecording",
+        "key": "ctrl+shift+r",
+        "mac": "cmd+shift+r",
+        "when": "coachntt.connected && !coachntt.recording"
+      },
+      {
+        "command": "coachntt.stopVoiceRecording",
+        "key": "ctrl+shift+r",
+        "mac": "cmd+shift+r",
+        "when": "coachntt.connected && coachntt.recording"
       }
     ]
   },

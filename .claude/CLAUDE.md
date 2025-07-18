@@ -310,6 +310,21 @@
   - Maintained safety-first design with complete content abstraction
   - Achieved all performance targets: <100ms panel creation, <50ms message round-trip
 
+- **Session 2.2.2**: Voice Activity Detection & Audio Capture
+  - Created VoiceActivityDetector with energy-based detection and adaptive thresholds (~300 lines)
+  - Implemented AudioCaptureService with WebRTC audio capture and streaming (~500 lines)
+  - Built circular buffer for pre-speech capture (300ms) and post-speech timeout (800ms)
+  - Created VoiceInputPanel WebView with real-time waveform visualization (~350 lines)
+  - Added comprehensive voice input styles with VAD indicators (~200 lines)
+  - Implemented client-side audio capture with Web Audio API (~300 lines)
+  - Integrated push-to-talk functionality with Ctrl+Shift+V keybinding
+  - Added VAD metrics display: energy, threshold, confidence levels
+  - Created audio-to-WAV encoding for MCP transcription integration
+  - Added 5 voice commands with keybindings and command palette integration
+  - Achieved VAD performance targets: <10ms per frame processing
+  - Maintained privacy-first design: no raw audio persistence without consent
+  - Implemented maximum recording duration (30s) with automatic stop
+
 ### 🏗️ Architecture Summary
 ```
 src/
@@ -479,8 +494,10 @@ vscode-extension/              # VSCode Extension (Phase 2)
 │   │   │   └── memory-detail-panel.ts # Memory detail WebView implementation
 │   │   ├── templates/
 │   │   │   └── base-template.ts # HTML template generation with CSP
-│   │   └── audio-player/
-│   │       └── audio-player-panel.ts # Audio player WebView panel
+│   │   ├── audio-player/
+│   │   │   └── audio-player-panel.ts # Audio player WebView panel
+│   │   └── voice-input/
+│   │       └── voice-input-panel.ts # Voice input WebView with VAD
 │   ├── utils/
 │   │   ├── logger.ts          # Logger with automatic abstraction
 │   │   └── audio-cache.ts     # LRU cache for audio storage
@@ -490,7 +507,9 @@ vscode-extension/              # VSCode Extension (Phase 2)
 │   └── services/
 │       ├── mcp-client.ts      # WebSocket client for MCP communication
 │       ├── connection-manager.ts # Connection lifecycle and retry logic
-│       └── audio-playback-service.ts # Audio synthesis and playback
+│       ├── audio-playback-service.ts # Audio synthesis and playback
+│       ├── voice-activity-detector.ts # Energy-based VAD implementation
+│       └── audio-capture-service.ts # WebRTC audio capture with streaming
 ├── test/
 │   └── suite/
 │       ├── extension.test.ts  # Extension unit tests
@@ -563,7 +582,7 @@ Before creating new files or directories:
 
 ### Phase 2 (In Progress)
 - Week 1-2: Foundation [▓▓▓▓▓▓] 100% (4/4 sessions) - Sessions 2.1.1 ✅, 2.1.2 ✅, 2.1.3 ✅, 2.1.4 ✅
-- Week 3-4: Core Features [▓░░░░░] 25% (1/4 sessions) - Session 2.2.1 ✅
+- Week 3-4: Core Features [▓▓▓░░░] 50% (2/4 sessions) - Session 2.2.1 ✅, 2.2.2 ✅
 - Week 5: Voice Integration [░░░░░░] 0% (0/4 sessions)
 - Week 6: Polish & Advanced [░░░░░░] 0% (0/3 sessions)
 

@@ -12,6 +12,8 @@ import { WebViewManager } from './webview/webview-manager';
 import { MemoryDetailPanel } from './webview/panels/memory-detail-panel';
 import { AudioPlaybackService } from './services/audio-playback-service';
 import { AudioPlayerPanel } from './webview/audio-player/audio-player-panel';
+import { AudioCaptureService } from './services/audio-capture-service';
+import { VoiceInputPanel } from './webview/voice-input/voice-input-panel';
 
 /**
  * Extension state management
@@ -29,6 +31,7 @@ export class ExtensionState {
     private connectionManager: ConnectionManager | undefined;
     private webViewManager: WebViewManager | undefined;
     private audioService: AudioPlaybackService | undefined;
+    private audioCaptureService: AudioCaptureService | undefined;
     private statusBarItems: Map<string, vscode.StatusBarItem>;
     private disposables: vscode.Disposable[];
 
@@ -60,8 +63,9 @@ export class ExtensionState {
             // Initialize WebView manager
             this.webViewManager = WebViewManager.getInstance(context);
             
-            // Initialize Audio service
+            // Initialize Audio services
             this.audioService = AudioPlaybackService.getInstance(context);
+            this.audioCaptureService = AudioCaptureService.getInstance();
             
             // Set connection manager getter to avoid circular dependency
             this.commands.setConnectionManagerGetter(() => this.connectionManager);
@@ -80,6 +84,9 @@ export class ExtensionState {
             
             // Register audio commands
             this.registerAudioCommands(context);
+            
+            // Register voice commands
+            this.registerVoiceCommands(context);
             
             // Create audio status bar item
             if (this.audioService) {
@@ -493,6 +500,97 @@ export class ExtensionState {
     }
     
     /**
+     * Register voice commands
+     */
+    private registerVoiceCommands(context: vscode.ExtensionContext): void {
+        if (!this.audioCaptureService) return;
+        
+        // Open voice input panel command
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.openVoiceInput', () => {
+                if (!this.webViewManager || !this.audioCaptureService) {
+                    vscode.window.showErrorMessage('Voice input service not initialized');
+                    return;
+                }
+                
+                this.webViewManager.createOrShowPanel(
+                    'voice-input',
+                    {
+                        viewType: 'coachntt.voiceInput',
+                        title: 'Voice Input',
+                        showOptions: vscode.ViewColumn.Two,
+                        options: {
+                            enableScripts: true,
+                            retainContextWhenHidden: true
+                        }
+                    },
+                    (panel) => new VoiceInputPanel(context.extensionPath)
+                );
+            })
+        );
+        
+        // Start voice recording command
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.startVoiceRecording', async () => {
+                if (!this.audioCaptureService) return;
+                
+                try {
+                    const state = this.audioCaptureService.getState();
+                    if (state === 'idle') {
+                        await this.audioCaptureService.initialize();
+                    }
+                    this.audioCaptureService.startRecording();
+                    vscode.window.showInformationMessage('Voice recording started');
+                } catch (error) {
+                    this.logger.error('Failed to start voice recording', error);
+                    vscode.window.showErrorMessage('Failed to start voice recording');
+                }
+            })
+        );
+        
+        // Stop voice recording command
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.stopVoiceRecording', async () => {
+                if (!this.audioCaptureService) return;
+                
+                try {
+                    await this.audioCaptureService.stopRecording();
+                    vscode.window.showInformationMessage('Voice recording stopped');
+                } catch (error) {
+                    this.logger.error('Failed to stop voice recording', error);
+                    vscode.window.showErrorMessage('Failed to stop voice recording');
+                }
+            })
+        );
+        
+        // Toggle push-to-talk command
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.togglePushToTalk', () => {
+                if (!this.audioCaptureService) return;
+                
+                // This command is meant to be used with keybindings
+                // The actual push-to-talk logic is handled in the WebView
+                vscode.commands.executeCommand('coachntt.openVoiceInput');
+            })
+        );
+        
+        // Toggle VAD command
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.toggleVAD', () => {
+                if (!this.audioCaptureService) return;
+                
+                // Toggle VAD state
+                const vadEnabled = !this.audioCaptureService.vadEnabled;
+                this.audioCaptureService.setVADEnabled(vadEnabled);
+                
+                vscode.window.showInformationMessage(
+                    `Voice Activity Detection ${vadEnabled ? 'enabled' : 'disabled'}`
+                );
+            })
+        );
+    }
+    
+    /**
      * Cleanup extension state
      */
     public dispose(): void {
@@ -508,6 +606,7 @@ export class ExtensionState {
         this.memoryContentProvider?.dispose();
         this.memoryTreeProvider?.dispose();
         this.audioService?.dispose();
+        this.audioCaptureService?.dispose();
         this.webViewManager?.dispose();
         this.connectionManager?.dispose();
         this.mcpClient?.disconnect();
