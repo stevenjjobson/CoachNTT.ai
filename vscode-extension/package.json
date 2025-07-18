@@ -85,6 +85,49 @@
           "description": "JWT authentication token (stored securely)",
           "order": 8,
           "markdownDescription": "Your JWT authentication token. This will be stored securely in VSCode's secret storage. Leave empty to prompt for token on connection."
+        },
+        "coachntt.memoryView.groupByIntent": {
+          "type": "boolean",
+          "default": true,
+          "description": "Group memories by intent in tree view",
+          "order": 10
+        },
+        "coachntt.memoryView.showArchived": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show archived memories in tree view",
+          "order": 11
+        },
+        "coachntt.memoryView.sortBy": {
+          "type": "string",
+          "default": "timestamp",
+          "enum": ["timestamp", "importance", "reinforcement"],
+          "enumDescriptions": [
+            "Sort by creation time",
+            "Sort by importance score",
+            "Sort by reinforcement count"
+          ],
+          "description": "Sort order for memories",
+          "order": 12
+        },
+        "coachntt.memoryView.sortOrder": {
+          "type": "string",
+          "default": "desc",
+          "enum": ["asc", "desc"],
+          "enumDescriptions": [
+            "Ascending order",
+            "Descending order"
+          ],
+          "description": "Sort direction for memories",
+          "order": 13
+        },
+        "coachntt.memoryView.pageSize": {
+          "type": "number",
+          "default": 50,
+          "minimum": 10,
+          "maximum": 200,
+          "description": "Number of memories to load per page",
+          "order": 14
         }
       }
     },
@@ -124,6 +167,80 @@
         "title": "Check Connection Status",
         "category": "CoachNTT",
         "icon": "$(info)"
+      },
+      {
+        "command": "coachntt.refreshMemories",
+        "title": "Refresh Memories",
+        "category": "CoachNTT: Memory",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "coachntt.searchMemories",
+        "title": "Search Memories",
+        "category": "CoachNTT: Memory",
+        "icon": "$(search)"
+      },
+      {
+        "command": "coachntt.clearSearch",
+        "title": "Clear Search",
+        "category": "CoachNTT: Memory",
+        "icon": "$(close)",
+        "enablement": "coachntt.memorySearchActive"
+      },
+      {
+        "command": "coachntt.createMemory",
+        "title": "Create Memory",
+        "category": "CoachNTT: Memory",
+        "icon": "$(add)"
+      },
+      {
+        "command": "coachntt.createMemoryFromSelection",
+        "title": "Create Memory from Selection",
+        "category": "CoachNTT: Memory",
+        "icon": "$(add)",
+        "enablement": "editorHasSelection"
+      },
+      {
+        "command": "coachntt.viewMemory",
+        "title": "View Memory",
+        "category": "CoachNTT: Memory",
+        "icon": "$(eye)"
+      },
+      {
+        "command": "coachntt.editMemory",
+        "title": "Edit Memory",
+        "category": "CoachNTT: Memory",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "coachntt.deleteMemory",
+        "title": "Delete Memory",
+        "category": "CoachNTT: Memory",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "coachntt.reinforceMemory",
+        "title": "Reinforce Memory",
+        "category": "CoachNTT: Memory",
+        "icon": "$(star)"
+      },
+      {
+        "command": "coachntt.exportMemories",
+        "title": "Export Memories",
+        "category": "CoachNTT: Memory",
+        "icon": "$(export)"
+      },
+      {
+        "command": "coachntt.importMemories",
+        "title": "Import Memories",
+        "category": "CoachNTT: Memory",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "command": "coachntt.configureMemoryView",
+        "title": "Configure Memory View",
+        "category": "CoachNTT: Memory",
+        "icon": "$(settings-gear)"
       }
     ],
     "viewsContainers": {
@@ -142,6 +259,14 @@
           "name": "Welcome",
           "icon": "$(home)",
           "contextualTitle": "CoachNTT Welcome"
+        },
+        {
+          "id": "coachntt.memories",
+          "name": "Memories",
+          "icon": "$(archive)",
+          "contextualTitle": "CoachNTT Memories",
+          "visibility": "visible",
+          "when": "coachntt.connected"
         }
       ]
     },
@@ -151,6 +276,60 @@
           "command": "coachntt.refreshView",
           "when": "view == coachntt.welcome",
           "group": "navigation"
+        },
+        {
+          "command": "coachntt.refreshMemories",
+          "when": "view == coachntt.memories",
+          "group": "navigation@1"
+        },
+        {
+          "command": "coachntt.searchMemories",
+          "when": "view == coachntt.memories",
+          "group": "navigation@2"
+        },
+        {
+          "command": "coachntt.createMemory",
+          "when": "view == coachntt.memories",
+          "group": "navigation@3"
+        },
+        {
+          "command": "coachntt.clearSearch",
+          "when": "view == coachntt.memories && coachntt.memorySearchActive",
+          "group": "navigation@4"
+        },
+        {
+          "command": "coachntt.configureMemoryView",
+          "when": "view == coachntt.memories",
+          "group": "2_configure"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "coachntt.viewMemory",
+          "when": "view == coachntt.memories && viewItem == memory",
+          "group": "1_view"
+        },
+        {
+          "command": "coachntt.editMemory",
+          "when": "view == coachntt.memories && viewItem == memory",
+          "group": "2_modify@1"
+        },
+        {
+          "command": "coachntt.reinforceMemory",
+          "when": "view == coachntt.memories && viewItem == memory",
+          "group": "2_modify@2"
+        },
+        {
+          "command": "coachntt.deleteMemory",
+          "when": "view == coachntt.memories && viewItem == memory",
+          "group": "3_delete"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "coachntt.createMemoryFromSelection",
+          "when": "editorHasSelection",
+          "group": "coachntt@1"
         }
       ],
       "commandPalette": [

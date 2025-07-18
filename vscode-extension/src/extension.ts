@@ -3,16 +3,26 @@ import { Logger } from './utils/logger';
 import { ConfigurationService } from './config/settings';
 import { CommandRegistry } from './commands';
 import { WelcomeViewProvider } from './providers/welcomeView';
+import { MCPClient } from './services/mcp-client';
+import { ConnectionManager } from './services/connection-manager';
+import { MemoryTreeProvider } from './providers/memory-tree-provider';
+import { MemoryCommands } from './commands/memory-commands';
+import { MemoryContentProvider } from './providers/memory-content-provider';
 
 /**
  * Extension state management
  */
-class ExtensionState {
+export class ExtensionState {
     private static instance: ExtensionState;
     private logger: Logger;
     private config: ConfigurationService;
     private commands: CommandRegistry;
     private welcomeViewProvider: WelcomeViewProvider | undefined;
+    private memoryTreeProvider: MemoryTreeProvider | undefined;
+    private memoryCommands: MemoryCommands | undefined;
+    private memoryContentProvider: MemoryContentProvider | undefined;
+    private mcpClient: MCPClient | undefined;
+    private connectionManager: ConnectionManager | undefined;
     private statusBarItems: Map<string, vscode.StatusBarItem>;
     private disposables: vscode.Disposable[];
 
@@ -38,6 +48,12 @@ class ExtensionState {
         this.logger.info('CoachNTT extension activating...');
         
         try {
+            // Initialize MCP client and connection manager first
+            this.initializeMCPServices(context);
+            
+            // Set connection manager getter to avoid circular dependency
+            this.commands.setConnectionManagerGetter(() => this.connectionManager);
+            
             // Register commands
             this.commands.registerCommands(context);
             
@@ -162,12 +178,12 @@ class ExtensionState {
         this.welcomeViewProvider = new WelcomeViewProvider();
         
         // Register tree data provider
-        const treeView = vscode.window.createTreeView('coachntt.welcome', {
+        const welcomeTreeView = vscode.window.createTreeView('coachntt.welcome', {
             treeDataProvider: this.welcomeViewProvider,
             showCollapseAll: true
         });
         
-        context.subscriptions.push(treeView);
+        context.subscriptions.push(welcomeTreeView);
         
         // Register refresh command for the view
         context.subscriptions.push(
@@ -175,6 +191,28 @@ class ExtensionState {
                 this.welcomeViewProvider?.refresh();
             })
         );
+        
+        // Register memory tree view if connected
+        if (this.mcpClient && this.memoryTreeProvider) {
+            const memoryTreeView = vscode.window.createTreeView('coachntt.memories', {
+                treeDataProvider: this.memoryTreeProvider,
+                showCollapseAll: true,
+                canSelectMany: false
+            });
+            
+            context.subscriptions.push(memoryTreeView);
+            
+            // Register memory content provider
+            this.memoryContentProvider = new MemoryContentProvider(this.mcpClient, this.logger);
+            const scheme = 'coachntt-memory';
+            context.subscriptions.push(
+                vscode.workspace.registerTextDocumentContentProvider(scheme, this.memoryContentProvider)
+            );
+            
+            // Register memory commands
+            this.memoryCommands = new MemoryCommands(this.mcpClient, this.memoryTreeProvider, this.logger);
+            this.memoryCommands.registerCommands(context);
+        }
     }
 
     /**
@@ -207,6 +245,60 @@ class ExtensionState {
     }
 
     /**
+     * Initialize MCP services
+     */
+    private initializeMCPServices(context: vscode.ExtensionContext): void {
+        try {
+            // Create MCP client
+            this.mcpClient = new MCPClient(this.logger);
+            
+            // Create connection manager
+            this.connectionManager = new ConnectionManager(this.mcpClient, this.logger);
+            
+            // Create memory tree provider
+            this.memoryTreeProvider = new MemoryTreeProvider(this.mcpClient, this.logger);
+            
+            // Set up connection state change handler
+            this.mcpClient.on('connected', () => {
+                this.updateStatusBarItems(true, 0.95); // Default good safety score
+                vscode.commands.executeCommand('setContext', 'coachntt.connected', true);
+                
+                // Register memory view if not already registered
+                if (!this.memoryCommands) {
+                    this.registerViews(context);
+                }
+            });
+            
+            this.mcpClient.on('disconnected', () => {
+                this.updateStatusBarItems(false, 0);
+                vscode.commands.executeCommand('setContext', 'coachntt.connected', false);
+            });
+            
+            this.mcpClient.on('error', (error: Error) => {
+                this.logger.error('MCP client error', error);
+                vscode.window.showErrorMessage(`CoachNTT error: ${error.message}`);
+            });
+            
+        } catch (error) {
+            this.logger.error('Failed to initialize MCP services', error);
+        }
+    }
+    
+    /**
+     * Get MCP client instance
+     */
+    public getMCPClient(): MCPClient | undefined {
+        return this.mcpClient;
+    }
+    
+    /**
+     * Get connection manager instance
+     */
+    public getConnectionManager(): ConnectionManager | undefined {
+        return this.connectionManager;
+    }
+    
+    /**
      * Cleanup extension state
      */
     public dispose(): void {
@@ -219,6 +311,10 @@ class ExtensionState {
         this.statusBarItems.forEach(item => item.dispose());
         
         // Dispose services
+        this.memoryContentProvider?.dispose();
+        this.memoryTreeProvider?.dispose();
+        this.connectionManager?.dispose();
+        this.mcpClient?.disconnect();
         this.commands.dispose();
         this.config.dispose();
         this.logger.dispose();

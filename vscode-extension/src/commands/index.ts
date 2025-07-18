@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import { Logger } from '../utils/logger';
 import { ConfigurationService } from '../config/settings';
-import { ConnectionManager } from '../services/connection-manager';
 
 /**
  * Command handler type
@@ -15,13 +14,12 @@ export class CommandRegistry {
     private static instance: CommandRegistry;
     private logger: Logger;
     private config: ConfigurationService;
-    private connectionManager: ConnectionManager;
     private commands: Map<string, vscode.Disposable>;
+    private connectionManagerGetter?: () => any;
 
     private constructor() {
         this.logger = Logger.getInstance();
         this.config = ConfigurationService.getInstance();
-        this.connectionManager = ConnectionManager.getInstance();
         this.commands = new Map();
     }
 
@@ -36,13 +34,17 @@ export class CommandRegistry {
     }
 
     /**
+     * Set connection manager getter to avoid circular dependency
+     */
+    public setConnectionManagerGetter(getter: () => any): void {
+        this.connectionManagerGetter = getter;
+    }
+    
+    /**
      * Register all extension commands
      */
     public registerCommands(context: vscode.ExtensionContext): void {
         this.logger.info('Registering extension commands');
-
-        // Initialize connection manager with context
-        this.connectionManager.initialize(context);
 
         // Register each command
         this.register('coachntt.connect', () => this.handleConnect());
@@ -94,6 +96,11 @@ export class CommandRegistry {
             }
 
             // Connect using ConnectionManager
+            const connectionManager = this.connectionManagerGetter?.();
+            if (!connectionManager) {
+                throw new Error('Connection manager not initialized');
+            }
+            
             await vscode.window.withProgress({
                 location: vscode.ProgressLocation.Notification,
                 title: 'Connecting to CoachNTT backend...',
@@ -102,7 +109,7 @@ export class CommandRegistry {
                 progress.report({ increment: 30 });
                 
                 try {
-                    await this.connectionManager.connect();
+                    await connectionManager.connect();
                     progress.report({ increment: 70, message: 'Connected!' });
                 } catch (error) {
                     throw error;
@@ -121,8 +128,13 @@ export class CommandRegistry {
     private async handleDisconnect(): Promise<void> {
         this.logger.info('Disconnecting from backend');
         
+        const connectionManager = this.connectionManagerGetter?.();
+        if (!connectionManager) {
+            throw new Error('Connection manager not initialized');
+        }
+        
         try {
-            await this.connectionManager.disconnect();
+            await connectionManager.disconnect();
             this.logger.info('Successfully disconnected from backend');
             
         } catch (error) {
@@ -161,8 +173,14 @@ export class CommandRegistry {
      * Handle check status command
      */
     private async handleCheckStatus(): Promise<void> {
+        const connectionManager = this.connectionManagerGetter?.();
+        if (!connectionManager) {
+            vscode.window.showErrorMessage('Connection manager not initialized');
+            return;
+        }
+        
         const config = this.config.getConnectionConfig();
-        const state = this.connectionManager.getState();
+        const state = connectionManager.getState();
         const status = state.connected ? 'Connected' : 'Disconnected';
         
         let message = `
@@ -187,7 +205,8 @@ Min Safety Score: ${this.config.getMinSafetyScore()}
      * Get connection status
      */
     public getConnectionStatus(): boolean {
-        return this.connectionManager.getState().connected;
+        const connectionManager = this.connectionManagerGetter?.();
+        return connectionManager ? connectionManager.getState().connected : false;
     }
 
     /**
@@ -196,6 +215,5 @@ Min Safety Score: ${this.config.getMinSafetyScore()}
     public dispose(): void {
         this.commands.forEach(disposable => disposable.dispose());
         this.commands.clear();
-        this.connectionManager.dispose();
     }
 }

@@ -1,272 +1,268 @@
-# 🚀 Next Session: 2.1.3 Memory Tree Provider
+# 🚀 Next Session: 2.1.4 WebView Foundation
 
 ## 📋 Session Overview
 
-**Session**: 2.1.3 Memory Tree Provider  
+**Session**: 2.1.4 WebView Foundation  
 **Phase**: 2 - VSCode Extension & Voice Integration  
-**Prerequisites**: Session 2.1.2 complete ✅, MCP client ready ✅  
-**Focus**: Create hierarchical memory view in sidebar  
-**Context Budget**: ~2800 tokens  
-**Estimated Output**: ~900 lines  
+**Prerequisites**: Session 2.1.3 complete ✅, Memory tree provider ready ✅  
+**Focus**: Create WebView framework for rich UI components  
+**Context Budget**: ~2500 tokens  
+**Estimated Output**: ~800 lines  
 
 ## 🎯 Quick Start Command
 
 ### Copy this to start the next session:
 ```
-I'm continuing Phase 2 of CoachNTT.ai. Session 2.1.2 (MCP Client Integration) is complete.
+I'm continuing Phase 2 of CoachNTT.ai. Session 2.1.3 (Memory Tree Provider) is complete.
 
 Please review:
 1. @.claude/NEXT_SESSION.md (this file)  
-2. @.claude/CLAUDE.md (Session 2.1.2 complete ✅)
-3. @vscode-extension/src/services/mcp-client.ts (WebSocket client)
-4. @vscode-extension/src/services/connection-manager.ts (Connection lifecycle)
-5. @project-docs/Phase2_Implementation_Cadence.md (Session 2.1.3 requirements)
+2. @.claude/CLAUDE.md (Session 2.1.3 complete ✅)
+3. @vscode-extension/src/providers/memory-tree-provider.ts (Tree provider)
+4. @vscode-extension/src/models/memory.model.ts (Memory models)
+5. @project-docs/Phase2_Implementation_Cadence.md (Session 2.1.4 requirements)
 
-Ready to start Session 2.1.3: Memory Tree Provider.
-Note: MCP client is working with real-time WebSocket updates.
+Ready to start Session 2.1.4: WebView Foundation.
+Note: Memory tree is working with search, CRUD operations, and real-time updates.
 ```
 
 ## 📚 Context Files to Load
 
 ### Essential Files (Load First)
-1. **`vscode-extension/src/providers/welcomeView.ts`** - Existing tree provider reference
-2. **`vscode-extension/src/services/mcp-client.ts`** - MCP client for data fetching
-3. **`vscode-extension/src/types/mcp.types.ts`** - Type definitions
-4. **`src/api/models/memory.py`** - Memory API models
-5. **`project-docs/Phase2_Implementation_Cadence.md`** - Session 2.1.3 requirements
+1. **`vscode-extension/src/extension.ts`** - Extension state for WebView integration
+2. **`vscode-extension/src/providers/memory-tree-provider.ts`** - Existing tree provider
+3. **`vscode-extension/src/models/memory.model.ts`** - Memory models for WebView display
+4. **`vscode-extension/package.json`** - Configuration and commands
+5. **`project-docs/Phase2_Implementation_Cadence.md`** - Session 2.1.4 requirements
 
 ### Reference Files (Load as Needed)
-- `vscode-extension/package.json` - View contributions
-- `vscode-extension/src/events/mcp-events.ts` - Event system
-- `src/core/memory/models.py` - Memory types reference
-- `project-docs/VSCode_Extension_PRD.md` - Tree view requirements
+- `vscode-extension/webpack.config.js` - Build configuration for WebView resources
+- `vscode-extension/src/services/mcp-client.ts` - For WebView data fetching
+- `vscode-extension/src/utils/logger.ts` - Logging with abstraction
+- `project-docs/VSCode_Extension_PRD.md` - WebView requirements
 
 ## ⚠️ Important Session Notes
 
-### Session 2.1.2 Complete - Ready for Memory Tree
-**Session 2.1.2 Achievements**:
-- ✅ WebSocket client with automatic reconnection
-- ✅ Connection manager with retry logic
-- ✅ Type-safe MCP message interfaces
-- ✅ JWT authentication with secure storage
-- ✅ Event system for real-time updates
-- ✅ Channel subscription management
-- ✅ Integration with extension commands
+### Session 2.1.3 Complete - Ready for WebView
+**Session 2.1.3 Achievements**:
+- ✅ Memory models with intent types and tree hierarchy
+- ✅ MemoryTreeProvider with three-tier structure
+- ✅ Full CRUD operations and bulk import/export
+- ✅ Virtual document provider for memory details
+- ✅ Search functionality with results view
+- ✅ Context menu actions for all operations
+- ✅ Real-time WebSocket updates
 - ✅ Comprehensive test suite
 
-**Session 2.1.3 Focus**:
-- **Tree Provider**: Create memory tree data provider
-- **Three-Tier Structure**: Working → Session → Long-term
-- **Icons & Decorations**: Visual memory type indicators
-- **Lazy Loading**: Efficient handling of large datasets
-- **Search & Filter**: Memory search functionality
+**Session 2.1.4 Focus**:
+- **WebView Manager**: Central service for panel lifecycle
+- **Message Protocol**: Type-safe bidirectional communication
+- **HTML Templates**: Secure template generation with CSP
+- **Theme Support**: Light/dark theme integration
+- **State Persistence**: Save/restore WebView state
 
 ## 🏗️ Implementation Strategy
 
-### Session 2.1.2 Deliverables
-1. **Create MCPClient service class**
-   - WebSocket connection handling
-   - Message serialization/deserialization
-   - Connection state management
-   - Error handling and recovery
+### Session 2.1.4 Deliverables
+1. **Create WebView panel manager**
+   - Panel lifecycle management
+   - Multiple panel support
+   - Disposal and recovery
+   - Active panel tracking
 
-2. **Implement WebSocket connection management**
-   - Connect/disconnect methods
-   - Automatic reconnection with backoff
-   - Connection status tracking
-   - Heartbeat/ping-pong mechanism
+2. **Implement secure WebView communication**
+   - Message passing protocol
+   - Type-safe message interfaces
+   - Request/response pattern
+   - Error handling
 
-3. **Add connection retry logic with backoff**
-   - Exponential backoff algorithm
-   - Maximum retry attempts
-   - Connection timeout handling
-   - User notification on failures
+3. **Add WebView HTML/CSS templates**
+   - Base template generation
+   - CSP header configuration
+   - Resource URI handling
+   - Theme detection
 
-4. **Create type-safe MCP tool wrappers**
-   - Define MCP message interfaces
-   - Tool request/response types
-   - Memory operation interfaces
-   - Graph query interfaces
+4. **Create message passing protocol**
+   - Bidirectional messaging
+   - Event emitter pattern
+   - Message validation
+   - Queue management
 
-5. **Implement connection status tracking**
-   - Real-time status updates
-   - Status bar integration
-   - Connection health monitoring
-   - Error state handling
+5. **Implement WebView state persistence**
+   - State save/restore
+   - Panel recovery
+   - View column tracking
+   - User preferences
 
-6. **Add authentication support**
-   - JWT token management
-   - Token refresh logic
-   - Secure credential storage
-   - Authentication headers
+6. **Add theme support (light/dark)**
+   - VSCode theme variables
+   - Dynamic theme switching
+   - Custom CSS variables
+   - Accessibility support
 
-7. **Create event emitter for MCP events**
-   - Event type definitions
-   - Event dispatching system
-   - Subscriber management
-   - Event filtering
+7. **Create WebView security policy**
+   - Content Security Policy
+   - Nonce generation
+   - Script validation
+   - Resource restrictions
 
-8. **Handle connection lifecycle in extension**
-   - Initialize on connect command
-   - Cleanup on disconnect
+8. **Add resource loading system**
+   - Local resource URIs
+   - Media file handling
+   - CSS/JS bundling
+   - Cache management
+
+9. **Test WebView lifecycle**
+   - Panel creation/disposal
    - State persistence
-   - Resource management
+   - Message handling
+   - Security validation
 
-9. **Add connection commands to palette**
-   - Connect with options
-   - Force reconnect
-   - Connection diagnostics
-   - Clear connection cache
-
-10. **Test MCP communication**
-    - Mock MCP server tests
-    - Connection scenario tests
-    - Error handling tests
-    - Performance tests
+10. **Document WebView architecture**
+    - Architecture overview
+    - Message protocol docs
+    - Security guidelines
+    - Extension points
 
 ## 🔧 Technical Requirements
 
 ### New Files to Create
 ```
-vscode-extension/src/
-├── services/
-│   ├── mcp-client.ts         # MCP WebSocket client
-│   └── connection-manager.ts # Connection lifecycle management
-├── types/
-│   └── mcp.types.ts          # MCP message type definitions
-└── events/
-    └── mcp-events.ts         # Event system for MCP updates
+vscode-extension/
+├── src/
+│   └── webview/
+│       ├── webview-manager.ts         # Central WebView management
+│       ├── message-protocol.ts        # Type-safe messaging
+│       └── panels/
+│           └── memory-detail-panel.ts  # First WebView implementation
+│       └── templates/
+│           └── base-template.ts        # HTML template generation
+└── media/
+    └── webview.css                     # WebView styles
 ```
 
-### Key Dependencies to Add
-```json
-{
-  "dependencies": {
-    "ws": "^8.16.0",           // WebSocket client
-    "eventemitter3": "^5.0.1", // Event emitter
-    "p-retry": "^5.1.2"        // Retry with exponential backoff
-  },
-  "devDependencies": {
-    "@types/ws": "^8.5.10"     // WebSocket types
-  }
-}
-```
+### Key Implementation Points
+- Use vscode.WebviewPanel for panel management
+- Implement CSP with nonces for security
+- Create reusable base classes for panels
+- Support VSCode theme variables
+- Handle panel serialization for recovery
 
 ## 🛡️ Safety Requirements
 
 ### Mandatory Safety Checks
-- [ ] All displayed paths must be abstracted in UI
-- [ ] Configuration values must not expose secrets
-- [ ] Status bar must show abstracted information only
-- [ ] Memory content display must maintain abstractions
+- [ ] All memory content must be abstracted in WebView
+- [ ] No concrete paths or IDs in HTML content
+- [ ] CSP must prevent external resource loading
+- [ ] Message content must be validated
 - [ ] Error messages must not reveal concrete details
-- [ ] VPS connection details must be stored securely
+- [ ] Resource URIs must use vscode-resource scheme
 
 ## 📊 Success Metrics
 
-### Extension Performance
-- **Activation Time**: <50ms impact on VSCode startup
-- **Command Response**: <100ms for all commands
-- **Memory Usage**: <50MB for base extension
-- **TypeScript Compilation**: <5 seconds
-- **Test Coverage**: >80% for core functionality
+### WebView Performance
+- **Panel Creation**: <100ms for initial display
+- **Message Round-trip**: <50ms for simple messages
+- **Theme Switch**: <100ms for complete update
+- **State Recovery**: <200ms after restart
+- **Resource Loading**: <50ms for local resources
 
 ### Development Goals
-- **Hot Reload**: Working development environment
-- **Debugging**: Breakpoints and inspection working
-- **Type Safety**: 100% TypeScript with strict mode
-- **Extensibility**: Clear command and provider patterns
-- **Documentation**: Inline JSDoc for all public APIs
+- **Reusability**: Base classes for future WebViews
+- **Type Safety**: 100% typed message protocol
+- **Security**: Strict CSP enforcement
+- **Theming**: Full VSCode theme integration
+- **Testing**: Mock WebView API for tests
 
 ## 📋 Session Completion Checklist
 
-### Extension Foundation
-- [ ] VSCode extension directory created
-- [ ] TypeScript and build configuration complete
-- [ ] Extension manifest (package.json) configured
-- [ ] Base extension activation working
-- [ ] Status bar items displaying
+### WebView Foundation
+- [ ] WebView manager service created
+- [ ] Message protocol implemented
+- [ ] Base template system ready
+- [ ] Memory detail panel working
+- [ ] CSS with theme support added
 
-### Core Structure
-- [ ] Command registration implemented
-- [ ] Configuration schema defined
-- [ ] Activity bar icon and view created
-- [ ] Welcome view provider implemented
-- [ ] Output channel for logging ready
+### Security & State
+- [ ] CSP headers configured
+- [ ] Nonce generation working
+- [ ] State persistence implemented
+- [ ] Panel recovery tested
+- [ ] Resource loading secure
 
-### Development Environment
-- [ ] Debug configuration working
-- [ ] Hot reload functioning
-- [ ] Build tasks configured
-- [ ] Test suite initialized
-- [ ] Extension compiles without errors
+### Testing & Documentation
+- [ ] WebView lifecycle tests
+- [ ] Message handling tests
+- [ ] Security validation tests
+- [ ] Architecture documented
+- [ ] Examples provided
 
 ### Session Wrap-up
-- [ ] All extension files committed to git
-- [ ] **Checkpoint**: Extension activates in VSCode
-- [ ] Next session planned (Session 2.1.2: MCP Client Integration)
+- [ ] All WebView files committed
+- [ ] **Checkpoint**: WebView displays custom UI
+- [ ] Next session planned (Session 2.2.1: Audio Playback)
 - [ ] Update CLAUDE.md progress tracking
 
-## 🚀 Phase 1 Complete - Ready for Phase 2
+## 🚀 Looking Ahead - Week 3-4: Core Features
 
-### Backend Infrastructure Ready for Extension:
+After WebView foundation, we'll build:
 
-**Complete API System**:
-- REST API with 15+ endpoints ready for extension consumption
-- WebSocket support for real-time updates
-- JWT authentication with flexible token handling
-- Safety validation on all endpoints
-- Background task management with progress tracking
+**Session 2.2.1: Audio Playback Service**
+- Audio synthesis integration
+- Playback controls in status bar
+- Queue management
+- Volume/speed controls
 
-**VPS Deployment Target**:
-- Ubuntu 24.04 server with Docker installed
-- 2 vCPU, 8GB RAM, 100GB NVMe SSD
-- Ready for backend service deployment
-- Will host MCP server and API for extension
+**Session 2.2.2: Monitoring Dashboard Integration**
+- Real-time metrics display
+- Sparkline charts
+- Alert notifications
+- Performance CodeLens
 
-**Safety Framework**:
-- Zero-tolerance abstraction enforcement
-- Safety metrics and scoring system
-- Ready to implement in UI components
-- Abstraction patterns documented
+**Session 2.2.3: Unified WebSocket Service**
+- Channel multiplexing
+- Event aggregation
+- Backpressure handling
+- Single connection for all features
 
-**Knowledge System**:
-- Memory management with clustering
-- Knowledge graph with semantic connections
-- Intent analysis for intelligent queries
-- Vector embeddings with caching
+**Session 2.2.4: Memory Operations & Search**
+- "Store Selection as Memory" command
+- Semantic search interface
+- Memory tagging
+- Bulk operations
 
 ## 📝 Session Completion Protocol
 
 ### End-of-Session Requirements
-Before committing Session 2.1.1 completion:
+Before committing Session 2.1.4 completion:
 
 1. **Update Session Status**:
-   - [ ] Update CLAUDE.md with Session 2.1.1 achievements
-   - [ ] Update progress tracking (Week 1-2: 0% → 25%)
-   - [ ] Add extension foundation details to architecture
+   - [ ] Update CLAUDE.md with Session 2.1.4 achievements
+   - [ ] Update progress tracking (Week 1-2: 75% → 100%)
+   - [ ] Add WebView components to architecture
 
 2. **Prepare Next Session**:
-   - [ ] Update NEXT_SESSION.md for Session 2.1.2 (MCP Client Integration)
-   - [ ] Update quick start command with Session 2.1.1 completion note
-   - [ ] Update context files list for MCP integration
+   - [ ] Update NEXT_SESSION.md for Session 2.2.1 (Audio Playback)
+   - [ ] Update quick start command with completion note
+   - [ ] Update context files for audio integration
 
 3. **Documentation Updates**:
-   - [ ] Document extension architecture decisions
-   - [ ] Update README with extension development setup
-   - [ ] Record TypeScript patterns used
+   - [ ] Document WebView architecture patterns
+   - [ ] Update README with WebView features
+   - [ ] Record security decisions
 
 4. **Git Commit**:
-   - [ ] Comprehensive commit message with Session 2.1.1 summary
-   - [ ] Include all extension foundation files
-   - [ ] Tag beginning of Phase 2 implementation
+   - [ ] Comprehensive commit message with WebView summary
+   - [ ] Include all WebView foundation files
+   - [ ] Tag Week 1-2 completion
 
 ## 📚 Reference: Phase 2 Implementation Cadence
 
 From the Phase2_Implementation_Cadence document:
-- **Session 2.1.1**: VSCode Extension Scaffold (Current)
-- **Session 2.1.2**: MCP Client Integration (Next)
-- **Session 2.1.3**: Memory Tree Provider
-- **Session 2.1.4**: WebView Foundation
+- **Session 2.1.1**: VSCode Extension Scaffold ✅
+- **Session 2.1.2**: MCP Client Integration ✅
+- **Session 2.1.3**: Memory Tree Provider ✅
+- **Session 2.1.4**: WebView Foundation (Current)
+- **Session 2.2.1**: Audio Playback Service (Next)
 
-The extension will connect to the VPS-hosted backend services in later sessions.
+The WebView foundation will enable rich UI for monitoring dashboards and audio controls in future sessions.
