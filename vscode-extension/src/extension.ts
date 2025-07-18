@@ -14,6 +14,8 @@ import { AudioPlaybackService } from './services/audio-playback-service';
 import { AudioPlayerPanel } from './webview/audio-player/audio-player-panel';
 import { AudioCaptureService } from './services/audio-capture-service';
 import { VoiceInputPanel } from './webview/voice-input/voice-input-panel';
+import { MonitoringService } from './services/monitoring-service';
+import { MonitoringDashboard } from './webview/monitoring/monitoring-dashboard';
 
 /**
  * Extension state management
@@ -32,6 +34,7 @@ export class ExtensionState {
     private webViewManager: WebViewManager | undefined;
     private audioService: AudioPlaybackService | undefined;
     private audioCaptureService: AudioCaptureService | undefined;
+    private monitoringService: MonitoringService | undefined;
     private statusBarItems: Map<string, vscode.StatusBarItem>;
     private disposables: vscode.Disposable[];
 
@@ -67,6 +70,9 @@ export class ExtensionState {
             this.audioService = AudioPlaybackService.getInstance(context);
             this.audioCaptureService = AudioCaptureService.getInstance();
             
+            // Initialize Monitoring service
+            this.monitoringService = MonitoringService.getInstance();
+            
             // Set connection manager getter to avoid circular dependency
             this.commands.setConnectionManagerGetter(() => this.connectionManager);
             
@@ -87,6 +93,9 @@ export class ExtensionState {
             
             // Register voice commands
             this.registerVoiceCommands(context);
+            
+            // Register monitoring commands
+            this.registerMonitoringCommands(context);
             
             // Create audio status bar item
             if (this.audioService) {
@@ -591,6 +600,75 @@ export class ExtensionState {
     }
     
     /**
+     * Register monitoring commands
+     */
+    private registerMonitoringCommands(context: vscode.ExtensionContext): void {
+        if (!this.monitoringService) return;
+        
+        // Open monitoring dashboard command
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.openMonitoringDashboard', () => {
+                if (!this.webViewManager || !this.monitoringService) {
+                    vscode.window.showErrorMessage('Monitoring service not initialized');
+                    return;
+                }
+                
+                this.webViewManager.createOrShowPanel(
+                    'monitoring-dashboard',
+                    {
+                        viewType: 'coachntt.monitoringDashboard',
+                        title: 'Monitoring Dashboard',
+                        showOptions: vscode.ViewColumn.Two,
+                        options: {
+                            enableScripts: true,
+                            retainContextWhenHidden: true
+                        }
+                    },
+                    (panel) => new MonitoringDashboard(
+                        panel,
+                        context,
+                        this.logger
+                    )
+                );
+            })
+        );
+        
+        // Update session count command (for testing)
+        context.subscriptions.push(
+            vscode.commands.registerCommand('coachntt.updateSessionCount', async () => {
+                const input = await vscode.window.showInputBox({
+                    prompt: 'Enter number of active sessions',
+                    value: '1',
+                    validateInput: (value) => {
+                        const num = parseInt(value);
+                        if (isNaN(num) || num < 1 || num > 100) {
+                            return 'Please enter a number between 1 and 100';
+                        }
+                        return null;
+                    }
+                });
+                
+                if (input) {
+                    this.monitoringService?.updateSessionCount(parseInt(input));
+                    vscode.window.showInformationMessage(`Session count updated to ${input}`);
+                }
+            })
+        );
+        
+        // Show monitoring status bar item
+        const monitoringStatus = vscode.window.createStatusBarItem(
+            vscode.StatusBarAlignment.Left,
+            97
+        );
+        monitoringStatus.text = '$(dashboard) Monitor';
+        monitoringStatus.tooltip = 'Open Monitoring Dashboard';
+        monitoringStatus.command = 'coachntt.openMonitoringDashboard';
+        monitoringStatus.show();
+        this.statusBarItems.set('monitoring', monitoringStatus);
+        context.subscriptions.push(monitoringStatus);
+    }
+    
+    /**
      * Cleanup extension state
      */
     public dispose(): void {
@@ -607,6 +685,7 @@ export class ExtensionState {
         this.memoryTreeProvider?.dispose();
         this.audioService?.dispose();
         this.audioCaptureService?.dispose();
+        this.monitoringService?.dispose();
         this.webViewManager?.dispose();
         this.connectionManager?.dispose();
         this.mcpClient?.disconnect();

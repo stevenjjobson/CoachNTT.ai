@@ -69,7 +69,12 @@
         "coachntt.logLevel": {
           "type": "string",
           "default": "info",
-          "enum": ["debug", "info", "warn", "error"],
+          "enum": [
+            "debug",
+            "info",
+            "warn",
+            "error"
+          ],
           "enumDescriptions": [
             "Show all logs including debug information",
             "Show informational messages and above",
@@ -101,7 +106,11 @@
         "coachntt.memoryView.sortBy": {
           "type": "string",
           "default": "timestamp",
-          "enum": ["timestamp", "importance", "reinforcement"],
+          "enum": [
+            "timestamp",
+            "importance",
+            "reinforcement"
+          ],
           "enumDescriptions": [
             "Sort by creation time",
             "Sort by importance score",
@@ -113,7 +122,10 @@
         "coachntt.memoryView.sortOrder": {
           "type": "string",
           "default": "desc",
-          "enum": ["asc", "desc"],
+          "enum": [
+            "asc",
+            "desc"
+          ],
           "enumDescriptions": [
             "Ascending order",
             "Descending order"
@@ -128,6 +140,30 @@
           "maximum": 200,
           "description": "Number of memories to load per page",
           "order": 14
+        },
+        "coachntt.monitoring.memoryThresholdPercentage": {
+          "type": "number",
+          "default": 80,
+          "minimum": 50,
+          "maximum": 95,
+          "description": "Base memory threshold percentage for monitoring",
+          "order": 15
+        },
+        "coachntt.monitoring.memoryScalingFactor": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Memory threshold scaling factor (% per session)",
+          "order": 16
+        },
+        "coachntt.monitoring.maxMemoryPercentage": {
+          "type": "number",
+          "default": 90,
+          "minimum": 60,
+          "maximum": 95,
+          "description": "Maximum memory threshold percentage",
+          "order": 17
         }
       }
     },
@@ -338,6 +374,18 @@
         "title": "Toggle Voice Activity Detection",
         "category": "CoachNTT: Voice",
         "icon": "$(wand)"
+      },
+      {
+        "command": "coachntt.openMonitoringDashboard",
+        "title": "Open Monitoring Dashboard",
+        "category": "CoachNTT: Monitoring",
+        "icon": "$(dashboard)"
+      },
+      {
+        "command": "coachntt.updateSessionCount",
+        "title": "Update Session Count",
+        "category": "CoachNTT: Monitoring",
+        "icon": "$(symbol-numeric)"
       }
     ],
     "viewsContainers": {
@@ -510,6 +558,12 @@
         "key": "ctrl+shift+r",
         "mac": "cmd+shift+r",
         "when": "coachntt.connected && coachntt.recording"
+      },
+      {
+        "command": "coachntt.openMonitoringDashboard",
+        "key": "ctrl+shift+d",
+        "mac": "cmd+shift+d",
+        "when": "coachntt.connected"
       }
     ]
   },
@@ -543,9 +597,11 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "ws": "^8.16.0",
+    "@types/chart.js": "^2.9.41",
+    "chart.js": "^4.5.0",
     "eventemitter3": "^5.0.1",
-    "p-retry": "^5.1.2"
+    "p-retry": "^5.1.2",
+    "ws": "^8.16.0"
   },
   "repository": {
     "type": "git",

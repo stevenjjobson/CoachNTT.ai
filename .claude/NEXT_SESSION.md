@@ -1,204 +1,198 @@
-# 🎯 Next Session: 2.2.3 Real-time Monitoring Dashboard
+# 🎯 Next Session: 2.2.4 Advanced Code Analysis Features
 
 ## 📋 Session Overview
-- **Session**: 2.2.3
-- **Title**: Real-time Monitoring Dashboard
+- **Session**: 2.2.4
+- **Title**: Advanced Code Analysis Features
 - **Duration**: 1.5-2 hours
-- **Complexity**: Medium
-- **Prerequisites**: Sessions 2.2.1-2.2.2 complete ✅, WebSocket integration ready ✅
+- **Complexity**: Medium-High
+- **Prerequisites**: Sessions 2.2.1-2.2.3 complete ✅, Monitoring ready ✅
 
 ## 🎯 Primary Goals
-1. Create real-time monitoring dashboard WebView
-2. Implement resource usage tracking (CPU, memory, disk)
-3. Add performance metrics visualization
-4. Display safety score trends with charts
-5. Create system health indicators
+1. Create code analysis service with pattern detection
+2. Implement complexity scoring and code metrics
+3. Add intelligent suggestions based on patterns
+4. Create code lens providers for inline insights
+5. Integrate analysis with monitoring dashboard
 
 ## 📁 Files to Create/Modify
-1. **vscode-extension/src/webview/monitoring/monitoring-dashboard.ts** (~400 lines)
-   - Dashboard WebView panel
-   - Real-time data handling
-   - Chart integration
+1. **vscode-extension/src/types/code-analysis.types.ts** (~100 lines)
+   - Code analysis result types
+   - Pattern definitions
+   - Suggestion interfaces
    
-2. **vscode-extension/src/services/monitoring-service.ts** (~300 lines)
-   - Resource monitoring
-   - Performance metrics collection
-   - WebSocket subscription management
+2. **vscode-extension/src/services/code-analysis-service.ts** (~400 lines)
+   - AST analysis for TypeScript/JavaScript
+   - Pattern detection algorithms
+   - Complexity calculations
+   - Performance profiling
    
-3. **vscode-extension/media/monitoring-dashboard.css** (~250 lines)
-   - Dashboard layout styles
-   - Chart container styles
-   - Status indicator animations
+3. **vscode-extension/src/providers/code-lens-provider.ts** (~200 lines)
+   - Inline complexity indicators
+   - Performance hints
+   - Safety suggestions
    
-4. **vscode-extension/media/monitoring-dashboard.js** (~350 lines)
-   - Chart.js integration
-   - Real-time chart updates
-   - Interactive controls
+4. **vscode-extension/src/webview/code-insights/code-insights-panel.ts** (~300 lines)
+   - Code insights WebView
+   - Pattern visualization
+   - Suggestion management
    
-5. **vscode-extension/src/types/monitoring.types.ts** (~100 lines)
-   - Monitoring data types
-   - Chart configuration types
-   - Metric interfaces
+5. **vscode-extension/media/code-insights.css** (~150 lines)
+   - Insights panel styling
+   - Pattern highlighting
+   
+6. **vscode-extension/media/code-insights.js** (~200 lines)
+   - Interactive insights UI
+   - Chart integration for metrics
 
 ## 🔍 Technical Requirements
-### Dashboard Components
-- Resource usage gauges (CPU, Memory, Disk)
-- Safety score trend chart (line graph)
-- Performance metrics cards
-- System health status indicators
-- Real-time log stream viewer
+### Analysis Features
+- Cyclomatic complexity calculation
+- Cognitive complexity scoring
+- Design pattern detection
+- Anti-pattern identification
+- Performance bottleneck detection
 
-### Data Collection
-- Poll system resources every 5 seconds
-- Subscribe to WebSocket performance updates
-- Maintain 1-hour rolling window of data
-- Calculate moving averages for trends
-- Detect anomalies and alert thresholds
+### Pattern Detection
+- Singleton, Factory, Observer patterns
+- Memory leaks and circular dependencies
+- Inefficient loops and algorithms
+- Security vulnerabilities
+- Dead code detection
 
-### Visualization
-- Use Chart.js for interactive charts
-- Implement smooth animations
-- Support dark/light theme switching
-- Responsive layout for different panel sizes
-- Export capability for reports
+### Integration Points
+- Real-time analysis on file save
+- Background analysis for large projects
+- Integration with monitoring metrics
+- Memory-aware analysis throttling
 
 ## 📝 Implementation Plan
-### Part 1: Monitoring Service
+### Part 1: Code Analysis Service
 ```typescript
-export class MonitoringService {
-    private metrics: Map<string, MetricData[]>;
-    private thresholds: ResourceThresholds;
+export class CodeAnalysisService {
+    private analysisCache: Map<string, AnalysisResult>;
+    private patternDetectors: PatternDetector[];
     
-    public collectSystemMetrics(): SystemMetrics {
-        return {
-            cpu: process.cpuUsage(),
-            memory: process.memoryUsage(),
-            uptime: process.uptime()
-        };
+    public async analyzeFile(uri: vscode.Uri): Promise<AnalysisResult> {
+        // AST parsing
+        // Pattern detection
+        // Complexity calculation
+        // Performance profiling
     }
 }
 ```
 
-### Part 2: Dashboard WebView
+### Part 2: CodeLens Provider
 ```typescript
-export class MonitoringDashboard extends ManagedWebViewPanel {
-    private charts: Map<string, Chart>;
-    private updateInterval: NodeJS.Timer;
-    
-    protected setupCharts(): void {
-        this.charts.set('safety', this.createSafetyChart());
-        this.charts.set('resources', this.createResourceChart());
+export class ComplexityCodeLensProvider implements vscode.CodeLensProvider {
+    public provideCodeLenses(document: vscode.TextDocument): vscode.CodeLens[] {
+        // Show complexity scores
+        // Display performance hints
+        // Add safety warnings
     }
 }
 ```
 
-### Part 3: Real-time Updates
-- WebSocket subscription to 'performance_updates' channel
-- Efficient data buffering with circular arrays
-- Throttled UI updates (max 10 FPS)
-- Automatic reconnection on disconnect
+### Part 3: Integration with Monitoring
+- Add code metrics to monitoring dashboard
+- Track analysis performance impact
+- Correlate code complexity with memory usage
+- Alert on high-complexity hotspots
 
 ## ⚡ Performance Targets
-- Dashboard load time: <500ms
-- Chart update latency: <100ms
-- Memory usage: <50MB for 1 hour of data
-- Smooth 60 FPS animations
+- File analysis: <300ms for average file
+- Pattern detection: <50ms per pattern
+- CodeLens update: <100ms
+- Memory usage: <20MB for analysis cache
 
 ## 🧪 Testing Requirements
-1. Test with high-frequency updates
-2. Verify memory doesn't leak over time
-3. Test chart responsiveness
-4. Validate theme switching
-5. Test export functionality
+1. Test pattern detection accuracy
+2. Verify complexity calculations
+3. Test performance on large files
+4. Validate memory usage limits
+5. Test CodeLens responsiveness
 
 ## 📚 Key Concepts
-- **Time-series Data**: Storing and visualizing temporal metrics
-- **Rolling Windows**: Efficient fixed-size data buffers
-- **Chart.js**: Popular JavaScript charting library
-- **Performance Observer**: Browser API for performance monitoring
-- **Gauge Charts**: Circular progress indicators
+- **AST (Abstract Syntax Tree)**: Code structure representation
+- **Cyclomatic Complexity**: Number of linearly independent paths
+- **Cognitive Complexity**: Human readability metric
+- **Design Patterns**: Reusable software design solutions
+- **CodeLens**: Inline code information in editor
 
 ## 🔗 Integration Points
-- MCPClient for WebSocket subscriptions
-- ConfigurationService for threshold settings
-- Logger for performance warnings
-- Extension state for global metrics
+- TypeScript Compiler API for AST
+- MonitoringService for metrics
+- MCPClient for pattern storage
+- WebViewManager for insights panel
 
 ## 📦 Deliverables
-1. ✅ Real-time monitoring dashboard with 5+ chart types
-2. ✅ Resource usage tracking with alerts
-3. ✅ Safety score visualization with trends
-4. ✅ Performance metrics collection
-5. ✅ Export functionality for reports
+1. ✅ Code analysis service with 5+ pattern detectors
+2. ✅ Complexity scoring with inline display
+3. ✅ Code insights panel with visualizations
+4. ✅ Performance profiling integration
+5. ✅ Memory-aware analysis throttling
 
 ## 🚨 Safety Considerations
-- Abstract all file paths in logs
-- No sensitive data in metrics
-- Sanitize exported data
-- Rate limit metric collection
-- Graceful degradation on errors
+- Sanitize file paths in analysis results
+- Abstract sensitive code patterns
+- Limit analysis scope for performance
+- Respect .gitignore and exclusions
+- No code execution during analysis
 
 ## 💡 Innovation Opportunities
-- Predictive alerts using trends
-- Correlation analysis between metrics
-- Custom metric definitions
-- Webhook integration for alerts
-- Historical comparison views
+- ML-based pattern learning
+- Team coding style analysis
+- Automated refactoring suggestions
+- Performance prediction models
+- Code quality trending
 
 ## 🔄 State Management
 ```typescript
-interface DashboardState {
-    metrics: MetricCollection;
-    charts: ChartConfiguration;
-    alerts: Alert[];
-    isStreaming: boolean;
-    timeRange: TimeRange;
+interface AnalysisState {
+    activeAnalyses: Map<string, AnalysisTask>;
+    results: Map<string, AnalysisResult>;
+    patterns: PatternLibrary;
+    settings: AnalysisSettings;
 }
 ```
 
 ## 📈 Success Metrics
-- All charts update smoothly
+- Pattern detection accuracy >90%
+- Analysis completes within targets
 - No memory leaks after 1 hour
-- Alerts trigger within 5 seconds
-- Export includes all visible data
-- Dashboard remains responsive
+- CodeLens updates smoothly
+- User-reported insights value
 
 ## 🎓 Learning Resources
-- [Chart.js Documentation](https://www.chartjs.org/docs/latest/)
-- [Performance Observer API](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver)
-- [VSCode WebView Best Practices](https://code.visualstudio.com/api/extension-guides/webview)
-- [Time-series Data Patterns](https://www.influxdata.com/time-series-database/)
+- [TypeScript Compiler API](https://github.com/microsoft/TypeScript/wiki/Using-the-Compiler-API)
+- [Code Complexity Metrics](https://www.sonarsource.com/docs/CognitiveComplexity.pdf)
+- [Design Patterns](https://refactoring.guru/design-patterns)
+- [VSCode CodeLens API](https://code.visualstudio.com/api/language-extensions/programmatic-language-features#codelens)
 
 ## ✅ Pre-Session Checklist
-- [ ] Chart.js added to dependencies
-- [ ] WebSocket subscriptions working
-- [ ] Resource monitoring APIs researched
-- [ ] Dashboard mockup designed
-- [ ] Performance profiling ready
+- [ ] TypeScript AST parser ready
+- [ ] Pattern library defined
+- [ ] Complexity algorithms researched
+- [ ] CodeLens examples reviewed
+- [ ] Performance profiling tools ready
 
 ## 🚀 Quick Start
 ```bash
-# Continue from Session 2.2.2
+# Continue from Session 2.2.3
 cd vscode-extension
 
-# Install Chart.js
-npm install chart.js @types/chart.js
+# Create code analysis structure
+mkdir -p src/services
+mkdir -p src/providers
+mkdir -p src/webview/code-insights
 
-# Create monitoring structure
-mkdir -p src/webview/monitoring
-touch src/webview/monitoring/monitoring-dashboard.ts
-touch src/services/monitoring-service.ts
-touch src/types/monitoring.types.ts
-
-# Create media files
-touch media/monitoring-dashboard.css
-touch media/monitoring-dashboard.js
+# Create type definitions
+touch src/types/code-analysis.types.ts
 
 # Start development
 npm run watch
 ```
 
 ## 📝 Context for Next Session
-After completing the monitoring dashboard, the next session (2.2.4) will focus on advanced code analysis features including pattern detection, complexity scoring, and intelligent suggestions based on coding patterns.
+After completing code analysis features, Session 2.3.1 will begin the voice integration phase, implementing voice command framework with speech recognition integration and command grammar definitions.
 
-**Note**: Session 2.2.2 successfully implemented voice activity detection with WebRTC audio capture, adaptive VAD thresholds, and push-to-talk functionality. The voice infrastructure is ready for transcription integration.
+**Note**: Session 2.2.3 successfully implemented real-time monitoring dashboard with dynamic memory scaling, Chart.js visualizations, and session-aware resource management. The monitoring infrastructure is ready for code analysis metrics integration.
