@@ -378,6 +378,15 @@
   - Built CommandParser with regex patterns, fuzzy matching, and confidence scoring (~250 lines)
   - Implemented VoiceCommandRegistry for command storage and category organization (~200 lines)
   - Created CommandRouter with context validation and execution management (~300 lines)
+
+- **Session 2.3.2**: Natural Language Query (NLQ)
+  - Built comprehensive NLQ system for voice-driven code search (~1,350 lines)
+  - Created NLQParser with intent extraction, entity recognition, and fuzzy matching (~250 lines)
+  - Implemented SemanticAnalyzer with concept mapping and constraint building (~200 lines)
+  - Built AST-based CodeSearchEngine with TypeScript compiler API integration (~350 lines)
+  - Created QueryResultManager with navigation, grouping, and voice feedback (~350 lines)
+  - Integrated NLQ with voice command framework through NLQVoiceCommands (~200 lines)
+  - Added comprehensive test suites for parser and search engine (~500 lines)
   - Built VoiceFeedbackService for TTS and visual feedback integration (~150 lines)
   - Defined 15+ voice command patterns across 6 categories (navigation, file, selection, edit, search, extension)
   - Added command history with repeat functionality and undo support
@@ -665,7 +674,7 @@ Before creating new files or directories:
 ### Phase 2 (In Progress)
 - Week 1-2: Foundation [▓▓▓▓▓▓] 100% (4/4 sessions) - Sessions 2.1.1 ✅, 2.1.2 ✅, 2.1.3 ✅, 2.1.4 ✅
 - Week 3-4: Core Features [▓▓▓▓▓▓] 100% (5/5 sessions) - Sessions 2.2.1 ✅, 2.2.2 ✅, 2.2.3 ✅, 2.2.4 ✅, 2.2.5 ✅
-- Week 5: Voice Integration [▓░░░░░] 25% (1/4 sessions) - Session 2.3.1 ✅
+- Week 5: Voice Integration [▓▓░░░░] 50% (2/4 sessions) - Sessions 2.3.1 ✅, 2.3.2 ✅
 - Week 6: Polish & Advanced [░░░░░░] 0% (0/3 sessions)
 
 ## 📦 Deployment Target

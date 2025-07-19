@@ -1,58 +1,59 @@
 ---
 title: Next Development Steps
 created: 2025-07-18T12:00:00Z
-updated: 2025-07-19T12:00:00Z
+updated: 2025-07-19T14:00:00Z
 category: planning
-tags: [roadmap, voice-integration, session-2.3.2, nlq, priorities]
+tags: [roadmap, voice-integration, session-2.3.3, voice-to-text, priorities]
 source: Development planning and task tracking
-session: 2.3.2
+session: 2.3.3
 ---
 
 # 🎯 Next Steps for CoachNTT.ai
 
-## Immediate Priority: Session 2.3.2 - Natural Language Query (NLQ)
+## Immediate Priority: Session 2.3.3 - Voice-to-Text Integration
 
 ### Session Goals
-1. **Natural Language Query Parser**
-   - Create NLQ processing service
-   - Implement semantic understanding
-   - Build query intent recognition
-   - Extract search parameters
+1. **MCP Transcription Integration**
+   - Connect AudioCaptureService to MCP transcribe API
+   - Implement streaming transcription support
+   - Add real-time transcription feedback
+   - Handle transcription errors gracefully
 
-2. **Code Search Integration**
-   - Connect NLQ to code analysis
-   - Implement AST-based search
-   - Add semantic code matching
-   - Create result ranking system
+2. **Voice-to-NLQ Pipeline**
+   - Route transcriptions to NLQ parser
+   - Implement confidence thresholds
+   - Add voice command confirmation
+   - Create fallback strategies
 
-3. **Voice-to-Code Navigation**
-   - Map queries to file locations
-   - Implement jump-to-definition
-   - Add context-aware navigation
-   - Create result preview
+3. **Voice Feedback Loop**
+   - Add transcription preview
+   - Implement command confirmation UI
+   - Create voice activity indicators
+   - Add error recovery prompts
 
-4. **Query Result Presentation**
-   - Design result visualization
-   - Add code snippet display
-   - Implement result grouping
-   - Create voice feedback for results
+4. **Extension Integration**
+   - Wire up voice commands in extension.ts
+   - Connect NLQ commands to registry
+   - Add voice toggle to status bar
+   - Register all voice keybindings
 
 ### Prerequisites Check
 - [x] Voice command framework complete
-- [x] Command parser with fuzzy matching
-- [x] Code analysis service operational
-- [x] AST parsing for TypeScript
-- [ ] Design NLQ semantic model
-- [ ] Plan code search strategies
+- [x] NLQ parser and semantic analyzer
+- [x] Code search engine with AST
+- [x] Audio capture service ready
+- [x] MCP client with tool_call support
+- [ ] Connect transcription to voice commands
+- [ ] Integrate all services in extension.ts
 
 ## Technical Tasks
 
 ### High Priority
-1. **Voice Command Framework**
-   - Create command parser service
-   - Define command grammar types
-   - Build intent matching system
-   - Implement command execution
+1. **Voice-to-Text Integration**
+   - Wire AudioCaptureService to MCP
+   - Connect transcriptions to commands
+   - Add real-time feedback
+   - Implement error handling
 
 2. **Critical Test Coverage Gaps**
    - Living Documents: No tests for document-abstractor, context-window-manager
@@ -92,42 +93,40 @@ session: 2.3.2
    - Advanced NLU integration
    - Team collaboration
 
-## Session 2.3.2 Implementation Plan
+## Session 2.3.3 Implementation Plan
 
-### 1. NLQ Parser Service (~300 lines)
+### 1. Transcription Service (~200 lines)
 ```typescript
-interface NLQuery {
-  query: string;
-  intent: 'find' | 'explain' | 'show' | 'search';
-  targets: QueryTarget[];
-  filters: QueryFilter[];
-  context?: CodeContext;
+interface TranscriptionService {
+  transcribe(audio: AudioBuffer): Promise<TranscriptionResult>;
+  startStreaming(): TranscriptionStream;
+  stopStreaming(): void;
 }
 ```
 
-### 2. Semantic Understanding (~250 lines)
-- Natural language tokenization
-- Entity extraction (functions, classes, variables)
-- Intent classification
-- Context awareness
+### 2. Voice Pipeline Manager (~250 lines)
+- Connect audio capture to transcription
+- Route transcriptions to appropriate handlers
+- Manage confidence thresholds
+- Handle errors and retries
 
-### 3. Code Search Engine (~350 lines)
-- AST traversal for matches
-- Semantic similarity scoring
-- File and symbol indexing
-- Result ranking algorithm
+### 3. Voice UI Components (~300 lines)
+- Transcription preview widget
+- Command confirmation dialog
+- Voice activity status bar
+- Error recovery prompts
 
-### 4. Query Result Manager (~200 lines)
-- Result aggregation
-- Snippet extraction
-- Navigation helpers
-- Voice response generation
+### 4. Extension Integration (~150 lines)
+- Register all voice services
+- Connect event handlers
+- Update status bar items
+- Add command palette entries
 
-### 5. Integration & Testing (~200 lines)
-- Connect to voice commands
-- Update code analysis service
-- Add NLQ commands to registry
-- Write query tests
+### 5. Testing & Documentation (~200 lines)
+- Integration tests for voice pipeline
+- Update user documentation
+- Create voice command guide
+- Add troubleshooting section
 
 ## Outstanding Issues
 
@@ -171,21 +170,21 @@ interface NLQuery {
 
 ## Success Criteria
 
-### For Session 2.3.1 (Completed)
-- [x] Basic voice commands working
-- [x] Speech recognition integrated
-- [x] Commands execute correctly
-- [x] Voice feedback operational
-- [x] Tests specifications created
-- [x] Documentation updated
+### For Session 2.3.2 (Completed)
+- [x] NLQ parser operational
+- [x] Code search integrated
+- [x] Semantic understanding working
+- [x] Results properly ranked
+- [x] Voice navigation functional
+- [x] Tests created and passing
 
-### For Session 2.3.2
-- [ ] NLQ parser operational
-- [ ] Code search integrated
-- [ ] Semantic understanding working
-- [ ] Results properly ranked
-- [ ] Voice navigation functional
-- [ ] Tests passing
+### For Session 2.3.3
+- [ ] MCP transcription connected
+- [ ] Voice-to-text pipeline working
+- [ ] Real-time feedback operational
+- [ ] Command confirmation UI
+- [ ] Extension fully integrated
+- [ ] All voice features tested
 
 ### For Phase 2 Completion
 - [ ] All voice features integrated

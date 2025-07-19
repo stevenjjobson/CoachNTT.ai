@@ -153,6 +153,19 @@ export class CommandParser {
                 /list memories/i
             ]
         });
+
+        // Natural Language Query intents
+        this.addIntent({
+            intent: 'nlq',
+            action: 'search',
+            patterns: [
+                /^(?:find|show me|where is|where are|what) (.+)/i,
+                /^(?:search for|look for) (.+)/i,
+                /^which (.+)/i,
+                /^list all (.+)/i
+            ],
+            parameterExtractor: (match) => ({ query: match[1] })
+        });
     }
 
     private addIntent(pattern: IntentPattern): void {
