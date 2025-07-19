@@ -5,73 +5,63 @@ updated: 2025-07-19T15:30:00Z
 category: planning
 tags: [roadmap, testing-critical, session-2.3.2.5, technical-debt, priorities]
 source: Development planning and task tracking
-session: 2.3.2.5
+session: 2.3.2.5b
 ---
 
 # 🎯 Next Steps for CoachNTT.ai
 
-## 🚨 Immediate Priority: Session 2.3.2.5 - Testing Foundation Catch-Up
+## 🚨 Immediate Priority: Session 2.3.2.5b - TypeScript Test Fixes
 
 **Why This Is Critical**: 
-- Currently at ~15% test coverage (target: 90%)
-- Audio services have 0 tests
-- Voice integration depends on untested foundations
-- Risk of cascading failures without proper testing
+- 320+ tests written but cannot run due to TypeScript errors
+- Must fix compilation before proceeding with voice integration
+- Simple fixes will unlock comprehensive test coverage
 
-## Next Priority: Session 2.3.3 - Voice-to-Text Integration (Post-Testing)
+**Session Goals**:
+1. Fix TypeScript compilation errors
+2. Get all 320 existing tests running
+3. Add 15-20 basic abstraction tests
+4. Achieve 60%+ coverage on critical paths
+
+## Next Priority: Session 2.3.3 - Voice-to-Text Integration
 
 ### Session Goals
-1. **Backend Foundation Testing**
-   - Verify Docker containers start correctly
-   - Test API health endpoints
-   - Validate database connections
-   - Check safety enforcement rules
-   - Test memory CRUD operations
+1. **Connect Audio Pipeline to MCP**
+   - Wire AudioCaptureService to transcription API
+   - Handle transcription responses
+   - Error handling for failed transcriptions
 
-2. **VSCode Extension Testing**
-   - Verify extension activation
-   - Test MCP WebSocket connection
-   - Validate memory tree display
-   - Check command registration
-   - Test status bar updates
+2. **Integrate NLQ with Voice Input**
+   - Parse transcribed text through NLQParser
+   - Execute voice commands
+   - Provide audio/visual feedback
 
-3. **Audio Pipeline Testing**
-   - Test Voice Activity Detection (VAD)
-   - Verify audio capture functionality
-   - Test audio playback service
-   - Validate audio-to-WAV encoding
-   - End-to-end pipeline test
-
-4. **Critical Path Coverage**
-   - Achieve 60% test coverage on critical services
-   - Create tests for all audio services (currently 0)
-   - Test WebSocket pub/sub messaging
-   - Validate real-time update flow
-   - Document remaining testing gaps
+3. **Complete Voice Workflow**
+   - Push-to-talk → Capture → VAD → Transcribe → Parse → Execute
+   - Test end-to-end voice commands
+   - Optimize for low latency
 
 ### Prerequisites Check
-- [x] Development paused for testing
-- [x] Testing plan documented
-- [ ] Backend smoke tests passing
-- [ ] Extension activation verified
-- [ ] Audio pipeline tested
-- [ ] WebSocket stability confirmed
+- [x] Voice Command Framework (2.3.1) ✅
+- [x] Natural Language Query (2.3.2) ✅
+- [x] Test Suite Written (2.3.2.5) ✅
+- [ ] Tests Running (2.3.2.5b) 🔄
 - [ ] 60% critical path coverage achieved
 
 ## Technical Tasks
 
-### High Priority
-1. **Testing Infrastructure**
-   - Set up Jest configuration for extension
-   - Create test fixtures and mocks
-   - Implement test runners
-   - Add coverage reporting
+### High Priority (Session 2.3.2.5b)
+1. **Fix TypeScript Compilation**
+   - Install missing dependencies (uuid, @types/ws)
+   - Create managed-webview-panel mock
+   - Fix service constructor patterns
+   - Resolve type export issues
 
-2. **Critical Test Coverage Gaps**
-   - Living Documents: No tests for document-abstractor, context-window-manager
-   - Audio Services: No tests for audio-playback, voice-activity-detector, audio-capture
-   - Monitoring: No tests for monitoring-service, code-analysis-service
-   - Only 5 test files exist for 30+ services - major technical debt
+2. **Get Tests Running**
+   - Start with 10 tests to verify setup
+   - Fix compilation errors incrementally
+   - Run all 320 tests
+   - Generate coverage report
 
 3. **Documentation Updates**
    - Update API documentation

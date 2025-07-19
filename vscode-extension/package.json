@@ -187,7 +187,12 @@
         },
         "coachntt.codeAnalysis.enabledPatterns": {
           "type": "array",
-          "default": ["long-method", "god-class", "nested-loops", "dead-code"],
+          "default": [
+            "long-method",
+            "god-class",
+            "nested-loops",
+            "dead-code"
+          ],
           "description": "Enabled pattern detectors",
           "order": 21
         }
@@ -465,8 +470,13 @@
     "languages": [
       {
         "id": "coachntt-doc",
-        "aliases": ["CoachNTT Document", "Living Document"],
-        "extensions": [".CoachNTT"],
+        "aliases": [
+          "CoachNTT Document",
+          "Living Document"
+        ],
+        "extensions": [
+          ".CoachNTT"
+        ],
         "configuration": "./language-configuration.json",
         "icon": {
           "light": "./resources/icons/coachntt-doc-light.svg",
@@ -672,12 +682,16 @@
     "watch": "webpack --mode development --watch",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:vscode": "node ./out/test/runTest.js",
     "package": "vsce package",
     "publish": "vsce publish"
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
+    "@types/jest": "^30.0.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "18.x",
     "@types/sinon": "^17.0.2",
@@ -685,11 +699,13 @@
     "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
-    "@vscode/test-electron": "^2.3.8",
+    "@vscode/test-electron": "^2.5.2",
     "eslint": "^8.56.0",
     "glob": "^10.3.10",
+    "jest": "^30.0.4",
     "mocha": "^10.2.0",
     "sinon": "^17.0.1",
+    "ts-jest": "^29.4.0",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
     "webpack": "^5.89.0",
