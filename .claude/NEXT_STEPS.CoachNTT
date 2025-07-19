@@ -1,45 +1,49 @@
 ---
 title: Next Development Steps
 created: 2025-07-18T12:00:00Z
-updated: 2025-07-18T17:34:00Z
+updated: 2025-07-19T12:00:00Z
 category: planning
-tags: [roadmap, voice-integration, session-2.3.1, priorities]
+tags: [roadmap, voice-integration, session-2.3.2, nlq, priorities]
 source: Development planning and task tracking
-session: 2.3.1
+session: 2.3.2
 ---
 
 # 🎯 Next Steps for CoachNTT.ai
 
-## Immediate Priority: Session 2.3.1 - Voice Command Framework
+## Immediate Priority: Session 2.3.2 - Natural Language Query (NLQ)
 
 ### Session Goals
-1. **Command Grammar Definition**
-   - Define supported voice commands
-   - Create command parsing system
-   - Implement intent matching
+1. **Natural Language Query Parser**
+   - Create NLQ processing service
+   - Implement semantic understanding
+   - Build query intent recognition
+   - Extract search parameters
 
-2. **Speech-to-Text Integration**
-   - Web Speech API setup
-   - Transcription service connection
-   - Error handling for recognition
+2. **Code Search Integration**
+   - Connect NLQ to code analysis
+   - Implement AST-based search
+   - Add semantic code matching
+   - Create result ranking system
 
-3. **Command Router Implementation**
-   - Map voice commands to actions
-   - Create confirmation UI
-   - Add undo/redo support
+3. **Voice-to-Code Navigation**
+   - Map queries to file locations
+   - Implement jump-to-definition
+   - Add context-aware navigation
+   - Create result preview
 
-4. **Voice Feedback System**
-   - Text-to-speech responses
-   - Audio queue management
-   - Volume/speed controls
+4. **Query Result Presentation**
+   - Design result visualization
+   - Add code snippet display
+   - Implement result grouping
+   - Create voice feedback for results
 
 ### Prerequisites Check
-- [x] Audio playback service ready
-- [x] Voice activity detection working
-- [x] WebView infrastructure solid
-- [x] MCP client operational
-- [ ] Review speech recognition APIs
-- [ ] Plan command grammar
+- [x] Voice command framework complete
+- [x] Command parser with fuzzy matching
+- [x] Code analysis service operational
+- [x] AST parsing for TypeScript
+- [ ] Design NLQ semantic model
+- [ ] Plan code search strategies
 
 ## Technical Tasks
 
@@ -88,41 +92,42 @@ session: 2.3.1
    - Advanced NLU integration
    - Team collaboration
 
-## Session 2.3.1 Implementation Plan
+## Session 2.3.2 Implementation Plan
 
-### 1. Command Grammar Service (~200 lines)
+### 1. NLQ Parser Service (~300 lines)
 ```typescript
-interface VoiceCommand {
-  pattern: RegExp;
-  intent: CommandIntent;
-  action: CommandAction;
-  confirmation?: boolean;
+interface NLQuery {
+  query: string;
+  intent: 'find' | 'explain' | 'show' | 'search';
+  targets: QueryTarget[];
+  filters: QueryFilter[];
+  context?: CodeContext;
 }
 ```
 
-### 2. Speech Recognition Service (~300 lines)
-- Web Speech API wrapper
-- Continuous recognition mode
-- Language detection
-- Confidence scoring
+### 2. Semantic Understanding (~250 lines)
+- Natural language tokenization
+- Entity extraction (functions, classes, variables)
+- Intent classification
+- Context awareness
 
-### 3. Command Router (~250 lines)
-- Intent matching algorithm
-- Command queue management
-- Execution with rollback
-- Result notification
+### 3. Code Search Engine (~350 lines)
+- AST traversal for matches
+- Semantic similarity scoring
+- File and symbol indexing
+- Result ranking algorithm
 
-### 4. Voice Feedback Service (~200 lines)
-- TTS integration
-- Response templates
-- Queue prioritization
-- Interrupt handling
+### 4. Query Result Manager (~200 lines)
+- Result aggregation
+- Snippet extraction
+- Navigation helpers
+- Voice response generation
 
-### 5. Integration & Testing (~300 lines)
-- Connect to existing services
-- Update extension.ts
-- Add voice commands
-- Write comprehensive tests
+### 5. Integration & Testing (~200 lines)
+- Connect to voice commands
+- Update code analysis service
+- Add NLQ commands to registry
+- Write query tests
 
 ## Outstanding Issues
 
@@ -166,13 +171,21 @@ interface VoiceCommand {
 
 ## Success Criteria
 
-### For Session 2.3.1
-- [ ] Basic voice commands working
-- [ ] Speech recognition integrated
-- [ ] Commands execute correctly
-- [ ] Voice feedback operational
+### For Session 2.3.1 (Completed)
+- [x] Basic voice commands working
+- [x] Speech recognition integrated
+- [x] Commands execute correctly
+- [x] Voice feedback operational
+- [x] Tests specifications created
+- [x] Documentation updated
+
+### For Session 2.3.2
+- [ ] NLQ parser operational
+- [ ] Code search integrated
+- [ ] Semantic understanding working
+- [ ] Results properly ranked
+- [ ] Voice navigation functional
 - [ ] Tests passing
-- [ ] Documentation updated
 
 ### For Phase 2 Completion
 - [ ] All voice features integrated
@@ -185,11 +198,11 @@ interface VoiceCommand {
 ## Quick Start Commands
 
 ```bash
-# Begin Session 2.3.1
+# Begin Session 2.3.2
 cd vscode-extension
 
-# Install any new dependencies
-npm install
+# Review voice command implementation
+code src/services/voice-command/
 
 # Start development
 npm run watch
@@ -197,14 +210,17 @@ npm run watch
 # Open test instance
 F5 in VSCode
 
-# Test voice commands
-Ctrl+Shift+V (push to talk)
+# Test NLQ queries
+"Find all functions that handle authentication"
+"Show me the constructor for MCPClient"
+"Where is the memory validation implemented?"
 ```
 
 ## Notes for Next Session
 
-- Review Web Speech API browser compatibility
-- Consider fallback for unsupported browsers
-- Plan natural language patterns
-- Think about multilingual support
-- Design command discovery UI
+- Leverage existing CommandParser for NLQ foundation
+- Consider integrating with code-analysis-service
+- Plan query result caching strategy
+- Think about search performance optimization
+- Design visual feedback for search progress
+- Consider voice interruption for long searches

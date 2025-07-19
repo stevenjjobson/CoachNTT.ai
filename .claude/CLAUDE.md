@@ -372,6 +372,21 @@
   - Enabled context-aware documentation that evolves with the codebase
   - **Out-of-Cadence Addition**: Critical feature for managing project documentation
 
+- **Session 2.3.1**: Voice Command Framework
+  - Implemented complete voice command processing system with natural language understanding (~1,250 lines)
+  - Created VoiceCommandService as central coordinator with event system and history (~350 lines)
+  - Built CommandParser with regex patterns, fuzzy matching, and confidence scoring (~250 lines)
+  - Implemented VoiceCommandRegistry for command storage and category organization (~200 lines)
+  - Created CommandRouter with context validation and execution management (~300 lines)
+  - Built VoiceFeedbackService for TTS and visual feedback integration (~150 lines)
+  - Defined 15+ voice command patterns across 6 categories (navigation, file, selection, edit, search, extension)
+  - Added command history with repeat functionality and undo support
+  - Created comprehensive test specifications for all components
+  - Achieved context-aware execution with safety validation
+  - Identified critical test coverage gap: only 5 test files for 30+ services
+  - Prepared integration points with existing audio services
+  - Maintained zero-tolerance safety with complete abstraction in commands
+
 ### 🏗️ Architecture Summary
 ```
 src/
@@ -562,7 +577,13 @@ vscode-extension/              # VSCode Extension (Phase 2)
 │   │   ├── monitoring-service.ts # Real-time metrics with dynamic thresholds
 │   │   ├── living-document-service.ts # Living Documents (.CoachNTT) processing
 │   │   ├── document-abstractor.ts # Markdown-aware safety abstraction
-│   │   └── context-window-manager.ts # Document compaction and optimization
+│   │   ├── context-window-manager.ts # Document compaction and optimization
+│   │   └── voice-command/
+│   │       ├── voice-command-service.ts # Central coordinator for voice commands
+│   │       ├── command-parser.ts # Natural language command parsing
+│   │       ├── voice-command-registry.ts # Command storage and discovery
+│   │       ├── command-router.ts # Context-aware command execution
+│   │       └── voice-feedback-service.ts # Audio and visual feedback
 │   └── types/
 │       ├── mcp.types.ts       # MCP message type definitions
 │       ├── monitoring.types.ts # Monitoring metrics and chart types
@@ -616,13 +637,13 @@ docker-compose exec postgres psql -U ccp_user -d cognitive_coding_partner
 
 **For detailed session preparation, see:** [NEXT_STEPS.CoachNTT](.claude/NEXT_STEPS.CoachNTT)
 
-### Quick Summary: Session 2.3.1 Voice Command Framework  
-- **Prerequisites**: Session 2.2.5 complete ✅, Living Documents ready ✅
-- **Focus**: Implement voice command processing system
+### Quick Summary: Session 2.3.2 Natural Language Query (NLQ)
+- **Prerequisites**: Session 2.3.1 complete ✅, Voice Command Framework ready ✅
+- **Focus**: Implement natural language query processing for code search
 - **Context Budget**: ~2800 tokens
-- **Estimated Output**: ~1250 lines
+- **Estimated Output**: ~1200 lines
 
-**Note**: Session 2.2.5 (Living Documents Integration) completed with automatic abstraction, context management, and evolution tracking.
+**Note**: Session 2.3.1 (Voice Command Framework) completed with 15+ command patterns, natural language parsing, and comprehensive feedback system.
 
 ## 📁 Pre-Session Structure Check
 
@@ -644,7 +665,7 @@ Before creating new files or directories:
 ### Phase 2 (In Progress)
 - Week 1-2: Foundation [▓▓▓▓▓▓] 100% (4/4 sessions) - Sessions 2.1.1 ✅, 2.1.2 ✅, 2.1.3 ✅, 2.1.4 ✅
 - Week 3-4: Core Features [▓▓▓▓▓▓] 100% (5/5 sessions) - Sessions 2.2.1 ✅, 2.2.2 ✅, 2.2.3 ✅, 2.2.4 ✅, 2.2.5 ✅
-- Week 5: Voice Integration [░░░░░░] 0% (0/4 sessions)
+- Week 5: Voice Integration [▓░░░░░] 25% (1/4 sessions) - Session 2.3.1 ✅
 - Week 6: Polish & Advanced [░░░░░░] 0% (0/3 sessions)
 
 ## 📦 Deployment Target
@@ -717,6 +738,7 @@ When starting a session, I will provide:
 - **Safety First**: Every feature must support abstraction from the start
 - **No Retrofitting**: Build safety into foundation, not added later
 - **Session Completion**: Always update NEXT_SESSION.md before final commit
+- **Session Documentation**: All session summaries go in `docs/sessions/` directory
 
 ## 📝 Session Completion Protocol
 
@@ -735,6 +757,7 @@ Before committing session completion, **ALWAYS** complete these steps:
    - [ ] Update prerequisites to include current session as complete
 
 3. **Documentation Updates**:
+   - [ ] Create session summary in `docs/sessions/SESSION_X.Y_SUMMARY.md`
    - [ ] Document new capabilities and integration points
    - [ ] Update performance benchmarks if applicable
    - [ ] Record any architectural decisions or deviations
