@@ -695,6 +695,7 @@
     "@types/mocha": "^10.0.1",
     "@types/node": "18.x",
     "@types/sinon": "^17.0.2",
+    "@types/uuid": "^10.0.0",
     "@types/vscode": "^1.85.0",
     "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
@@ -708,6 +709,7 @@
     "ts-jest": "^29.4.0",
     "ts-loader": "^9.5.1",
     "typescript": "^5.3.3",
+    "uuid": "^11.1.0",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
   },

@@ -74,6 +74,11 @@ export interface AudioItem {
 }
 
 /**
+ * Type alias for backward compatibility
+ */
+export type AudioQueueItem = AudioItem;
+
+/**
  * Audio queue state for persistence
  */
 export interface AudioQueueState {

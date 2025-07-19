@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  postgres-minimal:
+    build:
+      context: ./docker/dockerfiles
+      dockerfile: postgres-minimal.Dockerfile
+    container_name: ccp_postgres_minimal
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+      POSTGRES_DB: test_db
+    ports:
+      - "127.0.0.1:5433:5432"  # Different port to avoid conflicts
+    volumes:
+      # Mount migrations for testing
+      - ./migrations:/migrations:ro
+      # Minimal data volume
+      - postgres_minimal_data:/var/lib/postgresql/data
+    # Resource limits for VPS testing
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_user -d test_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  postgres_minimal_data:
+    driver: local

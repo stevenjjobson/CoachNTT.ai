@@ -9,7 +9,7 @@ import { DocumentAbstractor } from '../services/document-abstractor';
  */
 export class LivingDocumentPreview {
     private static panels: Map<string, vscode.WebviewPanel> = new Map();
-    private static abstractor = new DocumentAbstractor();
+    private static abstractor = DocumentAbstractor.getInstance();
 
     /**
      * Create or show preview panel for a document

@@ -35,7 +35,6 @@ interface AudioPlayerPanelState {
 export class AudioPlayerPanel extends ManagedWebViewPanel {
     private protocol: MessageProtocol;
     private audioService: AudioPlaybackService;
-    private disposables: vscode.Disposable[] = [];
     
     constructor(
         panel: vscode.WebviewPanel,

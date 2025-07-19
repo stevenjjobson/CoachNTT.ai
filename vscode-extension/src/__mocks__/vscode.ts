@@ -60,7 +60,7 @@ export class Uri {
     // Simplified parsing
     const match = /^(\w+):\/\/([^\/]+)(\/[^?#]*)(\?[^#]*)?(#.*)?$/.exec(value);
     if (match) {
-      return new Uri(match[1], match[2], match[3] || '', match[4] || '', match[5] || '');
+      return new Uri(match[1], match[2] || '', match[3] || '', match[4] || '', match[5] || '');
     }
     return new Uri('', '', value, '', '');
   }
@@ -105,15 +105,25 @@ export class Position {
 }
 
 export class Range {
+  public start: Position;
+  public end: Position;
+  
   constructor(
-    public start: Position | number,
-    public end: Position | number,
-    endCharacterOrEndLine?: number,
+    startLineOrStartPos: Position | number,
+    startCharacterOrEndPos: Position | number,
+    endLine?: number,
     endCharacter?: number
   ) {
-    if (typeof start === 'number' && typeof end === 'number') {
-      this.start = new Position(start, end);
-      this.end = new Position(endCharacterOrEndLine || start, endCharacter || end);
+    if (typeof startLineOrStartPos === 'number' && typeof startCharacterOrEndPos === 'number') {
+      this.start = new Position(startLineOrStartPos, startCharacterOrEndPos);
+      this.end = new Position(endLine || startLineOrStartPos, endCharacter || startCharacterOrEndPos);
+    } else if (startLineOrStartPos instanceof Position && startCharacterOrEndPos instanceof Position) {
+      this.start = startLineOrStartPos;
+      this.end = startCharacterOrEndPos;
+    } else {
+      // Default case
+      this.start = new Position(0, 0);
+      this.end = new Position(0, 0);
     }
   }
   
@@ -204,12 +214,18 @@ export class Disposable {
 
 export class CancellationTokenSource {
   private _token: CancellationToken;
+  private _emitter = new EventEmitter<void>();
   
   constructor() {
-    let isCancelled = false;
     this._token = {
       isCancellationRequested: false,
-      onCancellationRequested: new EventEmitter<void>().event
+      onCancellationRequested: (listener: (e: void) => void) => {
+        const disposable = {
+          dispose: () => this._emitter.removeListener('cancel', listener)
+        };
+        this._emitter.on('cancel', listener);
+        return disposable;
+      }
     };
   }
   
@@ -219,6 +235,7 @@ export class CancellationTokenSource {
   
   cancel(): void {
     this._token.isCancellationRequested = true;
+    this._emitter.emit('cancel');
   }
   
   dispose(): void {

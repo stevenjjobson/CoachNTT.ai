@@ -30,9 +30,9 @@ export class MonitoringDashboard extends ManagedWebViewPanel {
     constructor(
         panel: vscode.WebviewPanel,
         context: vscode.ExtensionContext,
-        private logger: any
+        logger: Logger
     ) {
-        super(panel, context);
+        super(panel, context, logger);
         
         this.monitoringService = MonitoringService.getInstance();
         this.charts = new Map();
@@ -490,6 +490,32 @@ export class MonitoringDashboard extends ManagedWebViewPanel {
     <script src="${scriptUri}"></script>
 </body>
 </html>`;
+    }
+    
+    /**
+     * Get panel state for persistence
+     */
+    protected getPanelState(): any {
+        return {
+            timeRange: this.timeRange,
+            charts: Array.from(this.charts.entries()),
+            alerts: this.alerts
+        };
+    }
+    
+    /**
+     * Restore panel state
+     */
+    public restoreState(state: any): void {
+        if (state.timeRange) {
+            this.timeRange = state.timeRange;
+        }
+        if (state.charts) {
+            this.charts = new Map(state.charts);
+        }
+        if (state.alerts) {
+            this.alerts = state.alerts;
+        }
     }
     
     /**

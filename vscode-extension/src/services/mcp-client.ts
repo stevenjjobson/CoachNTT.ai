@@ -472,6 +472,20 @@ export class MCPClient {
     }
 
     /**
+     * Convenience method to subscribe to events
+     */
+    public on(event: string, listener: (...args: any[]) => void): void {
+        this.eventEmitter.on(event as any, listener);
+    }
+
+    /**
+     * Convenience method to unsubscribe from events
+     */
+    public off(event: string, listener: (...args: any[]) => void): void {
+        this.eventEmitter.off(event as any, listener);
+    }
+
+    /**
      * Dispose the client
      */
     public dispose(): void {

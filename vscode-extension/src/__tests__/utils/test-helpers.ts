@@ -4,6 +4,7 @@
 
 import { EventEmitter } from 'events';
 import * as vscode from 'vscode';
+import { MediaStream, AudioContext, AudioContextState, MediaStreamTrackState } from '../../__mocks__/dom';
 
 /**
  * Create mock audio data for testing

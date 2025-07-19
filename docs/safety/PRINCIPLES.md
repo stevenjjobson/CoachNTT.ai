@@ -2,10 +2,11 @@
 
 ---
 **Document**: Safety Principles and Guidelines  
-**Version**: 1.0  
-**Date**: 2025-01-13  
+**Version**: 1.1  
+**Date**: 2025-01-19  
 **Purpose**: Define fundamental safety principles that govern all CCP operations  
 **Criticality**: MANDATORY - All components must adhere to these principles  
+**Updated**: Added Law 6 - Document Reality, Not Aspirations
 
 ---
 
@@ -68,6 +69,50 @@ The Cognitive Coding Partner prioritizes safety through systematic abstraction o
 - Record validation decisions
 - Track safety score calculations
 - Monitor reference usage patterns
+
+### Law 6: Document Reality, Not Aspirations
+**Principle**: All documentation must reflect actual system state with appropriate context, not cherry-picked metrics or intended future state.
+
+**Rationale**: Delusional documentation compounds technical debt, breaks trust, and leads to false confidence in system capabilities.
+
+**Implementation**:
+
+#### A. Feature Documentation
+- Test status must be verified before documenting as "complete"
+- Feature claims require working demonstrations
+- Progress tracking based on passing tests, not written code
+- "Implemented" means: coded + tested + integrated + documented
+
+#### B. Metric Integrity
+- **Context Required**: All metrics must include test conditions
+- **Bad**: "Memory usage: 45MB ✅"  
+- **Good**: "Memory usage: 45MB (database only, no API, no features loaded)"
+- **Bad**: "90% test coverage"
+- **Good**: "90% test coverage (10 of 11 abstraction tests passing, 157 other tests not running)"
+
+#### C. Test Result Reality
+- Test counts = passing tests only
+- Non-running tests marked as "unverified" not "implemented"
+- Coverage metrics include denominators (e.g., "10/167 tests passing")
+- Performance claims require full feature load
+
+#### D. Regular Reality Audits
+- Weekly review: Do docs match reality?
+- Remove or mark stale claims
+- Update metrics with current context
+- Flag aspirational content clearly
+
+#### E. Prohibited Practices
+- ❌ Claiming partial implementation as complete
+- ❌ Extrapolating limited test results to full system
+- ❌ Hiding critical context in footnotes
+- ❌ Using future tense for current state ("will support")
+
+#### F. Required Practices
+- ✅ Mark work-in-progress clearly
+- ✅ Include test environment in all metrics
+- ✅ Date all performance claims
+- ✅ Separate "tested" from "implemented"
 
 ## 📋 Safety Implementation Principles
 

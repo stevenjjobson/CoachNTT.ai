@@ -272,26 +272,97 @@ services:
       - "ccp.monitoring.enabled=true"
       - "traefik.enable=false"
 
-  # Future services can be added here
-  # api:
-  #   build:
-  #     context: .
-  #     dockerfile: docker/dockerfiles/app.Dockerfile
-  #   container_name: ccp_api
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #   environment:
-  #     DATABASE_URL: postgresql://${POSTGRES_USER:-ccp_user}:${POSTGRES_PASSWORD:-ccp_dev_password}@postgres:5432/${POSTGRES_DB:-cognitive_coding_partner}
-  #   ports:
-  #     - "8000:8000"
-  #   networks:
-  #     - ccp_network
+  # ===============================================
+  # API Service
+  # ===============================================
+  api:
+    build:
+      context: .
+      dockerfile: docker/dockerfiles/app.Dockerfile
+    container_name: ccp_api
+    depends_on:
+      postgres:
+        condition: service_healthy
+      pgbouncer:
+        condition: service_healthy
+    environment:
+      # Database connection via pgbouncer
+      DATABASE_URL: postgresql://${POSTGRES_USER:-ccp_user}:${POSTGRES_PASSWORD:-ccp_dev_password}@pgbouncer:6432/${POSTGRES_DB:-cognitive_coding_partner}
+      
+      # API configuration
+      API_HOST: 0.0.0.0
+      API_PORT: 8000
+      API_WORKERS: 2
+      
+      # Safety configuration
+      SAFETY_VALIDATION_ENABLED: "true"
+      SAFETY_MINIMUM_SCORE: "0.8"
+      
+      # Memory configuration
+      MEMORY_DECAY_ENABLED: "true"
+      MEMORY_DECAY_CONSTANT: "0.0001"
+      
+    ports:
+      - "127.0.0.1:8000:8000"  # Localhost only
+      
+    volumes:
+      # Application logs
+      - api_logs:/app/logs:rw
+      
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+      
+    networks:
+      - ccp_network
+      
+    restart: unless-stopped
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    
+    # Logging
+    logging:
+      driver: json-file
+      options:
+        max-size: "50m"
+        max-file: "3"
+        labels: "service=api,component=backend"
 
 volumes:
   # ===============================================
   # Secure Volume Configuration
   # ===============================================
+  
+  # API logs volume
+  api_logs:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${API_LOGS_PATH:-./data/api-logs}
+    labels:
+      - "ccp.component=api-logs"
+      - "ccp.security.level=medium"
+      - "ccp.retention=30d"
   
   # Primary database data volume
   postgres_data:

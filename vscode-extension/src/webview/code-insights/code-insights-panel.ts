@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { ManagedWebViewPanel } from '../managed-webview-panel';
+import { ManagedWebViewPanel } from '../webview-manager';
 import { Logger } from '../../utils/logger';
 import { CodeAnalysisService } from '../../services/code-analysis-service';
 import { AnalysisResult, CodeMetrics } from '../../types/code-analysis.types';

@@ -16,7 +16,7 @@ export class DocumentSessionManager {
     constructor(
         private contextBudget: number = 0.3 // 30% of context window for documents
     ) {
-        this.contextWindowManager = new ContextWindowManager();
+        this.contextWindowManager = ContextWindowManager.getInstance();
         this.setupFileWatchers();
     }
 

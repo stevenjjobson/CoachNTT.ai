@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { ManagedWebViewPanel } from '../managed-webview-panel';
+import { ManagedWebViewPanel } from '../webview-manager';
 import { MessageProtocol, WebViewMessage } from '../message-protocol';
 import { AudioCaptureService, RecordingState } from '../../services/audio-capture-service';
 import { Logger } from '../../utils/logger';
@@ -31,17 +31,19 @@ interface VoiceInputSettings {
  * VAD indicators, and transcription display.
  */
 export class VoiceInputPanel extends ManagedWebViewPanel {
-    private logger: Logger;
     private audioCapture: AudioCaptureService;
     private protocol: MessageProtocol<VoiceInputMessage>;
     private settings: VoiceInputSettings;
     private updateTimer?: NodeJS.Timer;
     private lastAudioBlob?: Blob;
 
-    constructor(extensionPath: string) {
-        super('voice-input', 'Voice Input', extensionPath);
+    constructor(
+        panel: vscode.WebviewPanel,
+        context: vscode.ExtensionContext,
+        logger: Logger
+    ) {
+        super(panel, context, logger);
         
-        this.logger = Logger.getInstance();
         this.audioCapture = AudioCaptureService.getInstance();
         this.protocol = new MessageProtocol(this.logger);
         

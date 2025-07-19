@@ -13,6 +13,7 @@ import { MemoryDetailPanel } from './webview/panels/memory-detail-panel';
 import { AudioPlaybackService } from './services/audio-playback-service';
 import { AudioPlayerPanel } from './webview/audio-player/audio-player-panel';
 import { AudioCaptureService } from './services/audio-capture-service';
+import { AudioSourceType } from './models/audio-queue';
 import { VoiceInputPanel } from './webview/voice-input/voice-input-panel';
 import { MonitoringService } from './services/monitoring-service';
 import { MonitoringDashboard } from './webview/monitoring/monitoring-dashboard';
@@ -308,11 +309,11 @@ export class ExtensionState {
      */
     private initializeMCPServices(context: vscode.ExtensionContext): void {
         try {
-            // Create MCP client
-            this.mcpClient = new MCPClient(this.logger);
+            // Get MCP client singleton
+            this.mcpClient = MCPClient.getInstance();
             
-            // Create connection manager
-            this.connectionManager = new ConnectionManager(this.mcpClient, this.logger);
+            // Get connection manager singleton
+            this.connectionManager = ConnectionManager.getInstance();
             
             // Create memory tree provider
             this.memoryTreeProvider = new MemoryTreeProvider(this.mcpClient, this.logger);
@@ -475,7 +476,7 @@ export class ExtensionState {
                 }
                 
                 try {
-                    await this.audioService.addToQueue(text, 'synthesis', {
+                    await this.audioService.addToQueue(text, AudioSourceType.SYNTHESIS, {
                         metadata: {
                             source: vscode.workspace.asRelativePath(editor.document.fileName)
                         }
@@ -558,7 +559,7 @@ export class ExtensionState {
                             retainContextWhenHidden: true
                         }
                     },
-                    (panel) => new VoiceInputPanel(context.extensionPath)
+                    (panel) => new VoiceInputPanel(panel, context, this.logger)
                 );
             })
         );

@@ -6,6 +6,29 @@
 **Tech Stack**: Python 3.10+, PostgreSQL with pgvector, FastAPI  
 **Status**: Phase 1 - Secure Foundation (In Progress)
 
+## 🛡️ Documentation Integrity Commitment
+
+This project commits to Safety Law 6: Document Reality, Not Aspirations
+
+### Our Promise
+- ✅ Test counts reflect passing tests only
+- ✅ Metrics include full context
+- ✅ Features marked complete only when demoed
+- ✅ Regular reality audits published
+- ✅ Aspirational content clearly marked
+
+### Reality Tracking
+- See `docs/REALITY_CHECK.md` for current state
+- See `TEST_REALITY.md` for actual test status
+- Weekly audits in `docs/reality-audits/`
+
+### Verification
+Before reading any feature claim, check:
+1. When was it last tested?
+2. What was the test environment?
+3. Are there passing tests?
+4. Can it be demoed?
+
 ## 📍 Current State (Updated: 2025-07-18)
 
 ### ✅ Completed Sessions
