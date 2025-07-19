@@ -1,59 +1,71 @@
 ---
 title: Next Development Steps
 created: 2025-07-18T12:00:00Z
-updated: 2025-07-19T14:00:00Z
+updated: 2025-07-19T15:30:00Z
 category: planning
-tags: [roadmap, voice-integration, session-2.3.3, voice-to-text, priorities]
+tags: [roadmap, testing-critical, session-2.3.2.5, technical-debt, priorities]
 source: Development planning and task tracking
-session: 2.3.3
+session: 2.3.2.5
 ---
 
 # 🎯 Next Steps for CoachNTT.ai
 
-## Immediate Priority: Session 2.3.3 - Voice-to-Text Integration
+## 🚨 Immediate Priority: Session 2.3.2.5 - Testing Foundation Catch-Up
+
+**Why This Is Critical**: 
+- Currently at ~15% test coverage (target: 90%)
+- Audio services have 0 tests
+- Voice integration depends on untested foundations
+- Risk of cascading failures without proper testing
+
+## Next Priority: Session 2.3.3 - Voice-to-Text Integration (Post-Testing)
 
 ### Session Goals
-1. **MCP Transcription Integration**
-   - Connect AudioCaptureService to MCP transcribe API
-   - Implement streaming transcription support
-   - Add real-time transcription feedback
-   - Handle transcription errors gracefully
+1. **Backend Foundation Testing**
+   - Verify Docker containers start correctly
+   - Test API health endpoints
+   - Validate database connections
+   - Check safety enforcement rules
+   - Test memory CRUD operations
 
-2. **Voice-to-NLQ Pipeline**
-   - Route transcriptions to NLQ parser
-   - Implement confidence thresholds
-   - Add voice command confirmation
-   - Create fallback strategies
+2. **VSCode Extension Testing**
+   - Verify extension activation
+   - Test MCP WebSocket connection
+   - Validate memory tree display
+   - Check command registration
+   - Test status bar updates
 
-3. **Voice Feedback Loop**
-   - Add transcription preview
-   - Implement command confirmation UI
-   - Create voice activity indicators
-   - Add error recovery prompts
+3. **Audio Pipeline Testing**
+   - Test Voice Activity Detection (VAD)
+   - Verify audio capture functionality
+   - Test audio playback service
+   - Validate audio-to-WAV encoding
+   - End-to-end pipeline test
 
-4. **Extension Integration**
-   - Wire up voice commands in extension.ts
-   - Connect NLQ commands to registry
-   - Add voice toggle to status bar
-   - Register all voice keybindings
+4. **Critical Path Coverage**
+   - Achieve 60% test coverage on critical services
+   - Create tests for all audio services (currently 0)
+   - Test WebSocket pub/sub messaging
+   - Validate real-time update flow
+   - Document remaining testing gaps
 
 ### Prerequisites Check
-- [x] Voice command framework complete
-- [x] NLQ parser and semantic analyzer
-- [x] Code search engine with AST
-- [x] Audio capture service ready
-- [x] MCP client with tool_call support
-- [ ] Connect transcription to voice commands
-- [ ] Integrate all services in extension.ts
+- [x] Development paused for testing
+- [x] Testing plan documented
+- [ ] Backend smoke tests passing
+- [ ] Extension activation verified
+- [ ] Audio pipeline tested
+- [ ] WebSocket stability confirmed
+- [ ] 60% critical path coverage achieved
 
 ## Technical Tasks
 
 ### High Priority
-1. **Voice-to-Text Integration**
-   - Wire AudioCaptureService to MCP
-   - Connect transcriptions to commands
-   - Add real-time feedback
-   - Implement error handling
+1. **Testing Infrastructure**
+   - Set up Jest configuration for extension
+   - Create test fixtures and mocks
+   - Implement test runners
+   - Add coverage reporting
 
 2. **Critical Test Coverage Gaps**
    - Living Documents: No tests for document-abstractor, context-window-manager
@@ -93,40 +105,57 @@ session: 2.3.3
    - Advanced NLU integration
    - Team collaboration
 
-## Session 2.3.3 Implementation Plan
+## Session 2.3.2.5 Testing Plan
 
-### 1. Transcription Service (~200 lines)
-```typescript
-interface TranscriptionService {
-  transcribe(audio: AudioBuffer): Promise<TranscriptionResult>;
-  startStreaming(): TranscriptionStream;
-  stopStreaming(): void;
-}
+### 1. Backend Smoke Tests (~30 min)
+```bash
+# Start containers
+docker-compose up -d
+
+# Health check
+curl http://localhost:8000/health
+
+# Database verification
+docker-compose exec postgres pg_isready
+
+# Run core tests
+python -m pytest tests/unit/core/test_safety.py -v
+python -m pytest tests/integration/test_memory_lifecycle.py -v
 ```
 
-### 2. Voice Pipeline Manager (~250 lines)
-- Connect audio capture to transcription
-- Route transcriptions to appropriate handlers
-- Manage confidence thresholds
-- Handle errors and retries
+### 2. Extension Foundation Tests (~1 hour)
+```bash
+cd vscode-extension
 
-### 3. Voice UI Components (~300 lines)
-- Transcription preview widget
-- Command confirmation dialog
-- Voice activity status bar
-- Error recovery prompts
+# Install test dependencies
+npm install --save-dev @types/jest jest ts-jest
 
-### 4. Extension Integration (~150 lines)
-- Register all voice services
-- Connect event handlers
-- Update status bar items
-- Add command palette entries
+# Run existing tests
+npm test
 
-### 5. Testing & Documentation (~200 lines)
-- Integration tests for voice pipeline
-- Update user documentation
-- Create voice command guide
-- Add troubleshooting section
+# Test specific services
+npm test -- --testNamePattern="MCPClient"
+npm test -- --testNamePattern="AudioCapture"
+```
+
+### 3. Audio Pipeline Tests (~2 hours)
+- Create test fixtures for audio data
+- Mock WebRTC APIs
+- Test VAD thresholds
+- Verify capture → encoding → playback flow
+- Test error scenarios
+
+### 4. Integration Tests (~1 hour)
+- Test extension → backend communication
+- Verify WebSocket message flow
+- Test memory CRUD operations
+- Validate real-time updates
+
+### 5. Coverage Report & Documentation (~30 min)
+- Generate coverage reports
+- Document testing gaps
+- Create test execution guide
+- Update project documentation
 
 ## Outstanding Issues
 
@@ -178,7 +207,15 @@ interface TranscriptionService {
 - [x] Voice navigation functional
 - [x] Tests created and passing
 
-### For Session 2.3.3
+### For Session 2.3.2.5 (Testing)
+- [ ] Backend services verified
+- [ ] Extension activation tested
+- [ ] Audio pipeline functional
+- [ ] WebSocket stability confirmed
+- [ ] 60% critical path coverage
+- [ ] Testing infrastructure established
+
+### For Session 2.3.3 (Deferred)
 - [ ] MCP transcription connected
 - [ ] Voice-to-text pipeline working
 - [ ] Real-time feedback operational

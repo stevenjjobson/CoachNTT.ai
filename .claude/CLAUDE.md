@@ -387,6 +387,19 @@
   - Created QueryResultManager with navigation, grouping, and voice feedback (~350 lines)
   - Integrated NLQ with voice command framework through NLQVoiceCommands (~200 lines)
   - Added comprehensive test suites for parser and search engine (~500 lines)
+
+- **Session 2.3.2.5**: Testing Foundation Catch-Up
+  - Status: Planned 🔄
+  - Priority: CRITICAL - Blocking Session 2.3.3
+  - Summary: Address critical test coverage gap (currently ~15% vs 90% target) before voice integration
+  - Focus Areas:
+    - Backend smoke tests and health verification
+    - VSCode extension activation and core services
+    - Audio pipeline end-to-end testing (capture → process → playback)
+    - MCP WebSocket connection stability
+    - Critical path verification (memory CRUD, WebSocket pub/sub)
+  - Success Criteria: 60% coverage on critical paths, all audio services tested
+  - Session Docs: docs/sessions/SESSION_2.3.2.5_TESTING_PLAN.md
   - Built VoiceFeedbackService for TTS and visual feedback integration (~150 lines)
   - Defined 15+ voice command patterns across 6 categories (navigation, file, selection, edit, search, extension)
   - Added command history with repeat functionality and undo support
@@ -788,6 +801,25 @@ Context files:
 - docs/sessions/SESSION_X.Y.Z_SUMMARY.md
 
 Focus: [Brief description of session goals]
+```
+
+### Session Testing Checklist
+```
+## Pre-Session Testing
+- [ ] Verify dependencies from previous sessions
+- [ ] Run smoke tests on required services
+- [ ] Check integration points are functional
+
+## During Session
+- [ ] Write tests for new components as created
+- [ ] Run tests after each major implementation
+- [ ] Verify integration with existing services
+
+## Post-Session Testing
+- [ ] Run full test suite for session components
+- [ ] Check for regression in existing functionality
+- [ ] Update test coverage metrics
+- [ ] Document any testing gaps for next session
 ```
 
 ### Commit Message Template
