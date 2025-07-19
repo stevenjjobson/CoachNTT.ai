@@ -777,6 +777,19 @@ Before committing session completion, **ALWAYS** complete these steps:
    - [ ] Tag major achievements and integrations
    - [ ] Follow established commit message format
 
+### Session Start Template
+```
+Good [time], Claude. Please begin Session X.Y.Z: [Session Name].
+
+Context files:
+- .claude/CLAUDE.md
+- .claude/CURRENT_SESSION.CoachNTT  
+- .claude/NEXT_STEPS.CoachNTT
+- docs/sessions/SESSION_X.Y.Z_SUMMARY.md
+
+Focus: [Brief description of session goals]
+```
+
 ### Commit Message Template
 ```
 [Session X.Y]: [Session Name] with [key achievement]
